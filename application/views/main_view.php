@@ -61,7 +61,7 @@
                     <ul class="nav nav-pills" style="margin-bottom: 15px;">
                         <li class="active"><a data-toggle="pill" href="#home">My active appliements</a></li>
                         <li><a data-toggle="pill" href="#menu1">New purchase</a></li>
-                        <li><a data-toggle="pill" href="#menu2">History</a></li>
+<!--                        <li><a data-toggle="pill" href="#menu2">History</a></li>-->
                     </ul>
                     <div class="tab-content" >
                         <div id="home" class="tab-pane fade in active">
