@@ -8,7 +8,7 @@ if (!empty($_POST)) {
     $site_salt = "subinsblogsalt"; /* Common Salt used for password storing on site. */
     $salted_hash = hash('sha256', $password . $site_salt . $p_salt);
 
-    $query = "INSERT INTO `employee`(`fullname`, `position`, `role`, `department`, `deprole`, `username`, `password`,`salt`, `email`)"
+    $query = "INSERT INTO `employee`(`fullname`, `position`, `role_id`, `departmentId`, `deprole`, `username`, `password`,`salt`, `email`)"
             . "VALUES ('" . $_POST["fullname"] . "','"
             . $_POST["position"] . "',"
             . $_POST["role"] . ",'"
