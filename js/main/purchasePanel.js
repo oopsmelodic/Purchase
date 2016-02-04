@@ -11,23 +11,6 @@ $(document).ready(function () {
         else
             personOK($(event.target).parent());
     });
-    //ITEM BUTTON CONTROLL
-    $('.personADD').click(function (){
-        var parent = $(this).parents('li');
-        var all_count =$('#chain_list').size();
-        var text = $(this).parents('li').find('.list-group-item-heading').text();
-        var index = $(this).index();
-
-        console.log(text);
-        $('<li class="list-group-item">' +
-                '<div class="col-lg-9"><select class="selectpicker" data-width="100%"><option>ITem1</option><option>Item2</option></select></div>' +
-                '<div class="col-lg-9"><select class="selectpicker" data-width="100%"><option>Item3</option><option>Item4</option></select></div>' +
-            '</li>').insertAfter(parent);
-            $('.selectpicker').selectpicker();
-            $('.selectpicker').on('change', function (e) {
-                console.log(this);
-            });
-    });
 });
 
 function getUsersJSON()

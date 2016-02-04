@@ -46,7 +46,7 @@
                 <li>
                     <a href="/admin"><i class="fa fa-fw fa-edit"></i>  User administration</a>
                 </li>
-            </ul>ss
+            </ul>
         </div>
         <!-- /.navbar-collapse -->
     </nav>
@@ -112,14 +112,10 @@
                                                 <h4 class="col-lg-6"><span class="label label-default">Expense type: </span></h4>
                                                 <h4 class="col-lg-6"><span class="label label-default"> Cost item: </span></h4>
                                                 <div class="col-lg-6">
-                                                    <select class="col-lg-6 selectpicker" data-width="100%">
-                                                        <option>CAPEX</option>
-                                                    </select>
+                                                    <input class="form-control" type="text"/>
                                                 </div>
                                                 <div class="col-lg-6">
-                                                    <select class="selectpicker" data-width="100%">
-                                                        <option>Item 1</option>
-                                                    </select>
+                                                    <input class="form-control" type="text"/>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -151,16 +147,13 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department leader</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%">
-                                                    <?php echo getRoleUsers(5);?>
+                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true">
+                                                    <?php echo implode('', $data['roles']['Department leader']);?>
                                                 </select>
                                             </div>
                                             <div class="col-lg-3" style="padding-left: 40px;">
                                                 <button class='btn btn-success btn-sm personOK inline'>
                                                     <span class='glyphicon glyphicon-ok' aria-hidden='true'></span>
-                                                </button>
-                                                <button class='btn btn-success btn-sm personADD inline'>
-                                                    <span class='glyphicon glyphicon-plus' aria-hidden='true'></span>
                                                 </button>
                                             </div>
                                             <div> </div>
@@ -168,64 +161,52 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%">
-                                                    <?php echo getRoleUsers(4); ?>
+                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true">
+                                                    <?php echo implode('',$data['roles']['Financial']);?>
                                                 </select>
                                             </div>
                                             <div class="col-lg-3" style="padding-left: 40px;">
                                                 <button class='btn btn-success btn-sm personOK inline'>
                                                     <span class='glyphicon glyphicon-ok' aria-hidden='true'></span>
-                                                </button>
-                                                <button class='btn btn-success btn-sm personADD inline'>
-                                                    <span class='glyphicon glyphicon-plus' aria-hidden='true'></span>
                                                 </button>
                                             </div>
                                         </li>
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">3. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial controller</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%">
-                                                    <?php echo getRoleUsers(3); ?>
+                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true">
+                                                    <?php echo implode('', $data['roles']['Financial controller']);?>
                                                 </select>
                                             </div>
                                             <div class="col-lg-3" style="padding-left: 40px;">
                                                 <button class='btn btn-success btn-sm personOK inline'>
                                                     <span class='glyphicon glyphicon-ok' aria-hidden='true'></span>
-                                                </button>
-                                                <button class='btn btn-success btn-sm personADD inline'>
-                                                    <span class='glyphicon glyphicon-plus' aria-hidden='true'></span>
                                                 </button>
                                             </div>
                                         </li>
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">4. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial director</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%">
-                                                    <?php echo getRoleUsers(2); ?>
+                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true">
+                                                    <?php echo implode('', $data['roles']['Financial director']);?>
                                                 </select>
                                             </div>
                                             <div class="col-lg-3" style="padding-left: 40px;">
                                                 <button class='btn btn-success btn-sm personOK inline'>
                                                     <span class='glyphicon glyphicon-ok' aria-hidden='true'></span>
-                                                </button>
-                                                <button class='btn btn-success btn-sm personADD inline'>
-                                                    <span class='glyphicon glyphicon-plus' aria-hidden='true'></span>
                                                 </button>
                                             </div>
                                         </li>
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">5. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> General director</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%">
-                                                    <?php echo getRoleUsers(1); ?>
+                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true">
+                                                    <?php echo implode('', $data['roles']['General director']);?>
                                                 </select>
                                             </div>
                                             <div class="col-lg-3" style="padding-left: 40px;">
                                                 <button class='btn btn-success btn-sm personOK inline'>
                                                     <span class='glyphicon glyphicon-ok' aria-hidden='true'></span>
-                                                </button>
-                                                <button class='btn btn-success btn-sm personADD inline'>
-                                                    <span class='glyphicon glyphicon-plus' aria-hidden='true'></span>
                                                 </button>
                                             </div>
                                         </li>
