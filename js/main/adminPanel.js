@@ -2,9 +2,9 @@ var UsersJSON;
 var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
 var valid = ["usernick", "userMail", "userName", "userSecondname", "userPosition", "inputPassword"];
 $(document).ready(function () {
-    $('.selectpicker').selectpicker();
-        getUsersJSON();
+    getUsersJSON();
 
+    $('.selectpicker').selectpicker();
     $("#usernick").keyup(function () {
         validator("usernick", ($('#usernick').val() == "" || $('#usernick').val().length < 3));
     });
