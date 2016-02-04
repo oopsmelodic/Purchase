@@ -74,7 +74,7 @@
                                                 <label for="usernick" class="col-lg-3 control-label">Username</label>
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control" id="usernick" placeholder="Username" autocomplete="off">
-                                                    <span class="help-block">Minimum of 3 characters</span>
+                                                    <span class="help-block" id="usercontroll">Minimum of 3 characters</span>
                                                 </div>
                                             </div>
                                             <div class="form-group has-error">
@@ -102,11 +102,10 @@
                                             <div class="form-group">
                                                 <label for="department" class="col-lg-3 control-label">Department</label>
                                                 <div class="col-lg-9">
-                                                    <select class="selectpicker" data-width="100%" style="display:inline;">
-                                                        <option>Finance</option>
-                                                        <option>Management</option>
-                                                        <option>Logistics</option>
-                                                        <option>Accountment</option>
+                                                    <select class="selectpicker" id="departments" data-width="100%" style="display:inline;">
+                                                        <?php 
+                                                            echo $data['departments'];
+                                                        ?>        
                                                     </select>
                                                 </div>
                                             </div>
@@ -120,13 +119,14 @@
                                             <div class="form-group">
                                                 <label for="role" class="col-lg-3 control-label">Role</label>
                                                 <div class="col-lg-9">
-                                                    <select class="selectpicker" data-width="100%" style="display:inline;">
+                                                    <select class="selectpicker" id="roles" data-width="100%" style="display:inline;">
                                                         <option>Initiator</option>
                                                         <option>Department leader</option>
                                                         <option>Financial</option>
                                                         <option>Financial controller</option>
                                                         <option>Financial director</option>
                                                         <option>General director</option>
+                                                        <option>Administrator</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -170,10 +170,9 @@
                                 <table class="table table-bordered" style="table-layout:fixed; margin-bottom: 0px; margin-right: 10px;">
                                     <thead>
                                     <tr>
-                                        <th class="col-md-3">Department / Employee</th>
+                                        <th class="col-md-5">Department / Employee</th>
                                         <th class="col-md-3">Position</th>
-                                        <th class="col-md-2">Role</th>
-                                        <th class="col-md-3"></th>
+                                        <th class="col-md-3">Role</th>
                                         <th class="col-md-1">Action</th>
                                     </tr>
                                     </thead>

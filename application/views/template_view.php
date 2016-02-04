@@ -43,7 +43,7 @@
     <script src="/js/fileupload/fileinput.min.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
-
+    <script src="../../js/bootbox.min.js" type="text/javascript"></script>
 </head>
 
 <body>
