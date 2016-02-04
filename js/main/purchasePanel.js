@@ -1,4 +1,3 @@
-var UsersJSON;
 var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
 $(document).ready(function () {
     $('.selectpicker').selectpicker();
@@ -11,17 +10,39 @@ $(document).ready(function () {
         else
             personOK($(event.target).parent());
     });
-});
 
-function getUsersJSON()
-{
-    $.ajax({
-        url: "php/getUsers.php",
-        dataType: "json",
-        success: usersTable
+
+    //test table
+
+    $('#testtable').bootstrapTable({
+        url: '/php/getUsers.php',
+        columns: [{
+            field: 'id',
+            title: '#',
+            sortable:true
+        }, {
+            field: 'fullname',
+            title: 'Заголовок',
+            sortable:true
+        },{
+            field: 'role',
+            title: 'Время загрузки',
+            sortable:true
+            //filterControl:'select'
+        },{
+            field: 'department',
+            title: 'Статус',
+            sortable:true
+        }],
+        search: true,
+        strictSearch: true,
+        detailView : false,
+        groupBy:true,
+        groupByField:['department']
+    }).on('dbl-click-row.bs.table',function (el,row){
+
     });
-}
-
+});
 function personOK(button)
 {
 
@@ -42,102 +63,4 @@ function personOK(button)
 
 //        $('#createpurch').removeClass('disabled');
     }
-}
-//function personOK(button)
-//{
-//    $(button).parent('.list-group-item').addClass('active');
-//    if ($(button).parent('.list-group-item').next().text() != "")
-//    {
-//        $('.personBack').remove();
-//        $(button).parent('.list-group-item').next().append("<select class='selectpicker inline' data-width='80%'>"
-//                + "<option>Initiator</option>"
-//                + "<option>General controller</option>"
-//                + "<option>Controller</option>"
-//                + "</select><button class='btn btn-success btn-sm inline personOK' style='right:60px; position:absolute;'>"
-//                + "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span></button>"
-//                + "<button class='btn btn-warning btn-sm inline personBack' style='right:20px; position:absolute;'>"
-//                + "<span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span></button>");
-//        $(button).parent('.list-group-item').children('.selectpicker').prop('disabled', true).selectpicker('refresh');
-//        $(button).remove();
-//
-//        $('.selectpicker').selectpicker();
-//        $('.personOK').click(function (event) {
-//            if (event.target.nodeName == "BUTTON")
-//                personOK(event.target);
-//            else
-//                personOK($(event.target).parent());
-//        });
-//        $('.personBack').click(function (event) {
-//        if (event.target.nodeName == "BUTTON")
-//            personBack(event.target);
-//        else
-//            personBack($(event.target).parent());
-//    });
-//    }
-//    else
-//    {
-//        $(button).parent('.list-group-item').children('.selectpicker').prop('disabled', true).selectpicker('refresh');
-//        $('#createpurch').removeClass('disabled');
-//        $(button).remove();
-//    }
-//}
-//function personBack(button)
-//{
-//    $('.personOK').remove();
-//    $(button).parent('.list-group-item').prev().append("<button class='btn btn-success btn-sm inline personOK' style='right:60px; position:absolute;'>"
-//            + "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span></button>"
-//            + "<button class='btn btn-warning btn-sm inline personBack' style='right:20px; position:absolute;'>"
-//            + "<span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span></button>");
-//    $(button).parent('.list-group-item').prev().children('.selectpicker').prop('disabled', false).selectpicker('refresh');
-//    $(button).parent('.list-group-item').prev().removeClass('active');
-//    $(button).parent('.list-group-item').children('.selectpicker').selectpicker('destroy');;
-//    $(button).remove();
-//
-//    $('.personOK').click(function (event) {
-//        if (event.target.nodeName == "BUTTON")
-//            personOK(event.target);
-//        else
-//            personOK($(event.target).parent());
-//    });
-//    $('.personBack').click(function (event) {
-//        if (event.target.nodeName == "BUTTON")
-//            personBack(event.target);
-//        else
-//            personBack($(event.target).parent());
-//    });
-//}
-function usersTable(json)
-{
-    UsersJSON = json;
-    var html = "<table id='tree' class='table table-bordered table-hover'  style='table-layout:fixed;'>";
-    var department = "";
-    var treegrid = 0;
-    var departmentID = 1;
-    for (var i = 0; i < UsersJSON.length; i++)
-    {
-        if (department != UsersJSON[i]["department"]) {
-            department = UsersJSON[i]["department"];
-            departmentID = treegrid + 1;
-            treegrid += 1;
-            html += "<tr class='treegrid-" + departmentID + " success'><td  class='col-md-5'>" + department + "</td><td class='col-md-3'></td><td class='col-md-3'></td><td class='col-md-1'></td></tr>";
-        }
-        treegrid += 1;
-        html += "<tr class='treegrid-" + treegrid + " treegrid-parent-" + departmentID + "'>"
-                + "<td><span class='glyphicon glyphicon-user' aria-hidden='true'></span> " + UsersJSON[i]["fullname"] + "</td><td>" + UsersJSON[i]["position"] + "</td><td>" + roles[UsersJSON[i]["role"] - 1] + "</td>"
-                + "<td style='text-align: center;'>"
-                + "<button type='button' class='btn btn-warning btn-xs' aria-label='Left Align'>"
-                + "<span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>"
-                + "</button> "
-                + "<button type='button' class='btn btn-danger btn-xs' aria-label='Left Align'>"
-                + "<span class='glyphicon glyphicon-remove' aria-hidden='true'></span>"
-                + "</button>"
-                + "</td></tr>";
-    }
-    html += "</table>";
-    $('#usersTable').html(html);
-
-    $('#tree').treegrid({
-        expanderExpandedClass: 'glyphicon glyphicon-minus',
-        expanderCollapsedClass: 'glyphicon glyphicon-plus'
-    });
 }

@@ -22,6 +22,8 @@
     <link href="/css/summernote.css" rel="stylesheet" type="text/css"/>
     <!-- Custom Fonts -->
     <link href="/bower_components/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/bower_components/bootstrap-table-master/bootstrap-table.min.css" rel="stylesheet" type="text/css">
+    <link href="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -43,7 +45,8 @@
     <script src="/js/fileupload/fileinput.min.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
-
+    <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
+    <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
 </head>
 
 <body>
