@@ -74,7 +74,7 @@
                                                 <label for="usernick" class="col-lg-3 control-label">Username</label>
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control" id="usernick" placeholder="Username" autocomplete="off">
-                                                    <span class="help-block">Minimum of 3 characters</span>
+                                                    <span class="help-block" id="usercontroll">Minimum of 3 characters</span>
                                                 </div>
                                             </div>
                                             <div class="form-group has-error">
@@ -102,11 +102,10 @@
                                             <div class="form-group">
                                                 <label for="department" class="col-lg-3 control-label">Department</label>
                                                 <div class="col-lg-9">
-                                                    <select class="selectpicker" data-width="100%" style="display:inline;">
-                                                        <option>Finance</option>
-                                                        <option>Management</option>
-                                                        <option>Logistics</option>
-                                                        <option>Accountment</option>
+                                                    <select class="selectpicker" id="departments" data-width="100%" style="display:inline;">
+                                                        <?php 
+                                                            echo $data['departments'];
+                                                        ?>        
                                                     </select>
                                                 </div>
                                             </div>
@@ -120,13 +119,14 @@
                                             <div class="form-group">
                                                 <label for="role" class="col-lg-3 control-label">Role</label>
                                                 <div class="col-lg-9">
-                                                    <select class="selectpicker" data-width="100%" style="display:inline;">
+                                                    <select class="selectpicker" id="roles" data-width="100%" style="display:inline;">
                                                         <option>Initiator</option>
                                                         <option>Department leader</option>
                                                         <option>Financial</option>
                                                         <option>Financial controller</option>
                                                         <option>Financial director</option>
                                                         <option>General director</option>
+                                                        <option>Administrator</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -154,12 +154,32 @@
                             <div class="brd" style="margin-bottom: 15px; margin-top:20px; padding:5px;">
                                 <h2  style="display:inline;">Users</h2>
                                 <div style="display:inlnie; position: absolute; right:15px; width:300px; top:25px;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Search">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default btn-danger" type="button"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button>
+                                                </span>
+                                    </div>
                                 </div>
+                                <button class="btn btn-success btn-sm" style="display:inline; position: absolute; right:360px; top:27px;" onclick="if ($('#tree')[0] != undefined)
+                                                    $('#tree').treegrid('expandAll');"><i class="glyphicon glyphicon-arrow-down" aria-hidden="true"></i></button>
+                                <button class="btn btn-warning btn-sm" style="display:inline; position: absolute; right:323px; top:27px;" onclick="if ($('#tree')[0] != undefined)
+                                                    $('#tree').treegrid('collapseAll');"><i class="glyphicon glyphicon-arrow-up" aria-hidden="true"></i></button>
                             </div>
                             <div class="table-responsive">
-                                <table id="testtable" class="table table-bordered" style="table-layout:fixed; margin-bottom: 0px; margin-right: 10px;">
-
+                                <table class="table table-bordered" style="table-layout:fixed; margin-bottom: 0px; margin-right: 10px;">
+                                    <thead>
+                                    <tr>
+                                        <th class="col-md-5">Department / Employee</th>
+                                        <th class="col-md-3">Position</th>
+                                        <th class="col-md-3">Role</th>
+                                        <th class="col-md-1">Action</th>
+                                    </tr>
+                                    </thead>
                                 </table>
+                                <div class="div-table-content" id="usersTable">
+                                    <div class="timer-loader" style ="position: absolute;top: 50%;left: 50%;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

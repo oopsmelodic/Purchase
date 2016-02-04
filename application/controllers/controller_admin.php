@@ -4,7 +4,7 @@ class Controller_Admin extends Controller
 {
     function __construct()
     {
-//        $this->model = new Model_Auth();
+        $this->model = new Model_Admin();
         $this->view = new View();
         $this->controller = new Controller();
     }
@@ -13,7 +13,8 @@ class Controller_Admin extends Controller
     {
         session_start();
         if($this->controller->check_session()) {
-            $this->view->generate('admin_view.php', 'template_view.php');
+            $data['departments'] = $this->model->get_departments();
+            $this->view->generate('admin_view.php', 'template_view.php',$data);
         }
     }
 }
