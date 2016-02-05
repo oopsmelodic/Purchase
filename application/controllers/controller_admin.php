@@ -14,6 +14,7 @@ class Controller_Admin extends Controller
         session_start();
         if($this->controller->check_session()) {
             $data['departments'] = $this->model->get_departments();
+            $data['roles'] = $this->model->get_roles();
             $this->view->generate('admin_view.php', 'template_view.php',$data);
         }
     }

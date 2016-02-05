@@ -24,11 +24,27 @@ class Model_Admin extends Model {
         include_once './php/conn.php';
 //        include_once './php/auth_ldap.php';
 
-        $query = mysqli_query(GetMyConnection(), "SELECT `id`, `name` FROM `departments`");
+        $query = mysqli_query(GetMyConnection(), "Select id,name From departments");
         if (mysqli_num_rows($query)) {
             $options = "";
             while ($row = mysqli_fetch_assoc($query)) {
-                $options.="<option>" . $row["name"] . "</option>";
+                $options.='<option data-content="' . $row["name"] . '">' . $row["id"] . '</option>';
+            }
+            return $options;
+        } else {
+            //Any auth
+        }
+    }
+
+    public function get_roles() {
+        include_once './php/conn.php';
+//        include_once './php/auth_ldap.php';
+
+        $query = mysqli_query(GetMyConnection(), "Select id,name From roles");
+        if (mysqli_num_rows($query)) {
+            $options = "";
+            while ($row = mysqli_fetch_assoc($query)) {
+                $options.='<option data-content="' . $row["name"] . '">' . $row["id"] . '</option>';
             }
             return $options;
         } else {

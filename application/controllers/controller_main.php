@@ -17,7 +17,7 @@ class Controller_Main extends Controller
             $roles = $this->model->get_roles_data();
             $flip_roles = Array();
             foreach($roles as $value){
-                $flip_roles[$value['role_name']][] = '<option data-subtext="'.$value['department'].'" emp_id="'.$value['id'].'" role_power="'.$value['role_power'].'">'.$value['fullname'].' </option>';
+                $flip_roles[$value['role_name']][] = '<option  data-content="<h5>'.$value['fullname'].'<small>'.$value['department'].'</small></h5>"  emp_id="'.$value['id'].'" role_power="'.$value['role_power'].'">'.$value['id'].' </option>';
             }
             $data['roles'] = $flip_roles;
             $data['check'] = $_SESSION['id'];
