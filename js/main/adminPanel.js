@@ -90,14 +90,11 @@ $(document).ready(function () {
         }).success(function (data){
             var classes = ["userName","userSecondname", "userPosition", "usernick", "inputPassword", "userMail"];
             bootbox.alert("User " + $('#usernick').val() + " was registred!");
-            for (var i = 0; i < classes.length; i++)
-            {
+            for (var i = 0; i < classes.length; i++){
                 $('#' + classes[i]).val("");
                 validator(classes[i], true);
             }
-
             $('#testtable').bootstrapTable('refresh');
-
         });
     });
 });
@@ -128,8 +125,7 @@ function validator(name, state)
         $('#' + name).parent().find('.help-block').slideDown();
         if (valid.indexOf(name) == -1)
             valid.push(name);
-    } else
-    {
+    }else{
         $('#' + name).parent().parent(".form-group").removeClass("has-error");
         $('#' + name).parent().find('.help-block').slideUp();
         if (valid.indexOf(name) != -1)

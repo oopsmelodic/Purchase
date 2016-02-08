@@ -85,13 +85,15 @@
                                                 <h4 class="col-lg-6"><legend><span class="label label-default"><?php echo $data['department']; ?></span> department.</legend></h4>
                                             </div>
                                             <div class="col-lg-12 form-group">
-                                                <h4 class="col-lg-6"><span class="label label-default">Expense type: </span></h4>
-                                                <h4 class="col-lg-6"><span class="label label-default"> Cost item: </span></h4>
                                                 <div class="col-lg-6">
-                                                    <input class="form-control" type="text"/>
+                                                    <h4 class="col-lg-6"><span class="label label-default">Expense type: </span></h4>
+                                                    <select id="budget_select" data-width="100%" multiple data-live-search="true">
+                                                        <?php echo $data['budgets'];?>
+                                                    </select>
                                                 </div>
-                                                <div class="col-lg-6">
-                                                    <input class="form-control" type="text"/>
+                                                <div class="col-lg-6" id="budget_inputs">
+<!--                                                    <h4 class="col-lg-6" id="budget_sizes"><span class="label label-default"> Cost Size: </span> </h4>-->
+<!--                                                    <input class="form-control" type="text"/>-->
                                                 </div>
                                             </div>
                                             <div class="form-group">

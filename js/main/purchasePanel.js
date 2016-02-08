@@ -42,6 +42,10 @@ $(document).ready(function () {
     }).on('dbl-click-row.bs.table',function (el,row){
 
     });
+
+    //selects
+    $('#budget_select').selectpicker();
+
 });
 function personOK(button)
 {

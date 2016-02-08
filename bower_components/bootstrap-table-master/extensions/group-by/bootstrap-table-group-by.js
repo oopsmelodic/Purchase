@@ -1,7 +1,4 @@
-/**
- * @author: Yura Knoxville
- * @version: v1.0.0
- */
+
 
 !function ($) {
 
@@ -97,8 +94,9 @@
             var that = this,
                 checkBox = false,
                 visibleColumns = 0;
-            if (this.columns != null) {
-                this.columns.forEach(function (column) {
+            //console.log(this);
+            if (this.options.columns != null) {
+                this.options.columns.forEach(function (column) {
                     if (column.checkbox) {
                         checkBox = true;
                     } else {
@@ -122,11 +120,10 @@
                     html.push('<td class="detail"></td>');
                 }
 
-                if (checkBox) {
+                if (checkBox){
                     html.push('<td class="bs-checkbox">',
-                        '<input name="btSelectGroup" type="checkbox" />',
-                        '</td>'
-                    );
+                                '<input name="btSelectGroup" type="checkbox" />',
+                              '</td>');
                 }
 
                 html.push('<td',
