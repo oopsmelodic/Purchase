@@ -44,7 +44,15 @@ $(document).ready(function () {
     });
 
     //selects
-    $('#budget_select').selectpicker();
+    $('#budget_select').selectpicker().on('changed.bs.select',function (item,val){
+        var cur_select = $(this).selectpicker('val');
+        if (cur_select!= null){
+            cur_select.forEach(function (item,i,arr){
+                var input =$('#budget_inputs').find('#bi_'+item).get(0);
+                console.log(input);
+            });
+        }
+    });
 
 });
 function personOK(button)

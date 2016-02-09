@@ -92,8 +92,8 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-lg-6" id="budget_inputs">
-<!--                                                    <h4 class="col-lg-6" id="budget_sizes"><span class="label label-default"> Cost Size: </span> </h4>-->
-<!--                                                    <input class="form-control" type="text"/>-->
+                                                    <h4 class="col-lg-6" id="budget_sizes"><span class="label label-default"> Cost Size: </span> </h4>
+                                                    <input id="bi_1" class="form-control" type="text"/>
                                                 </div>
                                             </div>
                                             <div class="form-group">

@@ -25,7 +25,7 @@ class Controller_Main extends Controller
                 $flip_budgets[$value['budget_type_name']][] = '<option  data-content="<h5>'.$value['budget_name'].'<small>'.$value['planed_cost'].'</small></h5>" planed_cost="'.$value['planed_cost'].'">'.$value['id'].' </option>';
             }
             foreach($flip_budgets as $key=>$value){
-                $data['budgets'].='<optgroup label="'.$key.'"'.'data-max-options="1">'.implode('',$value).'</optgroup>';
+                $data['budgets'].='<optgroup label="'.$key.'"'.'data-max-options="">'.implode('',$value).'</optgroup>';
             }
 //            $data['budgets'] = $flip_budgets;
             $data['roles'] = $flip_roles;

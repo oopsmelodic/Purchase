@@ -45,7 +45,7 @@ class Model_Main extends Model{
     public function get_budgets(){
 
         include_once './php/conn.php';
-        $query=mysqli_query(GetMyConnection(),"Select bt.name as budget_name,bt.date_time,bt.planed_cost, btt.name as budget_type_name  From budget as bt Left Join budget_type as btt on bt.type_id=btt.id");
+        $query=mysqli_query(GetMyConnection(),"Select bt.id ,bt.name as budget_name,bt.date_time,bt.planed_cost, btt.name as budget_type_name  From budget as bt Left Join budget_type as btt on bt.type_id=btt.id");
         if ($query){
             if (mysqli_num_rows($query)){
                 while ($row = mysqli_fetch_assoc($query)) {
