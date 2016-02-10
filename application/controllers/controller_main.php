@@ -14,6 +14,7 @@ class Controller_Main extends Controller
         session_start();
         if($this->controller->check_session()) {
             $data = $this->model->get_user_data($_SESSION['id']);
+//            print_r($data);
             $roles = $this->model->get_roles_data();
             $budgets = $this->model->get_budgets();
             $flip_roles = Array();

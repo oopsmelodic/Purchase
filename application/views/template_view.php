@@ -38,6 +38,7 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery-validate.js"></script>
     <script src="/js/main/main.js" type="text/javascript"></script>
 <!--    <script src="/js/main/purchasePanel.js" type="text/javascript"></script>-->
     <script type="text/javascript" src="/js/jquery.treegrid.js"></script>
