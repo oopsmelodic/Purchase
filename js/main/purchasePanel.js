@@ -1,5 +1,8 @@
 var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
 $(document).ready(function () {
+
+    $('.summernote').summernote();
+
     $('.selectpicker').selectpicker();
     //getUsersJSON();
     $('#purchase_form').validate({
@@ -85,6 +88,9 @@ $(document).ready(function () {
         }
     });
     $('#createpurch').click(function (){
+        var sign_chain = [];
+
+        //Make Chain
 
         $.ajax({
             url:'/php/sendData.php',
@@ -94,8 +100,8 @@ $(document).ready(function () {
                 employee_id: $('#user_id').attr('user_id') || 0,
                 department_id: $('#department_id').attr('department_id') || 0,
                 budget_id: $('#budget_select').selectpicker('val') || [],
-                purchase_text: $('#purchase_text').val() || 'Empty'
-                //substantiation_text
+                purchase_text: $('#purchase_text').val() || 'Empty',
+                substantiation_text:  $('.summernote').summernote('code')
             }
         }).success(function (data){
             console.log(data);
@@ -105,8 +111,7 @@ $(document).ready(function () {
 });
 function personOK(button){
 
-    if ($(button).hasClass("btn-success"))
-    {
+    if ($(button).hasClass("btn-success")){
         if ($(button).parents('.list-group-item').find('.selectpicker').selectpicker('val')!=null) {
             $(button).parents('.list-group-item').addClass('active');
             $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', true).selectpicker('refresh');
@@ -114,13 +119,11 @@ function personOK(button){
             $(button).addClass('btn-warning').removeClass('btn-success');
         }
     }
-    else if ($(button).hasClass("btn-warning"))
-    {
+    else if ($(button).hasClass("btn-warning")){
         $(button).parents('.list-group-item').removeClass('active');
         $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', false).selectpicker('refresh');
         $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-plus').removeClass('glyphicon-remove');
         $(button).addClass('btn-success').removeClass('btn-warning');
-
 //        $('#createpurch').removeClass('disabled');
     }
 
