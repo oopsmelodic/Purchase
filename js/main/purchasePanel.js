@@ -93,21 +93,26 @@ $(document).ready(function () {
         var sign_chain = [];
 
         //Make Chain
-
-        $.ajax({
-            url:'/php/sendData.php',
-            type:'POST',
-            dataType:'',
-            data:{
-                employee_id: $('#user_id').attr('user_id') || 0,
-                department_id: $('#department_id').attr('department_id') || 0,
-                budget_id: $('#budget_select').selectpicker('val') || [],
-                purchase_text: $('#purchase_text').val() || 'Empty',
-                substantiation_text:  $('.summernote').summernote('code')
-            }
-        }).success(function (data){
-            console.log(data);
+        $('#chain_list').each(function (index,item){
+            sign_chain.push($(item));
         });
+
+        console.log(sign_chain);
+
+        //$.ajax({
+        //    url:'/php/sendData.php',
+        //    type:'POST',
+        //    dataType:'',
+        //    data:{
+        //        employee_id: $('#user_id').attr('user_id') || 0,
+        //        department_id: $('#department_id').attr('department_id') || 0,
+        //        budget_id: $('#budget_select').selectpicker('val') || [],
+        //        purchase_text: $('#purchase_text').val() || 'Empty',
+        //        substantiation_text:  $('.summernote').summernote('code')
+        //    }
+        //}).success(function (data){
+        //    console.log(data);
+        //});
     });
 
 });

@@ -124,7 +124,7 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department leader</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
+                                                <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
                                                     <?php echo implode('', $data['roles']['Department leader']);?>
                                                 </select>
                                             </div>
@@ -138,7 +138,7 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
+                                                <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
                                                     <?php echo implode('',$data['roles']['Financial']);?>
                                                 </select>
                                             </div>
@@ -151,7 +151,7 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">3. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial controller</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
+                                                <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
                                                     <?php echo implode('', $data['roles']['Financial controller']);?>
                                                 </select>
                                             </div>
@@ -164,7 +164,7 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">4. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial director</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
+                                                <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
                                                     <?php echo implode('', $data['roles']['Financial director']);?>
                                                 </select>
                                             </div>
@@ -177,7 +177,7 @@
                                         <li class="list-group-item">
                                             <h5 class="list-group-item-heading">5. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> General director</h5>
                                             <div class="col-lg-9">
-                                                <select class="selectpicker" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
+                                                <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count">
                                                     <?php echo implode('', $data['roles']['General director']);?>
                                                 </select>
                                             </div>
