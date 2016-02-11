@@ -11,7 +11,7 @@ if (!empty($_POST)) {
     $query = "INSERT INTO iom(employee_id, budget_id, name,power,costsize,actualcost,substantation) "
         . "VALUES (" . $_POST["employee_id"] . ","
         . implode('',$_POST["budget_id"]) . ",'"
-        . $_POST["purchase_text"]. "',0,0,0,'Some Text')";
+        . $_POST["purchase_text"]. "',0,0,0,'".$_POST["substantiation_text"]."')";
 
     $res = mysqli_query(GetMyConnection(),$query);
     echo $query;
