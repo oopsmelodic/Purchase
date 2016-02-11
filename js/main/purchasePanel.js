@@ -59,6 +59,8 @@ $(document).ready(function () {
 
     });
 
+
+
     //selects
     $('#budget_select').selectpicker().on('changed.bs.select',function (item,val){
         var selectedOptions= $(this).context.selectedOptions;
