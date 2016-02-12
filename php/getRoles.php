@@ -1,13 +1,24 @@
 <?php
 include 'conn.php';
-
-$query="SELECT `username` , `fullname`, `position`, `role`, `department` 
-FROM `employee`
-ORDER BY `employee`.`department` ASC, `employee`.`role` ASC";
-
-$res = mysql_query($query, GetMyConnection());
-$rows = array();
-while($row = mysql_fetch_assoc($res)) {
-    $rows[] = $row;
+$result = mysqli_query(GetMyConnection(), "Select id,name From departments");
+if ($result) {
+    $departments = "";
+    while ($row = mysqli_fetch_assoc($result)) {
+        $departments.='<option data-content="' . $row["name"] . '">' . $row["id"] . '</option>';
+    }
+} else {
+    die("Couldn't get departments: " . mysql_error());
 }
-echo json_encode($rows);
+
+$result2 = mysqli_query(GetMyConnection(), "Select id,name From roles");
+if ($result2) {
+    $roles = "";
+    while ($row = mysqli_fetch_assoc($result2)) {
+        $roles.='<option data-content="' . $row["name"] . '">' . $row["id"] . '</option>';
+    }
+} else {
+    die("Couldn't get roles: " . mysql_error());
+}
+$json["departments"] = $departments;
+$json["roles"] = $roles;
+echo json_encode($json);
