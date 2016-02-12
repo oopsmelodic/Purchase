@@ -87,7 +87,7 @@
                                             <div class="col-lg-12 form-group">
                                                 <div class="col-lg-6">
                                                     <h4 class="col-lg-6"><span class="label label-default">Expense type: </span></h4>
-                                                    <select id="budget_select" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" data-required data-describedby="messages" data-description="test">
+                                                    <select id="budget_select" class="selectpicker" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" data-required data-describedby="messages" data-description="test">
                                                         <?php echo $data['budgets'];?>
                                                     </select>
                                                     <span id="messages"></span>

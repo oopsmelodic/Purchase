@@ -13,6 +13,7 @@ $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.st
     " Left Join employee as em on im.employee_id=em.id".
     " Left Join budget as bd on im.budget_id=bd.id".
     " Left Join budget_type as bt on bd.type_id=bt.id";
+
 $res = mysqli_query(GetMyConnection(),$query);
 
 $rows = array();
