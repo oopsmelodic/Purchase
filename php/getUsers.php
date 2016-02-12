@@ -4,7 +4,7 @@ include 'conn.php';
 
 $query="SELECT em.fullname as fullname, em.id as id, dp.name as department,rl.name as role, em.position FROM employee as em"
             ." Left Join departments as dp on em.department_id=dp.id"
-            ." Left Join roles as rl on em.role_id=rl.id";
+            ." Left Join roles as rl on em.role_id=rl.id Where em.status=1";
 
 $res = mysqli_query(GetMyConnection(),$query);
 

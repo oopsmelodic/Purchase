@@ -19,6 +19,11 @@ $res = mysqli_query(GetMyConnection(),$query);
 $rows = array();
 if (mysqli_num_rows($res)) {
     while ($row = mysqli_fetch_assoc($res)) {
+        switch ($row['status']){
+            case "in progress":
+                $row['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$row['status'].'</span>';
+                break;
+        }
         $rows[] = $row;
     }
 }
