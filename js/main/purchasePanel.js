@@ -1,7 +1,7 @@
 var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
 $(document).ready(function () {
 
-    $('.summernote').summernote();
+    $('#summernote').summernote();
 
     $('.selectpicker').selectpicker();
     //getUsersJSON();
@@ -31,32 +31,67 @@ $(document).ready(function () {
     //test table
 
     $('#testtable').bootstrapTable({
-        url: '/php/getUsers.php',
+        url: '/php/getIoms.php',
         columns: [{
             field: 'id',
-            title: '#',
+            title: '# IOM',
             sortable:true
         }, {
-            field: 'fullname',
-            title: 'Заголовок',
+            field: 'name',
+            title: 'Name:',
             sortable:true
         },{
-            field: 'role',
-            title: 'Время загрузки',
+            field: 'latest_action',
+            title: 'Latest Action:',
             sortable:true
             //filterControl:'select'
         },{
-            field: 'department',
-            title: 'Статус',
+            field: 'status',
+            title: 'Status:',
             sortable:true
         }],
         search: true,
         strictSearch: true,
-        detailView : false,
-        groupBy:true,
-        groupByField:['department']
+        detailView : true,
+        //groupBy:true,
+        //groupByField:['department']
+        detailFormatter: function (index, row){
+            var div = $('<div class="col-lg-12"></div>');
+            div.append('<div class="col-lg-6">' +
+                '<h5><span class="label label-primary">Cost Item: </span>&nbsp; '+row["budget_fullname"]+'</h5>' +
+                '<h5><span class="label label-primary">Cost Size: </span>&nbsp; '+row["actualcost"]+'</h5>' +
+                '<span class="label label-primary">Substantation: </span><br><textarea id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</textarea>' +
+                '</div>');
+            div.append('<div class=col-lg-6>' +
+                    '<table id="signers_'+index+'"></table>' +
+                '</div>');
+
+            return div.html();
+        }
     }).on('dbl-click-row.bs.table',function (el,row){
 
+    }).on('expand-row.bs.table',function (event,index,row){
+        $('#summer_'+index).summernote({
+            shortcuts: false
+        });
+        $('#summer_'+index).code(row['substantation']);
+        $('#signers_'+index).bootstrapTable({
+            url: '/php/getIomSigners.php?iom_id='+row['id'],
+            columns: [{
+                field: 'id',
+                title: '#',
+                //sortable:true
+            }, {
+                field: 'fullname',
+                title: 'Name:',
+                //sortable:true
+            },{
+                field: 'status',
+                title: 'Latest Action:',
+                //sortable:true
+                //filterControl:'select'
+            }],
+        });
     });
 
 
@@ -93,26 +128,25 @@ $(document).ready(function () {
         var sign_chain = [];
 
         //Make Chain
-        $('#chain_list').each(function (index,item){
-            sign_chain.push($(item));
+        $('#chain_list select').each(function (index,item){
+            sign_chain.push($(item).selectpicker('val'));
         });
-
-        console.log(sign_chain);
-
-        //$.ajax({
-        //    url:'/php/sendData.php',
-        //    type:'POST',
-        //    dataType:'',
-        //    data:{
-        //        employee_id: $('#user_id').attr('user_id') || 0,
-        //        department_id: $('#department_id').attr('department_id') || 0,
-        //        budget_id: $('#budget_select').selectpicker('val') || [],
-        //        purchase_text: $('#purchase_text').val() || 'Empty',
-        //        substantiation_text:  $('.summernote').summernote('code')
-        //    }
-        //}).success(function (data){
-        //    console.log(data);
-        //});
+        sign_chain = JSON.stringify(sign_chain);
+        $.ajax({
+            url:'/php/sendData.php',
+            type:'POST',
+            dataType:'json',
+            data:{
+                employee_id: $('#user_id').attr('user_id') || 0,
+                department_id: $('#department_id').attr('department_id') || 0,
+                budget_id: $('#budget_select').selectpicker('val') || [],
+                purchase_text: $('#purchase_text').val() || 'Empty',
+                substantiation_text:  $("#summernote").code(),
+                sign_chain: sign_chain
+            }
+        }).success(function (data){
+            console.log(data);
+        });
     });
 
 });
