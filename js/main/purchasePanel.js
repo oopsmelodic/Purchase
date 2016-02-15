@@ -49,6 +49,16 @@ $(document).ready(function () {
             field: 'status',
             title: 'Status:',
             sortable:true
+        },{
+            title:'Controls:',
+            formatter: function(id,data){
+                console.log(data.sign_status);
+                var controls='';
+                if (data.sign_status==1){
+                    controls = '<div><button class="btn btn-success">Confirm</button><button class="btn btn-danger">Cancel</button></div>'
+                }
+                return controls;
+            }
         }],
         search: true,
         strictSearch: true,
@@ -58,18 +68,19 @@ $(document).ready(function () {
         detailFormatter: function (index, row){
             var div = $('<div class="col-lg-12"></div>');
             div.append('<div class="col-lg-6">' +
-                '<h5><span class="label label-primary">Cost Item: </span>&nbsp; '+row["budget_fullname"]+'</h5>' +
-                '<h5><span class="label label-primary">Cost Size: </span>&nbsp; '+row["actualcost"]+'</h5>' +
-                '<span class="label label-primary">Substantation: </span><br><textarea id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</textarea>' +
-                '</div>');
+                        '<h5><span class="label label-primary">Cost Item: </span>&nbsp; '+row["budget_fullname"]+'</h5>' +
+                        '<h5><span class="label label-primary">Cost Size: </span>&nbsp; '+row["actualcost"]+'</h5>' +
+                        '<span class="label label-primary">Substantation: </span><br><textarea id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</textarea>' +
+                    '</div>');
             div.append('<div class=col-lg-6>' +
-                    '<table id="signers_'+index+'"></table>' +
-                '</div>');
+                        '<span class="label label-primary">Signers: </span>' +
+                        '<table id="signers_'+index+'"></table>' +
+                    '</div>');
 
             return div.html();
         }
-    }).on('dbl-click-row.bs.table',function (el,row){
-
+    }).on('load-success.bs.table',function (data){
+        //console.log(data);
     }).on('expand-row.bs.table',function (event,index,row){
         $('#summer_'+index).summernote({
             shortcuts: false
@@ -87,7 +98,7 @@ $(document).ready(function () {
                 //sortable:true
             },{
                 field: 'status',
-                title: 'Latest Action:',
+                title: 'Status:',
                 //sortable:true
                 //filterControl:'select'
             }],

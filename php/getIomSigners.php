@@ -3,7 +3,7 @@ include 'conn.php';
 
 
 
-$query= "SELECT sc.id,em.fullname,sc.status".
+$query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status".
         " From sign_chain as sc".
         " Left Join employee as em on em.id=sc.employee_id".
         " Where sc.iom_id=".$_GET['iom_id'];
