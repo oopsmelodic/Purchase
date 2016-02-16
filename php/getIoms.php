@@ -7,14 +7,16 @@ $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.st
             " (Select concat(' by ',em.fullname,'|',sc.time_stamp )".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
-            " ORDER BY sc.time_stamp".
+            " Where sc.iom_id=im.id".
+            " ORDER BY sc.time_stamp DESC".
             " LIMIT 1) as latest_action,".
-            "( ".$_SESSION['user']['id']." in (Select employee_id From sign_chain Where status='in progress')) as sign_status".
+            "( ".$_SESSION['user']['id']." in (Select employee_id From sign_chain Where status='in progress')) as sign_status,".
+            "( Select sc.status From sign_chain as sc Where sc.employee_id=".$_SESSION['user']['id'].") as user_last_status".
         " FROM iom as im".
             " Left Join employee as em on im.employee_id=em.id".
             " Left Join budget as bd on im.budget_id=bd.id".
             " Left Join budget_type as bt on bd.type_id=bt.id".
-        " Where ".$_SESSION['user']['id']." in (Select employee_id From sign_chain) or im.employee_id=".$_SESSION['user']['id'];
+        " Where ".$_SESSION['user']['id']." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$_SESSION['user']['id'];
 
 $res = mysqli_query(GetMyConnection(),$query);
 
@@ -24,6 +26,12 @@ if (mysqli_num_rows($res)) {
         switch ($row['status']){
             case "in progress":
                 $row['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$row['status'].'</span>';
+                break;
+            case "Approved":
+                $row['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$row['status'].'</span>';
+                break;
+            case "Canceled":
+                $row['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$row['status'].'</span>';
                 break;
         }
         $time_array = explode('|',$row['latest_action']);

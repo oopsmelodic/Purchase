@@ -1,4 +1,18 @@
 var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
+window.operateEvents = {
+    'click .control': function (e, value, row, index) {
+        //alert(row['id']);
+        $.ajax({
+            url:'/php/signIom.php',
+            type: 'POST',
+            dataType:'json',
+            data:{id: row['id'],type:$(this).html()}
+        }).success(function (data){
+            $('#testtable').bootstrapTable('refresh');
+        });
+    }
+};
+
 $(document).ready(function () {
 
     $('#summernote').summernote();
@@ -51,11 +65,13 @@ $(document).ready(function () {
             sortable:true
         },{
             title:'Controls:',
+            align: 'center',
+            events: operateEvents,
             formatter: function(id,data){
                 console.log(data.sign_status);
                 var controls='';
                 if (data.sign_status==1){
-                    controls = '<div><button class="btn btn-success">Confirm</button><button class="btn btn-danger">Cancel</button></div>'
+                    controls = '<div><button class="btn btn-success control">Confirm</button><button class="btn btn-danger control">Cancel</button></div>'
                 }
                 return controls;
             }
@@ -63,8 +79,9 @@ $(document).ready(function () {
         search: true,
         strictSearch: true,
         detailView : true,
+        showRefresh:true,
         //groupBy:true,
-        //groupByField:['department']
+        //groupByField:['status'],
         detailFormatter: function (index, row){
             var div = $('<div class="col-lg-12"></div>');
             div.append('<div class="col-lg-6">' +
@@ -91,7 +108,9 @@ $(document).ready(function () {
             columns: [{
                 field: 'id',
                 title: '#',
-                //sortable:true
+                formatter: function(id,data,index){
+                    return index+1;
+                }
             }, {
                 field: 'fullname',
                 title: 'Name:',
@@ -159,19 +178,18 @@ $(document).ready(function () {
             console.log(data);
         });
     });
-
 });
-function personOK(button){
+function personOK(button) {
 
-    if ($(button).hasClass("btn-success")){
-        if ($(button).parents('.list-group-item').find('.selectpicker').selectpicker('val')!=null) {
+    if ($(button).hasClass("btn-success")) {
+        if ($(button).parents('.list-group-item').find('.selectpicker').selectpicker('val') != null) {
             $(button).parents('.list-group-item').addClass('active');
             $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', true).selectpicker('refresh');
             $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-remove').removeClass('glyphicon-plus');
             $(button).addClass('btn-warning').removeClass('btn-success');
         }
     }
-    else if ($(button).hasClass("btn-warning")){
+    else if ($(button).hasClass("btn-warning")) {
         $(button).parents('.list-group-item').removeClass('active');
         $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', false).selectpicker('refresh');
         $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-plus').removeClass('glyphicon-remove');

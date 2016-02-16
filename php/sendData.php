@@ -26,7 +26,7 @@ if (!empty($_POST)) {
         }
     }
 
-    $res = mysqli_query(GetMyConnection(),$query);
+    $res = mysqli_query(GetMyConnection(),trim($query,','));
 
-    echo $query;
+    echo json_encode($query);
 }

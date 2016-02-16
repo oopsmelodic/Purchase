@@ -16,7 +16,13 @@ if (mysqli_num_rows($res)) {
         switch ($row['status']){
             case "in progress":
                 $row['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$row['status'].'</span>';
-            break;
+                break;
+            case "Approved":
+                $row['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$row['status'].'</span>';
+                break;
+            case "Canceled":
+                $row['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$row['status'].'</span>';
+                break;
         }
         $rows[] = $row;
     }
