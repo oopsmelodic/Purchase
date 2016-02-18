@@ -45,7 +45,7 @@ $(document).ready(function () {
     //test table
 
     $('#testtable').bootstrapTable({
-        url: '/php/getIoms.php',
+        url: '/php/core.php?method=getAllIoms',
         columns: [{
             field: 'id',
             title: '# IOM',

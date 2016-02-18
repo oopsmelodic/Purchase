@@ -39,4 +39,11 @@ class Controller_Main extends Controller
         session_destroy();
         header('Location:/');
     }
+
+    function action_info(){
+
+        echo $_GET['id'];
+
+    }
+
 }
