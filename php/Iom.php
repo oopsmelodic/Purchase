@@ -80,7 +80,7 @@ class Iom
     }
 
     public function getUsers(){
-        $query="SELECT em.fullname as fullname, em.id as id, dp.name as department,rl.name as role, em.position FROM employee as em".
+        $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position FROM employee as em".
             " Left Join departments as dp on em.department_id=dp.id".
             " Left Join roles as rl on em.role_id=rl.id Where em.status=1";
 
@@ -88,22 +88,13 @@ class Iom
         return $query_results;
     }
 
-    public function getAllRoles(){
+    public function getDepRoles(){
         $query = "Select id,name,power From roles";
-
-        $query_results = $this->sendQuery($query);
-
-        return $this->make_string_select($query_results);
+        $query2 = "Select id,name,sub From departments";
+        $query_results['roles'] = $this->make_string_select($this->sendQuery($query));
+        $query_results['departments'] = $this->make_string_select($this->sendQuery($query2));
+        return ($query_results);
     }
-
-    public function getAllDepartments(){
-        $query = "Select id,name,sub From departments";
-
-        $query_results = $this->sendQuery($query);
-
-        return $this->make_string_select($query_results);
-    }
-
 
     public function addUser($insert_arr){
         $query = "INSERT INTO `employee`(`fullname`, `position`, `role_id`, `department_id`, `username`, `password`,`email`)"
@@ -132,6 +123,32 @@ class Iom
 
         $query_results = $this->sendQuery($query);
         return $query_results;
+    }
+
+    public function updateUser($params){
+        $passstring = "";
+        if($params['password']!=="")
+        {
+            $password = md5($this->FISH . md5(trim($params['password'])));
+            $passstring="',password='".$password;
+        }
+        else $passstring="";
+
+        $query = "UPDATE employee SET fullname='".$params['fullname'].
+            "',position='".$params['position'].
+            "',role_id=".$params['role'].
+            ",department_id=".$params['department'].
+            ",username='".$params['username'].
+            $passstring.
+            "',email='".$params['email'].
+            "' WHERE id=".$params['id'].";";
+
+        $res = mysqli_query(GetMyConnection(), $query);
+
+        if (!$res) {
+            die("Couldn't update user: " . mysql_error());
+        }
+        else echo "success";
     }
 
     public function addIomReq($params){

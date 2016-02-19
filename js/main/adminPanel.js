@@ -4,14 +4,14 @@ $(document).ready(function () {
     $('.selectpicker').selectpicker();
 
     $.ajax({
-        url: "php/getRoles.php",
+        url: "php/core.php?method=getDepRoles",
         type: "POST"
     }).success(function (data) {
         deproles = JSON.parse(data);
     });
 
     $('#testtable').bootstrapTable({
-        url: '/php/getUsers.php',
+        url: '/php/core.php?method=getUsers',
         columns: [{
                 field: 'id',
                 title: 'Department  User ID',
@@ -35,6 +35,7 @@ $(document).ready(function () {
         search: true,
         //height: 600,
         strictSearch: true,
+        showRefresh: true,
         detailView: false,
         groupBy: true,
         groupByField: ['department']
@@ -135,7 +136,7 @@ function checkuserexists(username)
 {
     var existor;
     $.ajax({
-        url: "php/checkUser.php",
+        url: "php/core.php?method=checkUser",
         type: "POST",
         async: 0,
         data: {"username": username}
@@ -166,14 +167,14 @@ window.operateEvents = {
     'click .edit': function (e, value, row, index) {
         bootbox.dialog({
             title: "Editing user: " + row['name'] + "",
-            message: bootboxMessage(row["fullname"], row['name'], row['email'], row['position'], false),
+            message: bootboxMessage(row["fullname"], row['username'], row['email'], row['position'], false),
             buttons: {
                 success: {
                     label: "Save",
                     className: "btn-success modalbtn",
                     callback: function () {
                         $.ajax({
-                            url: "php/updateUser.php",
+                            url: "php/core.php?method=updateUser",
                             type: "POST",
                             data: {
                                 "fullname": $('#fullname').val(),
@@ -213,10 +214,10 @@ window.operateEvents = {
         });
     },
     'click .remove': function (e, value, row, index) {
-        bootbox.confirm("Are you sure to delete user: " + row['name'] + "?", function (result) {
+        bootbox.confirm("Are you sure to delete user: <b>" + row['fullname'] + "?</b>", function (result) {
             if (result) {
                 $.ajax({
-                    url: "php/deleteUser.php",
+                    url: "php/core.php?method=deleteUser",
                     type: "POST",
                     async: 0,
                     data: {"id": row["id"]}
