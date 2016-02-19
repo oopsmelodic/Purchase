@@ -2,7 +2,7 @@ window.operateEvents = {
     'click .control': function (e, value, row, index) {
         //alert(row['id']);
         $.ajax({
-            url:'/php/signIom.php',
+            url:'/php/core.php?method=signIom',
             type: 'POST',
             dataType:'json',
             data:{id: row['id'],type:$(this).html()}
