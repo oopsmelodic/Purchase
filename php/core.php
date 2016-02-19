@@ -8,14 +8,21 @@
 
 require_once 'Iom.php';
 
+session_start();
+
 $iom = new Iom();
 
 if (isset($_GET['method'])){
     $method = $_GET['method'];
 
-    echo json_encode($iom->$method(extract($_POST)));
+    if (method_exists($iom,$method)){
+        $_POST['user_session_id'] = $_SESSION['user']['id'];
+        echo json_encode($iom->$method($_POST));
+    }else{
+        echo json_encode(Array('error'=>'[ERROR]: Method {'.$method.'} not Found!'));
+    }
 
 //    echo '<pre>';
-//    print_r($iom->$method(extract($_POST)));
+//    print_r($_POST);
 //    echo '</pre>';
 }

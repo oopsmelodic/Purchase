@@ -8,16 +8,14 @@
  */
 include 'conn.php';
 
-session_start();
-
 class Iom
 {
 
     var $FISH = 'JENEK';
 
-    public function getAllIoms(){
+    public function getAllIoms($params){
 
-        $user_id = $_SESSION['user']['id'];
+        $user_id = $params['user_session_id'];
 
         $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation ,concat(bt.name,': ',bd.name) as budget_fullname ,".
             " (Select concat(' by ',em.fullname,'|',sc.time_stamp )".
@@ -54,11 +52,11 @@ class Iom
         return $query_results;
     }
 
-    public function getIomSigners($iom_id){
+    public function getIomSigners($params){
         $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
-            " Where sc.iom_id=".$iom_id;
+            " Where sc.iom_id=".$params['iom_id'];
 
         $query_results = $this->sendQuery($query);
 
@@ -94,14 +92,16 @@ class Iom
         $query = "Select id,name,power From roles";
 
         $query_results = $this->sendQuery($query);
-        return $query_results;
+
+        return $this->make_string_select($query_results);
     }
 
     public function getAllDepartments(){
         $query = "Select id,name,sub From departments";
 
         $query_results = $this->sendQuery($query);
-        return $query_results;
+
+        return $this->make_string_select($query_results);
     }
 
 
@@ -119,19 +119,66 @@ class Iom
         return $query_results;
     }
 
-    public function checkUser($username){
-        $query = "SELECT username FROM employee WHERE username='" . $username . "'";
+    public function checkUser($params){
+        $query = "SELECT username FROM employee WHERE username='" . $params['username'] . "'";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
     }
 
-    public function deleteUser($user_id){
+    public function deleteUser($params){
         $query = "UPDATE employee SET status=2".
-            " WHERE id=".$user_id;
+            " WHERE id=".$params['user_id'];
 
         $query_results = $this->sendQuery($query);
         return $query_results;
+    }
+
+    public function addIomReq($params){
+        $chain = json_decode($params['sign_chain']);
+        $query = "INSERT INTO iom(employee_id, budget_id, name,power,costsize,actualcost,substantation) "
+            . "VALUES (" . $params["employee_id"] . ","
+            . implode('',$params["budget_id"]) . ",'"
+            . $params["purchase_text"]. "',0,0,0,'".$params["substantiation_text"]."')";
+
+        $res = $this->sendQuery($query);
+        $iom_num = mysqli_insert_id(GetMyConnection());
+        $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
+        foreach($chain as $key=>$value){
+            if (!is_null($value)) {
+                foreach ($value as $v) {
+                    $query .= "(".$iom_num.",".$v.",'in progress'),";
+                }
+            }
+        }
+
+        $res = $this->sendQuery(trim($query,','));
+
+        if ($res){
+            echo json_encode(Array('type'=>'success','id'=>$iom_num));
+        }else{
+            echo json_encode(Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection())));
+        }
+
+
+    }
+
+    public function signIom($params){
+        $type='Error';
+        if ($params['type']=='Confirm'){
+            $type='Approved';
+        }else{
+            $type='Canceled';
+        }
+        $query = "Update sign_chain Set status='".$type."' Where iom_id=".$params['id']." and employee_id=".$params['user_session_id'];
+
+        $res = mysqli_query(GetMyConnection(),$query);
+
+        if ($res){
+            echo json_encode(Array('type'=>'success','id'=>$params['id']));
+        }else{
+            echo json_encode(Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection())));
+        }
     }
 
     function sendQuery($query){
@@ -175,6 +222,14 @@ class Iom
 
         if (!$full) $string = array_slice($string, 0, 1);
         return $string ? implode(', ', $string) . ' ago' : 'just now';
+    }
+
+    function make_string_select($arr){
+        $str = '';
+        foreach($arr as $key =>$value){
+            $str.='<option data-content="' . $value["name"] . '">' . $value["id"] . '</option>';
+        }
+        return $str;
     }
 
 }

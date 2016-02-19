@@ -1,4 +1,3 @@
-var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
 window.operateEvents = {
     'click .control': function (e, value, row, index) {
         //alert(row['id']);
@@ -104,7 +103,14 @@ $(document).ready(function () {
         });
         $('#summer_'+index).code(row['substantation']);
         $('#signers_'+index).bootstrapTable({
-            url: '/php/getIomSigners.php?iom_id='+row['id'],
+            url: '/php/core.php?method=getIomSigners',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
             columns: [{
                 field: 'id',
                 title: '#',
@@ -163,7 +169,7 @@ $(document).ready(function () {
         });
         sign_chain = JSON.stringify(sign_chain);
         $.ajax({
-            url:'/php/sendData.php',
+            url:'/php/core.php?method=addIomReq',
             type:'POST',
             dataType:'json',
             data:{
