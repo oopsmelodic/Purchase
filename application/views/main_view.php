@@ -39,9 +39,9 @@
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-                <li>
-                    <a href="/main"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="/main"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>-->
+<!--                </li>-->
                 <li class="active">
                     <a href="/main"><i class="fa fa-fw fa-table"></i> Purchases</a>
                 </li>

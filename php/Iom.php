@@ -16,7 +16,6 @@ class Iom
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
-
         $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation ,concat(bt.name,': ',bd.name) as budget_fullname ,".
             " (Select concat(' by ',em.fullname,'|',sc.time_stamp )".
             " From sign_chain as sc".
@@ -24,15 +23,14 @@ class Iom
             " Where sc.iom_id=im.id".
             " ORDER BY sc.time_stamp DESC".
             " LIMIT 1) as latest_action,".
-            "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress')) as sign_status,".
-            "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id.") as user_last_status".
+            "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status,".
+            "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id) as user_last_status".
             " FROM iom as im".
             " Left Join employee as em on im.employee_id=em.id".
             " Left Join budget as bd on im.budget_id=bd.id".
             " Left Join budget_type as bt on bd.type_id=bt.id".
             " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id;
         $query_results = $this->sendQuery($query);
-
         foreach($query_results as $key => $value){
             switch ($value['status']){
                 case "in progress":
@@ -198,8 +196,35 @@ class Iom
         }
     }
 
+    function checkIom($params){
+        $query = "Select im.id,im.name,count(sc.id) as need_count, ".
+                  "(Select count(id) From sign_chain Where status='Approved' and iom_id=im.id) as app_count, ".
+                  "(Select count(id) From sign_chain Where status='Canceled' and iom_id=im.id) as cancel_count ".
+                "From iom as im ".
+                  "Left Join sign_chain as sc on im.id=sc.iom_id ".
+                "Where im.id=".$params['iom_id'].
+                " GROUP BY im.id";
+        $results = $this->sendQuery($query);
+
+        if (is_array($results)){
+            if ($results['cancel_count']>0){
+                $this->updateIomStatus("Canceled",$params['iom_id']);
+            }else if($results['app_count']==$results['need_count']){
+                $this->updateIomStatus("Approved",$params['iom_id']);
+            }
+        }
+
+    }
+
+    function updateIomStatus($status,$iom_id){
+        $query = "Update iom Set status=".$status." Where id=".$iom_id;
+
+        $results = $this->sendQuery($query);
+    }
+
+
     function sendQuery($query){
-        $result= mysqli_query(GetMyConnection(),$query);
+        $result = mysqli_query(GetMyConnection(),$query);
         $rows = array();
         if (mysqli_num_rows($result)) {
             while ($row = mysqli_fetch_assoc($result)) {
