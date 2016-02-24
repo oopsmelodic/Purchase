@@ -38,11 +38,11 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/jquery-validate.js"></script>
+    <script src="/js/validator.js"></script>
     <script src="/js/main/main.js" type="text/javascript"></script>
 <!--    <script src="/js/main/purchasePanel.js" type="text/javascript"></script>-->
     <script type="text/javascript" src="/js/jquery.treegrid.js"></script>
-    <script src="/js/bootstrap-select.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap-select.js" type="text/javascript"></script>
     <script src="/js/fileupload/fileinput.min.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>

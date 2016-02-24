@@ -16,29 +16,19 @@ $(document).ready(function () {
 
     $('#summernote').summernote();
 
-    $('.selectpicker').selectpicker();
+    $('.selectpicker').selectpicker({
+        noneSelectedText: ''
+    });
     //getUsersJSON();
-    $('#purchase_form').validate({
-        description : {
-            test : {
-                required : '<div class="error">Required</div>',
-                pattern : '<div class="error">Pattern</div>',
-                conditional : '<div class="error">Conditional</div>',
-                valid : '<div class="success">Valid</div>'
-            }
-        },
-        onSubmit:false,
-        onKeyup:true,
-        onChange:false
-    });
+    //$('#chain_list').validator();
     $('#summernote').summernote({height: 300});
-    $('.personOK').click(function (event) {
-        event.preventDefault();
-        if (event.target.nodeName == "BUTTON")
-            personOK(event.target);
-        else
-            personOK($(event.target).parent());
-    });
+    //$('.personOK').click(function (event) {
+    //    event.preventDefault();
+    //    if (event.target.nodeName == "BUTTON")
+    //        personOK(event.target);
+    //    else
+    //        personOK($(event.target).parent());
+    //});
 
 
     //test table
@@ -149,8 +139,11 @@ $(document).ready(function () {
                     var data_content = $(selectedOptions[i]).attr('data-content');
                     var input = $('#budget_inputs').find('#bi_' + item).get(0);
                     if ($(input).size() == 0) {
-                        $('#budget_inputs').append('<div id="bi_' + item + '"><span class="col-lg-6">' + data_content + '</span>' +
-                            '<input class="form-control" type="number" min="0" placeholder="Cost size..." data-required/></div>');
+                        $('#budget_inputs').append('<div id="bi_' + item + '" class="form-group"><span class="col-lg-6">' + data_content + '</span>' +
+                            '<input class="form-control" type="number" min="0" data-minlength="1" placeholder="Cost size..." required/>' +
+                            '<span class="glyphicon form-control-feedback" aria-hidden="true"></span><span class="help-block with-errors"></span></div>');
+                        //$('#budget_inputs').validator();
+                        $('#budget_inputs').validator("validate");
                     } else {
                         //$(input).remove();
                     }
@@ -161,28 +154,37 @@ $(document).ready(function () {
         }
     });
     $('#createpurch').click(function (){
-        var sign_chain = [];
 
-        //Make Chain
-        $('#chain_list select').each(function (index,item){
-            sign_chain.push($(item).selectpicker('val'));
-        });
-        sign_chain = JSON.stringify(sign_chain);
-        $.ajax({
-            url:'/php/core.php?method=addIomReq',
-            type:'POST',
-            dataType:'json',
-            data:{
-                employee_id: $('#user_id').attr('user_id') || 0,
-                department_id: $('#department_id').attr('department_id') || 0,
-                budget_id: $('#budget_select').selectpicker('val') || [],
-                purchase_text: $('#purchase_text').val() || 'Empty',
-                substantiation_text:  $("#summernote").code(),
-                sign_chain: sign_chain
-            }
-        }).success(function (data){
-            console.log(data);
-        });
+
+    });
+    $('#purchase_form').validator().on('submit', function (e) {
+        if (e.isDefaultPrevented()) {
+            // handle the invalid form...
+        } else {
+            // everything looks good!
+            var sign_chain = [];
+
+            //Make Chain
+            $('#chain_list select').each(function (index,item){
+                sign_chain.push($(item).selectpicker('val'));
+            });
+            sign_chain = JSON.stringify(sign_chain);
+            //$.ajax({
+            //    url:'/php/core.php?method=addIomReq',
+            //    type:'POST',
+            //    dataType:'json',
+            //    data:{
+            //        employee_id: $('#user_id').attr('user_id') || 0,
+            //        department_id: $('#department_id').attr('department_id') || 0,
+            //        budget_id: $('#budget_select').selectpicker('val') || [],
+            //        purchase_text: $('#purchase_text').val() || 'Empty',
+            //        substantiation_text:  $("#summernote").code(),
+            //        sign_chain: sign_chain
+            //    }
+            //}).success(function (data){
+            //    console.log(data);
+            //});
+        }
     });
 });
 function personOK(button) {
