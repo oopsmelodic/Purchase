@@ -1,13 +1,30 @@
 window.operateEvents = {
     'click .control': function (e, value, row, index) {
         //alert(row['id']);
-        $.ajax({
-            url:'/php/core.php?method=signIom',
-            type: 'POST',
-            dataType:'json',
-            data:{id: row['id'],type:$(this).html()}
-        }).success(function (data){
-            $('#testtable').bootstrapTable('refresh');
+        swal({
+            title: "Are you sure?",
+            text: "Submit application '"+row['name']+"'?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function(isConfirm){
+            if (isConfirm) {
+                swal("Confirmed!", "Application '"+row['name']+"' has been confirmed.", "success");
+                $.ajax({
+                    url:'/php/core.php?method=signIom',
+                    type: 'POST',
+                    dataType:'json',
+                    data:{id: row['id'],type:$(this).html()}
+                }).success(function (data){
+                    $('#testtable').bootstrapTable('refresh');
+                });
+            } else {
+                //swal("Cancelled", "Your imaginary file is safe :)", "error");
+            }
         });
     }
 };
@@ -69,6 +86,7 @@ $(document).ready(function () {
         strictSearch: true,
         detailView : true,
         showRefresh:true,
+        toolbar: '#toolbar',
         //groupBy:true,
         //groupByField:['status'],
         detailFormatter: function (index, row){
@@ -153,56 +171,5 @@ $(document).ready(function () {
             $('#budget_inputs').html('');
         }
     });
-    $('#createpurch').click(function (){
 
-
-    });
-    $('#purchase_form').validator().on('submit', function (e) {
-        if (e.isDefaultPrevented()) {
-            // handle the invalid form...
-        } else {
-            // everything looks good!
-            var sign_chain = [];
-
-            //Make Chain
-            $('#chain_list select').each(function (index,item){
-                sign_chain.push($(item).selectpicker('val'));
-            });
-            sign_chain = JSON.stringify(sign_chain);
-            //$.ajax({
-            //    url:'/php/core.php?method=addIomReq',
-            //    type:'POST',
-            //    dataType:'json',
-            //    data:{
-            //        employee_id: $('#user_id').attr('user_id') || 0,
-            //        department_id: $('#department_id').attr('department_id') || 0,
-            //        budget_id: $('#budget_select').selectpicker('val') || [],
-            //        purchase_text: $('#purchase_text').val() || 'Empty',
-            //        substantiation_text:  $("#summernote").code(),
-            //        sign_chain: sign_chain
-            //    }
-            //}).success(function (data){
-            //    console.log(data);
-            //});
-        }
-    });
 });
-//function personOK(button) {
-//
-//    if ($(button).hasClass("btn-success")) {
-//        if ($(button).parents('.list-group-item').find('.selectpicker').selectpicker('val') != null) {
-//            $(button).parents('.list-group-item').addClass('active');
-//            $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', true).selectpicker('refresh');
-//            $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-remove').removeClass('glyphicon-plus');
-//            $(button).addClass('btn-warning').removeClass('btn-success');
-//        }
-//    }
-//    else if ($(button).hasClass("btn-warning")) {
-//        $(button).parents('.list-group-item').removeClass('active');
-//        $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', false).selectpicker('refresh');
-//        $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-plus').removeClass('glyphicon-remove');
-//        $(button).addClass('btn-success').removeClass('btn-warning');
-////        $('#createpurch').removeClass('disabled');
-//    }
-//
-//}

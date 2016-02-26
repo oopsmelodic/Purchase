@@ -44,7 +44,7 @@
         })
     }
 
-    Validator.INPUT_SELECTOR = ':input:not([type="submit"], button):enabled:visible'
+    Validator.INPUT_SELECTOR = 'input:not([type="submit"], button):enabled:visible,select'
 
     Validator.DEFAULTS = {
         delay: 500,
@@ -63,7 +63,7 @@
 
     Validator.VALIDATORS = {
         'native': function ($el) {
-            var el = $el[0]
+            var el = $el[0];
             return el.checkValidity ? el.checkValidity() : true
         },
         'match': function ($el) {
@@ -125,6 +125,7 @@
         }
 
         $.each(Validator.VALIDATORS, $.proxy(function (key, validator) {
+            //console.log($el.data(key));
             if (($el.data(key) || key == 'native') && !validator.call(this, $el)) {
                 var error = getErrorMessage(key)
                 !~errors.indexOf(error) && errors.push(error)
@@ -208,7 +209,7 @@
                 this.type === 'radio'    ? !$('[name="' + this.name + '"]:checked').length :
                 $.trim(this.value) === ''
         }
-
+        console.log(this.$element.find(Validator.INPUT_SELECTOR).filter('[required]'));
         return !!this.$element.find(Validator.INPUT_SELECTOR).filter('[required]').filter(fieldIncomplete).length
     }
 

@@ -144,9 +144,9 @@ class Iom
         $res = mysqli_query(GetMyConnection(), $query);
 
         if (!$res) {
-            die("Couldn't update user: " . mysql_error());
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
-        else echo "success";
+        else return "success";
     }
 
     public function addIomReq($params){
@@ -170,9 +170,9 @@ class Iom
         $res = $this->sendQuery(trim($query,','));
 
         if ($res){
-            echo json_encode(Array('type'=>'success','id'=>$iom_num));
+            return Array('type'=>'success','id'=>$iom_num);
         }else{
-            echo json_encode(Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection())));
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
 
 
@@ -190,48 +190,58 @@ class Iom
         $res = mysqli_query(GetMyConnection(),$query);
 
         if ($res){
-            echo json_encode(Array('type'=>'success','id'=>$params['id']));
+            $this->checkIom($params['id']);
+            return Array('type'=>'success','id'=>$params['id']);
         }else{
-            echo json_encode(Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection())));
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
     }
 
-    function checkIom($params){
+    public function checkIom($iom_id){
         $query = "Select im.id,im.name,count(sc.id) as need_count, ".
                   "(Select count(id) From sign_chain Where status='Approved' and iom_id=im.id) as app_count, ".
                   "(Select count(id) From sign_chain Where status='Canceled' and iom_id=im.id) as cancel_count ".
                 "From iom as im ".
                   "Left Join sign_chain as sc on im.id=sc.iom_id ".
-                "Where im.id=".$params['iom_id'].
+                "Where im.id=".$iom_id.
                 " GROUP BY im.id";
-        $results = $this->sendQuery($query);
 
+        $results = $this->sendQuery($query);
         if (is_array($results)){
-            if ($results['cancel_count']>0){
-                $this->updateIomStatus("Canceled",$params['iom_id']);
-            }else if($results['app_count']==$results['need_count']){
-                $this->updateIomStatus("Approved",$params['iom_id']);
+            foreach ($results as $value) {
+                if (intval($value['cancel_count']) > 0) {
+                    $this->updateIomStatus("Canceled", $iom_id);
+                } else if (intval($value['app_count']) == intval($value['need_count'])) {
+                    $this->updateIomStatus("Approved", $iom_id);
+                }
             }
         }
+
 
     }
 
     function updateIomStatus($status,$iom_id){
-        $query = "Update iom Set status=".$status." Where id=".$iom_id;
+        $query = "Update iom Set status='".$status."' Where id=".$iom_id;
 
         $results = $this->sendQuery($query);
+//        echo $query;
+//        return $results;
     }
 
 
     function sendQuery($query){
         $result = mysqli_query(GetMyConnection(),$query);
         $rows = array();
-        if (mysqli_num_rows($result)) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $rows[]=$row;
+        if (mysqli_affected_rows(GetMyConnection())) {
+            if (mysqli_num_rows($result)) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $rows[] = $row;
+                }
+                return $rows;
+            } else {
+                return mysqli_error(GetMyConnection());
             }
-            return $rows;
-        }else{
+        }else {
             return mysqli_error(GetMyConnection());
         }
     }

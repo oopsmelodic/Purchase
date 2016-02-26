@@ -20,6 +20,7 @@
     <link href="/css/spinner.css" rel="stylesheet" type="text/css"/>
     <link href="/css/fileinput.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/sweetalert.css" rel="stylesheet" type="text/css"/>
     <!-- Custom Fonts -->
     <link href="/bower_components/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="/bower_components/bootstrap-table-master/bootstrap-table.min.css" rel="stylesheet" type="text/css">
@@ -39,8 +40,8 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/validator.js"></script>
-    <script src="/js/main/main.js" type="text/javascript"></script>
-<!--    <script src="/js/main/purchasePanel.js" type="text/javascript"></script>-->
+    <script src="/js/sweetalert.min.js" type="text/javascript"></script>
+    <!--    <script src="/js/main/purchasePanel.js" type="text/javascript"></script>-->
     <script type="text/javascript" src="/js/jquery.treegrid.js"></script>
     <script src="/js/bootstrap-select.js" type="text/javascript"></script>
     <script src="/js/fileupload/fileinput.min.js" type="text/javascript"></script>
