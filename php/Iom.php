@@ -31,6 +31,7 @@ class Iom
             " Left Join budget_type as bt on bd.type_id=bt.id".
             " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id;
         $query_results = $this->sendQuery($query);
+
         foreach($query_results as $key => $value){
             switch ($value['status']){
                 case "in progress":
@@ -232,11 +233,12 @@ class Iom
     function sendQuery($query){
         $result = mysqli_query(GetMyConnection(),$query);
         $rows = array();
-        if (mysqli_affected_rows(GetMyConnection())) {
+        if (!is_bool($result)) {
             if (mysqli_num_rows($result)) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     $rows[] = $row;
                 }
+                mysqli_free_result($result);
                 return $rows;
             } else {
                 return mysqli_error(GetMyConnection());

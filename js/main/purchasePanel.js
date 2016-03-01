@@ -1,26 +1,34 @@
 window.operateEvents = {
     'click .control': function (e, value, row, index) {
         //alert(row['id']);
+        var button = $(this).html();
         swal({
             title: "Are you sure?",
-            text: "Submit application '"+row['name']+"'?",
+            text: button+" application '"+row['name']+"'?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",
             confirmButtonText: "Yes",
             cancelButtonText: "No",
             closeOnConfirm: false,
+            showLoaderOnConfirm: true,
             closeOnCancel: true
         }, function(isConfirm){
             if (isConfirm) {
-                swal("Confirmed!", "Application '"+row['name']+"' has been confirmed.", "success");
                 $.ajax({
                     url:'/php/core.php?method=signIom',
                     type: 'POST',
                     dataType:'json',
-                    data:{id: row['id'],type:$(this).html()}
+                    async:true,
+                    data:{id: row['id'],type:button}
                 }).success(function (data){
                     $('#testtable').bootstrapTable('refresh');
+                    if (button=='Cancel'){
+                        swal("Canceled!", "Application '"+row['name']+"' has been canceled.", "error");
+                    }else{
+                        swal("Confirmed!", "Application '"+row['name']+"' has been confirmed.", "success");
+                    }
+
                 });
             } else {
                 //swal("Cancelled", "Your imaginary file is safe :)", "error");
