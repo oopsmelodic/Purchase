@@ -1,3 +1,7 @@
+/**
+ * Created by melodic on 26.02.2016.
+ */
+
 window.operateEvents = {
     'click .control': function (e, value, row, index) {
         //alert(row['id']);
@@ -36,6 +40,7 @@ window.operateEvents = {
         });
     }
 };
+
 
 $(document).ready(function () {
 
@@ -100,8 +105,8 @@ $(document).ready(function () {
         detailFormatter: function (index, row){
             var div = $('<div class="col-lg-12"></div>');
             div.append('<div class="col-lg-6">' +
-                        '<h5><span class="label label-primary">Cost Item: </span>&nbsp; '+row["budget_fullname"]+'</h5>' +
-                        '<h5><span class="label label-primary">Cost Size: </span>&nbsp; '+row["actualcost"]+'</h5>' +
+                        '<span class="label label-primary">Budgets: </span>' +
+                        '<table id="budget_'+index+'"></table>' +
                         '<span class="label label-primary">Substantation: </span><br><textarea id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</textarea>' +
                     '</div>');
             div.append('<div class=col-lg-6>' +
@@ -140,6 +145,26 @@ $(document).ready(function () {
             },{
                 field: 'status',
                 title: 'Status:'
+                //sortable:true
+                //filterControl:'select'
+            }],
+        });
+        $('#budget_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomBudgets',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            columns: [{
+                field: 'budget_name',
+                title: 'Name:'
+                //sortable:true
+            },{
+                field: 'cur_cost',
+                title: 'Cost:'
                 //sortable:true
                 //filterControl:'select'
             }],

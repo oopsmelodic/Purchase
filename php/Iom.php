@@ -16,7 +16,7 @@ class Iom
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
-        $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation ,concat(bt.name,': ',bd.name) as budget_fullname ,".
+        $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation,".
             " (Select concat(' by ',em.fullname,'|',sc.time_stamp )".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
@@ -27,8 +27,6 @@ class Iom
             "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id) as user_last_status".
             " FROM iom as im".
             " Left Join employee as em on im.employee_id=em.id".
-            " Left Join budget as bd on im.budget_id=bd.id".
-            " Left Join budget_type as bt on bd.type_id=bt.id".
             " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id;
         $query_results = $this->sendQuery($query);
 
@@ -75,6 +73,16 @@ class Iom
             $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
         }
 
+        return $query_results;
+    }
+
+    public function getIomBudgets($params){
+        $query= " Select concat(bt.name,' ',b.name) as budget_name, ib.cost as cur_cost  From iom_budgets as ib".
+                " Left Join budget as b on ib.budget_id=b.id".
+                " Left Join budget_type as bt on b.type_id=bt.id".
+                " Where ib.iom_id=".$params['iom_id'];
+
+        $query_results = $this->sendQuery($query);
         return $query_results;
     }
 
@@ -152,12 +160,12 @@ class Iom
 
     public function addIomReq($params){
         $chain = json_decode($params['sign_chain']);
-        $query = "INSERT INTO iom(employee_id, budget_id, name,power,costsize,actualcost,substantation) "
-            . "VALUES (" . $params["employee_id"] . ","
-            . implode('',$params["budget_id"]) . ",'"
+        $budgets = json_decode($params['budgets'],true);
+        $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
+            . "VALUES (" . $params["employee_id"] . ",'"
             . $params["purchase_text"]. "',0,0,0,'".$params["substantiation_text"]."')";
-
         $res = $this->sendQuery($query);
+
         $iom_num = mysqli_insert_id(GetMyConnection());
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
         foreach($chain as $key=>$value){
@@ -170,8 +178,15 @@ class Iom
 
         $res = $this->sendQuery(trim($query,','));
 
+        $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
+        foreach($budgets as $key=>$value){
+                    $query .= "(".$iom_num.",".$value['id'].",".$value['value']."),";
+        }
+//        echo $query;
+        $res = $this->sendQuery(trim($query,','));
+
         if ($res){
-            return Array('type'=>'success','id'=>$iom_num);
+            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
         }else{
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }

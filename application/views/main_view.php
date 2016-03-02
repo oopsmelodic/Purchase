@@ -1,6 +1,4 @@
 
-
-
 <div id="wrapper">
 
     <!-- Navigation -->

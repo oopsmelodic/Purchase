@@ -209,7 +209,7 @@
                 this.type === 'radio'    ? !$('[name="' + this.name + '"]:checked').length :
                 $.trim(this.value) === ''
         }
-        console.log(this.$element.find(Validator.INPUT_SELECTOR).filter('[required]'));
+        //console.log(this.$element.find(Validator.INPUT_SELECTOR).filter('[required]'));
         return !!this.$element.find(Validator.INPUT_SELECTOR).filter('[required]').filter(fieldIncomplete).length
     }
 
