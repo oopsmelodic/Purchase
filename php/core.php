@@ -21,8 +21,4 @@ if (isset($_GET['method'])){
     }else{
         echo json_encode(Array('error'=>'[ERROR]: Method {'.$method.'} not Found!'));
     }
-
-//    echo '<pre>';
-//    print_r($_POST);
-//    echo '</pre>';
 }

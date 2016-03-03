@@ -159,12 +159,13 @@ class Iom
     }
 
     public function addIomReq($params){
+        print_r($params);
         $chain = json_decode($params['sign_chain']);
         $budgets = json_decode($params['budgets'],true);
         $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
             . "VALUES (" . $params["employee_id"] . ",'"
             . $params["purchase_text"]. "',0,0,0,'".$params["substantiation_text"]."')";
-        $res = $this->sendQuery($query);
+//        $res = $this->sendQuery($query);
 
         $iom_num = mysqli_insert_id(GetMyConnection());
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
@@ -176,20 +177,20 @@ class Iom
             }
         }
 
-        $res = $this->sendQuery(trim($query,','));
+//        $res = $this->sendQuery(trim($query,','));
 
         $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
         foreach($budgets as $key=>$value){
                     $query .= "(".$iom_num.",".$value['id'].",".$value['value']."),";
         }
 //        echo $query;
-        $res = $this->sendQuery(trim($query,','));
-
-        if ($res){
-            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
-        }else{
-            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
-        }
+//        $res = $this->sendQuery(trim($query,','));
+//
+//        if ($res){
+//            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
+//        }else{
+//            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+//        }
 
 
     }
@@ -201,19 +202,24 @@ class Iom
         }else{
             $type='Canceled';
         }
-        $query = "Update sign_chain Set status='".$type."' Where iom_id=".$params['id']." and employee_id=".$params['user_session_id'];
 
-        $res = mysqli_query(GetMyConnection(),$query);
+        if ($this->checkSignIom($params['id'],$params['user_session_id'])) {
+            $query = "Update sign_chain Set status='" . $type . "' Where iom_id=" . $params['id'] . " and employee_id=" . $params['user_session_id'];
 
-        if ($res){
-            $this->checkIom($params['id']);
-            return Array('type'=>'success','id'=>$params['id']);
+            $res = mysqli_query(GetMyConnection(), $query);
+
+            if ($res) {
+                $this->checkIom($params['id']);
+                return Array('type' => 'success', 'id' => $params['id']);
+            } else {
+                return Array('type' => 'error', 'error_msg' => mysqli_error(GetMyConnection()));
+            }
         }else{
-            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+            return Array('type' => 'error', 'error_msg' => "Before you have the chain signatory.");
         }
     }
 
-    public function checkIom($iom_id){
+    function checkIom($iom_id){
         $query = "Select im.id,im.name,count(sc.id) as need_count, ".
                   "(Select count(id) From sign_chain Where status='Approved' and iom_id=im.id) as app_count, ".
                   "(Select count(id) From sign_chain Where status='Canceled' and iom_id=im.id) as cancel_count ".
@@ -232,7 +238,24 @@ class Iom
                 }
             }
         }
+    }
 
+    function checkSignIom($iom_id,$user_id){
+        $query = "Select id,employee_id,status From sign_chain Where iom_id=".$iom_id." ORDER BY id DESC";
+
+        $results = $this->sendQuery($query);
+
+        for ($i=0;i<=count($results);$i++){
+            if ($results[$i]['employee_id']==$user_id){
+                if ($i+1==count($results)){
+                    return true;
+                }else if($results[$i+1]['status']=='Approved'){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
 
     }
 

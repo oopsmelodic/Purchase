@@ -26,13 +26,20 @@ window.operateEvents = {
                     async:true,
                     data:{id: row['id'],type:button}
                 }).success(function (data){
-                    $('#testtable').bootstrapTable('refresh');
-                    if (button=='Cancel'){
-                        swal("Canceled!", "Application '"+row['name']+"' has been canceled.", "error");
+                    if (data !=null) {
+                        if (data['type']=='success') {
+                            $('#testtable').bootstrapTable('refresh');
+                            if (button == 'Cancel') {
+                                swal("Canceled!", "Application '" + row['name'] + "' has been canceled.", "error");
+                            } else {
+                                swal("Confirmed!", "Application '" + row['name'] + "' has been confirmed.", "success");
+                            }
+                        }else{
+                            swal("You can't sign the application form",data['error_msg'],"error");
+                        }
                     }else{
-                        swal("Confirmed!", "Application '"+row['name']+"' has been confirmed.", "success");
+                        swal("Request Error!",data['error_msg'],"error");
                     }
-
                 });
             } else {
                 //swal("Cancelled", "Your imaginary file is safe :)", "error");

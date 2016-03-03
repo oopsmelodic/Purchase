@@ -10,6 +10,12 @@ $(function (){
         //dropupAuto:false
     });
 
+    $("#input-1").fileinput({
+        uploadUrl: "/php/upload.php", // server upload action
+        uploadAsync: true,
+        maxFileCount: 5
+    });
+
 
     $('#budget_select').selectpicker().on('changed.bs.select',function (item,index){
         var selectedOptions= $(this).context.selectedOptions;
