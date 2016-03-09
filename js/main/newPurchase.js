@@ -2,6 +2,8 @@
  * Created by melodic on 26.02.2016.
  */
 
+//var last_iom_id = 0;
+
 $(function (){
     $('#summernote').summernote();
 
@@ -9,7 +11,7 @@ $(function (){
         //noneSelectedText: ''
         //dropupAuto:false
     });
-
+    //titles = {'id-0': 'file-name-1', 'id-1': 'file-name-2'};
     $("#input-1").fileinput({
         uploadUrl: "/php/upload.php", // server upload action
         uploadAsync: true,
@@ -70,10 +72,11 @@ $(function (){
                     var sign_chain = [];
                     var budgets_chain = [];
                     //Make Chain
+
                     $('#budget_inputs input').each(function (index,item){
                         budgets_chain.push({'id':$(item).attr('budget_id'),'value':$(item).val()});
                     });
-                    console.log(JSON.stringify(budgets_chain));
+                    //console.log(JSON.stringify(budgets_chain));
                     $('#chain_list select').each(function (index,item){
                         sign_chain.push($(item).selectpicker('val'));
                     });
@@ -90,9 +93,17 @@ $(function (){
                             sign_chain: JSON.stringify(sign_chain)
                         }
                     }).success(function (data){
-                        swal("Confirmed!", "Application '"+$('#purchase_text').val()+"' has been created.", "success");
-                        console.log(data);
-                        location.href='/main';
+                        if (data!=null) {
+                            $('#input-1').on('filepreupload', function(event, dataz, previewId, index, jqXHR) {
+                                dataz.form.append("iom_id", data['id']);
+                            });
+                            $('#input-1').fileinput('upload');
+                            swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
+                            console.log(data);
+                            location.href='/main';
+                        }else{
+                            swal("Error", "Just a Error", "error");
+                        }
                     });
                 } else {
                     //swal("Cancelled", "Your imaginary file is safe :)", "error");

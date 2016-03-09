@@ -115,6 +115,8 @@ $(document).ready(function () {
                         '<span class="label label-primary">Budgets: </span>' +
                         '<table id="budget_'+index+'"></table>' +
                         '<span class="label label-primary">Substantation: </span><br><textarea id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</textarea>' +
+                        '<span class="label label-primary">Files: </span>' +
+                        '<table id="files_'+index+'"></table>' +
                     '</div>');
             div.append('<div class=col-lg-6>' +
                         '<span class="label label-primary">Signers: </span>' +
@@ -174,6 +176,22 @@ $(document).ready(function () {
                 title: 'Cost:'
                 //sortable:true
                 //filterControl:'select'
+            }],
+        });
+        $('#files_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomFiles',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            cardView: true,
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            columns: [{
+                field: 'filename',
+                title: 'Name:'
+                //sortable:true
             }],
         });
     });

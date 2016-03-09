@@ -179,3 +179,12 @@
 <!-- /#wrapper -->
 
 <script src="/js/main/newPurchase.js" type="text/javascript"></script>
+<script>
+
+    $("#input-1").fileinput({
+        uploadUrl: "/php/upload.php", // server upload action
+        uploadAsync: true,
+        maxFileCount: 5
+    });
+
+</script>

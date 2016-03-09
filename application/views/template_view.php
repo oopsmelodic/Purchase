@@ -44,7 +44,7 @@
     <!--    <script src="/js/main/purchasePanel.js" type="text/javascript"></script>-->
     <script type="text/javascript" src="/js/jquery.treegrid.js"></script>
     <script src="/js/bootstrap-select.js" type="text/javascript"></script>
-    <script src="/js/fileupload/fileinput.min.js" type="text/javascript"></script>
+    <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>

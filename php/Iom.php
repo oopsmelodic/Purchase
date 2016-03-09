@@ -86,6 +86,14 @@ class Iom
         return $query_results;
     }
 
+    public function getIomFiles($params){
+        $query= " Select fs.filename, fs.filepath  From files as fs".
+            " Where fs.iom_id=".$params['iom_id'];
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
     public function getUsers(){
         $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position FROM employee as em".
             " Left Join departments as dp on em.department_id=dp.id".
@@ -134,12 +142,10 @@ class Iom
 
     public function updateUser($params){
         $passstring = "";
-        if($params['password']!=="")
-        {
+        if($params['password']!==""){
             $password = md5($this->FISH . md5(trim($params['password'])));
             $passstring="',password='".$password;
-        }
-        else $passstring="";
+        }else $passstring="";
 
         $query = "UPDATE employee SET fullname='".$params['fullname'].
             "',position='".$params['position'].
@@ -159,14 +165,13 @@ class Iom
     }
 
     public function addIomReq($params){
-        print_r($params);
         $chain = json_decode($params['sign_chain']);
         $budgets = json_decode($params['budgets'],true);
         $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
             . "VALUES (" . $params["employee_id"] . ",'"
             . $params["purchase_text"]. "',0,0,0,'".$params["substantiation_text"]."')";
-//        $res = $this->sendQuery($query);
-
+        $result = $this->sendQuery($query);
+//echo $query;
         $iom_num = mysqli_insert_id(GetMyConnection());
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
         foreach($chain as $key=>$value){
@@ -177,20 +182,20 @@ class Iom
             }
         }
 
-//        $res = $this->sendQuery(trim($query,','));
+        $res = $this->sendQuery(trim($query,','));
 
         $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
         foreach($budgets as $key=>$value){
                     $query .= "(".$iom_num.",".$value['id'].",".$value['value']."),";
         }
 //        echo $query;
-//        $res = $this->sendQuery(trim($query,','));
-//
-//        if ($res){
-//            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
-//        }else{
-//            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
-//        }
+        $res = $this->sendQuery(trim($query,','));
+
+        if ($result){
+            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
+        }else{
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
 
 
     }
@@ -217,6 +222,15 @@ class Iom
         }else{
             return Array('type' => 'error', 'error_msg' => "Before you have the chain signatory.");
         }
+    }
+
+    public function appendFileToIom($iom_id,$filename,$file_path){
+
+        $query = "Insert Into files (iom_id,filename,filepath) Values(".$iom_id.",'".$filename."','".$file_path."')";
+
+//        echo $query;
+        $this->sendQuery($query);
+
     }
 
     function checkIom($iom_id){
@@ -282,7 +296,7 @@ class Iom
                 return mysqli_error(GetMyConnection());
             }
         }else {
-            return mysqli_error(GetMyConnection());
+            return true;
         }
     }
 
