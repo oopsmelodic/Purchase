@@ -11,7 +11,7 @@ include 'conn.php';
 class Iom
 {
 
-    var $FISH = 'JENEK';
+    var $FISH = 'JHENEK';
 
     public function getAllIoms($params){
 
@@ -95,19 +95,36 @@ class Iom
     }
 
     public function getUsers(){
-        $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position FROM employee as em".
+        $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position, dp.id as depid, rl.id as roleid FROM employee as em".
             " Left Join departments as dp on em.department_id=dp.id".
-            " Left Join roles as rl on em.role_id=rl.id Where em.status=1";
+            " Left Join roles as rl on em.role_id=rl.id Where em.deleted=0";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
     }
 
+    public function getBudgets(){
+        $query="Select b.id, b.date_time, b.planed_cost, bt.name as type_name, b.name From budget as b".
+                " Left Join budget_type as bt on b.type_id";
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
+    public function getColumns($params){
+        $query = "Show Columns From ".strtolower($params['table']);
+
+        $results = $this->sendQuery($query);
+        return $results;
+    }
+
     public function getDepRoles(){
         $query = "Select id,name,power From roles";
         $query2 = "Select id,name,sub From departments";
+        $query3 = "Select id,name From budget_type";
         $query_results['roles'] = $this->make_string_select($this->sendQuery($query));
         $query_results['departments'] = $this->make_string_select($this->sendQuery($query2));
+        $query_results['budget_type'] = $this->make_string_select($this->sendQuery($query3));
         return ($query_results);
     }
 
@@ -118,7 +135,7 @@ class Iom
             . $insert_arr["role"] . ","
             . $insert_arr["department"] . ",'"
             . $insert_arr["username"] . "','"
-            . md5($this->FISH . md5(trim($insert_arr))) . "','"
+            . md5($this->FISH . md5(trim($insert_arr['password']))) . "','"
             . $insert_arr["email"] . "')";
 
         $query_results = $this->sendQuery($query);
@@ -133,11 +150,34 @@ class Iom
     }
 
     public function deleteUser($params){
-        $query = "UPDATE employee SET status=2".
+        $query = "UPDATE employee SET deleted=1".
             " WHERE id=".$params['user_id'];
+        $query_results = $this->sendQuery($query);
+        if ($query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','user_id'=>$params['user_id']);
+        }
+    }
+
+    public function addBudget($insert_arr){
+        $query = "Insert Into budget (name,type_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['type_id'].",".$insert_arr['planed_cost'].")";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
+    }
+
+    public function deleteBudget($params){
+        $query = "UPDATE employee SET deleted=1".
+            " WHERE id=".$params['budget_id'];
+        $query_results = $this->sendQuery($query);
+        if ($query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','budget_id'=>$params['budget_id']);
+        }
     }
 
     public function updateUser($params){
@@ -161,7 +201,22 @@ class Iom
         if (!$res) {
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
-        else return "success";
+        else {
+            return Array('type'=>'success','id'=>$params['id']);
+        }
+    }
+
+    public function updateBudget($params){
+        $query = "Update budget Set type_id=".$params['type_id'].",name=".$params['name'].",planed_cost=".$params['planed_cost']." Where id=".$params['id'];
+
+        $res = $this->sendQuery($query);
+
+        if (!$res) {
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','id'=>$params['id']);
+        }
     }
 
     public function addIomReq($params){
@@ -171,7 +226,7 @@ class Iom
             . "VALUES (" . $params["employee_id"] . ",'"
             . $params["purchase_text"]. "',0,0,0,'".$params["substantiation_text"]."')";
         $result = $this->sendQuery($query);
-//echo $query;
+
         $iom_num = mysqli_insert_id(GetMyConnection());
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
         foreach($chain as $key=>$value){
@@ -188,7 +243,7 @@ class Iom
         foreach($budgets as $key=>$value){
                     $query .= "(".$iom_num.",".$value['id'].",".$value['value']."),";
         }
-//        echo $query;
+
         $res = $this->sendQuery(trim($query,','));
 
         if ($result){

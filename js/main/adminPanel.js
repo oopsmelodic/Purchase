@@ -1,7 +1,13 @@
 var valid = ["username", "email", "fullname", "position", "password"];
 var deproles;
+
+String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 $(document).ready(function () {
     $('.selectpicker').selectpicker();
+
 
     $.ajax({
         url: "php/core.php?method=getDepRoles",
@@ -10,71 +16,114 @@ $(document).ready(function () {
         deproles = JSON.parse(data);
     });
 
-    $('#testtable').bootstrapTable({
-        url: '/php/core.php?method=getUsers',
-        columns: [{
-                field: 'id',
-                title: 'Department  User ID',
-                sortable: true
-            }, {
-                field: 'fullname',
-                title: 'Fullname',
-                sortable: true
-            }, {
-                field: 'role',
-                title: 'Role',
-                sortable: true
-            },
-            {
-                field: 'operate',
-                title: 'Item Operate',
-                align: 'center',
-                events: operateEvents,
-                formatter: operateFormatter
-            }],
-        search: true,
-        //height: 600,
-        strictSearch: true,
-        showRefresh: true,
-        detailView: false,
-        groupBy: true,
-        groupByField: ['department']
-    }).on('dbl-click-row.bs.table', function (el, row) {
+    $('.nav.nav-pills li').on('click',function(){
+        $('#datatable').bootstrapTable('destroy');
+        var table = $(this).find('a').attr('table');
+        var columns = [];
+        var groupfield = "";
+        var method = "";
+        //COLUMN OPERATOR
+        switch (table){
+            case 'employee':
+                    columns.push({
+                        field:'id',
+                        title: '#',
+                        sortable:true
+                    },{
+                        field:'fullname',
+                        title: 'Fullname',
+                        sortable:true
+                    },{
+                        field:'role',
+                        title: 'Role',
+                        sortable:true
+                    });
+                    groupfield = ["department"];
+                    method = "getUsers";
+
+                break;
+            case 'budget':
+                    columns.push({
+                        field:'id',
+                        title: '#',
+                        sortable:true
+                    },{
+                        field:'name',
+                        title: 'Name:',
+                        sortable:true
+                    },{
+                        field:'planed_cost',
+                        title: 'Planed Cost:',
+                        sortable:true
+                    });
+                    groupfield = ["type_name"];
+                    method = "getBudgets";
+
+                break;
+        }
+        columns.push({
+            field: 'operate',
+            title: 'Item Operate',
+            align: 'center',
+            events: operateEvents,
+            formatter: operateFormatter
+        });
+
+        $('#datatable').bootstrapTable({
+            url: '/php/core.php?method='+method,
+            columns: columns,
+            search: true,
+            //height: 600,
+            strictSearch: true,
+            showRefresh: true,
+            detailView: false,
+            groupBy: true,
+            groupByField: groupfield,
+            method: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            queryParams: function (p){
+                return {
+                    "table":table
+                }
+            }
+        });
+
+        $('#datatable').attr("table_name",table);
 
     });
 
-    $('#showPanel').click(function (event) {
-        event.preventDefault();
-        slider(false);
-    });
+    $('.active').click();
 
     $('#addUser').click(function (event) {
         event.preventDefault();
+        var columns = [];
+        var data = $('#datatable').bootstrapTable('getData');
+
+        for (key in data[0]){
+            if (key!='_data'){
+                columns.push(key);
+            }
+        }
         bootbox.dialog({
             title: "Register user",
-            message: bootboxMessage("", "", "", "", true),
+            message: bootboxMessage(null,columns),
             buttons: {
                 success: {
                     label: "Add user",
                     className: "btn-success modalbtn",
                     callback: function () {
-                        var data;
-                        data = {
-                            "fullname": $('#fullname').val(),
-                            "position": $('#position').val(),
-                            "role": $('#roles').val(),
-                            "department": $('#departments').val(),
-                            "username": $('#username').val(),
-                            "password": $('#password').val(),
-                            "email": $('#email').val()};
+                        var data = {};
+                        for (var i=0; i<columns.length;i++){
+                            data[columns[i]]=$('#'+columns[i]).val();
+                        }
                         $.ajax({
-                            url: "php/addUser.php",
+                            url: "php/core.php?method=addUser",
                             type: "POST",
                             data: data
                         }).success(function (data) {
                             if (data === "success")
                             {
-                                $('#testtable').bootstrapTable('refresh');
+                                $('#datatable').bootstrapTable('refresh');
                                 message = "User <strong>" + $('#username').val() + "</strong> was registered.";
                             } else
                             {
@@ -87,51 +136,11 @@ $(document).ready(function () {
             }
         }
         ).on('shown.bs.modal', function () {
-            setValidator();
-            $("#password").keyup(function () {
-                validator("password", ($('#password').val() == "" || $('#password').val().length < 6));
-            });
-            valid = ["username", "email", "fullname", "position", "password"];
-            validator("password", ($('#password').val() == "" || $('#password').val().length < 6));
             $('.selectpicker').selectpicker();
         });
     });
 });
 
-function validateEmail(email) {
-    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-    return re.test(email);
-}
-
-function validateWords(string) {
-    var re = /^[^\W\d_]+$/;
-    return re.test(string);
-}
-
-function validatePosition(string) {
-    var re = /^[a-zA-Z_ ]*$/;
-    return re.test(string);
-}
-
-function validator(name, state)
-{
-    if (state)
-    {
-        $('.modalbtn').addClass("disabled");
-        $('#' + name).parent().parent(".form-group").addClass("has-error");
-        $('#' + name).parent().find('.help-block').slideDown();
-        if (valid.indexOf(name) == -1)
-            valid.push(name);
-    } else {
-        $('#' + name).parent().parent(".form-group").removeClass("has-error");
-        $('#' + name).parent().find('.help-block').slideUp();
-        if (valid.indexOf(name) != -1)
-            valid.splice(valid.indexOf(name), 1);
-        if (valid.length == 0) {
-            $('.modalbtn').removeClass("disabled");
-        }
-    }
-}
 function checkuserexists(username)
 {
     var existor;
@@ -165,27 +174,30 @@ function operateFormatter(value, row, index) {
 }
 window.operateEvents = {
     'click .edit': function (e, value, row, index) {
+        var table = $('#datatable').attr('table_name');
+        var columns = [];
+        for(var key in row){
+            if (key !='_data'){
+                columns.push(key);
+            }
+        }
         bootbox.dialog({
-            title: "Editing user: " + row['name'] + "",
-            message: bootboxMessage(row["fullname"], row['username'], row['email'], row['position'], false),
+            title: "Editing row: " + row['id'] + "",
+            message: bootboxMessage(row,columns),
             buttons: {
                 success: {
                     label: "Save",
                     className: "btn-success modalbtn",
                     callback: function () {
+                        var data = {};
+                        for (var i=0; i<columns.length;i++){
+                            data[columns[i]]=$('#'+columns[i]).val();
+                        }
+
                         $.ajax({
-                            url: "php/core.php?method=updateUser",
+                            url: "php/core.php?method=update"+table.capitalizeFirstLetter(),
                             type: "POST",
-                            data: {
-                                "fullname": $('#fullname').val(),
-                                "position": $('#position').val(),
-                                "role": $('#roles').val(),
-                                "department": $('#departments').val(),
-                                "username": $('#username').val(),
-                                "password": $('#password').val(),
-                                "email": $('#email').val(),
-                                "id": row['id']
-                            }
+                            data: data
                         }).success(function (data) {
                             if (data === "success")
                             {
@@ -202,30 +214,26 @@ window.operateEvents = {
             }
         }
         ).on('shown.bs.modal', function () {
-            setValidator();
-            $("#password").keyup(function () {
-                validator("password", ($('#password').val().length !== 0 && $('#password').val().length < 6));
-            });
-            valid = ["password"];
-            validator("password", ($('#password').val().length !== 0 && $('#password').val().length < 6));
+            console.log(row);
             $('.selectpicker').selectpicker();
-            $('#roles').selectpicker('val', row['roleid']);
-            $('#departments').selectpicker('val', row['depid']);
+            $('#role').selectpicker('val', parseInt(row['roleid']));
+            $('#department').selectpicker('val', parseInt(row['depid']));
         });
     },
     'click .remove': function (e, value, row, index) {
+        var table = $('#datatable').attr('table_name');
         bootbox.confirm("Are you sure to delete user: <b>" + row['fullname'] + "?</b>", function (result) {
             if (result) {
                 $.ajax({
-                    url: "php/core.php?method=deleteUser",
+                    url: "php/core.php?method=delete"+table.capitalizeFirstLetter(),
                     type: "POST",
                     async: 0,
-                    data: {"id": row["id"]}
+                    data: {"user_id": row["id"]}
                 }).success(function (data) {
                     var message = "";
                     if (data === "success")
                     {
-                        $('#testtable').bootstrapTable('remove', {
+                        $('#datatable').bootstrapTable('remove', {
                             field: 'id',
                             values: [row.id]
                         });
@@ -240,73 +248,63 @@ window.operateEvents = {
         });
     }
 };
-function setValidator()
-{
-    $("#username").keyup(function () {
-        validator("username", ($('#username').val() == "" || $('#username').val().length < 3) || checkuserexists($('#username').val()));
-    });
-    $("#email").keyup(function () {
-        validator("email", ($('#email').val() == "" || !validateEmail($('#email').val())));
-    });
 
-    $("#fullname").keyup(function () {
-        validator("fullname", ($('#fullname').val() == "" || !validatePosition($('#fullname').val())));
-    });
-
-    $("#position").keyup(function () {
-        validator("position", ($('#position').val() == "" || !validatePosition($('#position').val())));
-    });
-}
-function bootboxMessage(fullname, username, email, position, newuser)
-{
-    var display = (newuser) ? '' : 'style="display:none;"';
-    var danger = (newuser) ? ' has-error' : '';
-    var msg = '<div class="row">  ' +
-            '<div class="col-md-12"> ' +
-            '<form class="form-horizontal"> ' +
-            '<div class="form-group' + danger + '"> ' +
-            '<label class="col-md-4 control-label" for="name">Fullname</label> ' +
-            '<div class="col-md-4"> ' +
-            '<input id="fullname" name="fullname" type="text" class="form-control input-md" value="' + fullname + '"> ' +
-            '<span class="help-block"' + display + '>Only letters</span> </div> ' +
-            '</div> ' +
-            '<div class="form-group' + danger + '"> ' +
-            '<label class="col-md-4 control-label" for="name">Username</label> ' +
-            '<div class="col-md-4"> ' +
-            '<input id="username" name="username" type="text" class="form-control input-md" value="' + username + '"> ' +
-            '<span class="help-block" id="usercontroll" ' + display + '>Minimum of 3 characters</span> </div> ' +
-            '</div> ' +
-            '<div class="form-group' + danger + '"> ' +
-            '<label class="col-md-4 control-label" for="name">E-Mail</label> ' +
-            '<div class="col-md-4"> ' +
-            '<input id="email" name="email" type="text" class="form-control input-md" value="' + email + '"> ' +
-            '</div> ' +
-            '</div> ' +
-            '<div class="form-group' + danger + '"> ' +
-            '<label class="col-md-4 control-label" for="name">Position</label> ' +
-            '<div class="col-md-4"> ' +
-            '<input id="position" name="position" type="text" class="form-control input-md" value="' + position + '"> ' +
-            '<span class="help-block" ' + display + '>Only letters</span> </div> ' +
-            '</div> ' +
-            '<div class="form-group"> ' +
-            '<label class="col-md-4 control-label" for="name">Department</label> ' +
-            '<div class="col-md-4"> ' +
-            '<select class="selectpicker" id="departments" data-width="100%" style="display:inline;">' + deproles["departments"] + '</select>' +
-            '</div> ' +
-            '</div> ' +
-            '<div class="form-group"> ' +
-            '<label class="col-md-4 control-label" for="name">Role</label> ' +
-            '<div class="col-md-4"> ' +
-            '<select class="selectpicker" id="roles" data-width="100%" style="display:inline;">' + deproles["roles"] + '</select>' +
-            '</div> ' +
-            '</div> ' +
-            '<div class="form-group' + danger + '"> ' +
-            '<label class="col-md-4 control-label" for="name">Password</label> ' +
-            '<div class="col-md-4"> ' +
-            '<input id="password" name="password" type="text" class="form-control input-md" placeholder="Type new password..."> ' +
-            '<span class="help-block" ' + display + '>Minimum of 6 characters</span> </div> ' +
-            '</div> ' +
-            '</div> </div>' +
-            '</form> </div>  </div>';
-    return msg;
+function bootboxMessage(row,columns){
+    var display = (row!=null) ? '' : 'style="display:none;"';
+    var danger =  '';
+    var str =     '<div class="row"> ' +
+                    '<div class="col-md-12"> ' +
+                        '<form id="form_'+$('#datatable').attr("table_name")+'" class="form-horizontal"> ';
+    for (var i=0;i<columns.length;i++){
+        switch (columns[i]){
+            case 'department':
+                str+='<div class="form-group"> ' +
+                        '<label class="col-md-4 control-label" for="name">Department</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<select class="selectpicker" id="department" data-width="100%" style="display:inline;">' + deproles["departments"] + ':</select>' +
+                        '</div> ' +
+                    '</div> ';
+                break;
+            case 'role':
+                str+='<div class="form-group"> ' +
+                        '<label class="col-md-4 control-label" for="name">Role</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<select class="selectpicker" id="role" data-width="100%" style="display:inline;">' + deproles["roles"] + ':</select>' +
+                        '</div> ' +
+                    '</div> ';
+                break;
+            case 'type_name':
+                str+='<div class="form-group"> ' +
+                    '<label class="col-md-4 control-label" for="name">Budget Type</label> ' +
+                    '<div class="col-md-4"> ' +
+                    '<select class="selectpicker" id="budget_type" data-width="100%" style="display:inline;">' + deproles["budget_type"] + ':</select>' +
+                    '</div> ' +
+                    '</div> ';
+                break;
+            default:
+                if (columns[i]!='id' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
+                    str += '<div class="form-group' + danger + '">' +
+                                '<label class="col-md-4 control-label" for="name">' + columns[i].replace(/_/g," ").capitalizeFirstLetter() + ':</label>' +
+                                '<div class="col-md-4">' +
+                                    '<input id="' + columns[i] + '" name="' + columns[i] + '" type="text" class="form-control input-md" value="' + ((row!=null)? row[columns[i]] : '') + '">' +
+                                    '<span class="help-block"' + display + '>Only letters</span> ' +
+                                '</div>' +
+                            '</div>';
+                }
+                if (columns[i]=='username'){
+                    str+='<div class="form-group' + danger + '"> ' +
+                            '<label class="col-md-4 control-label" for="name">Password:</label> ' +
+                            '<div class="col-md-4"> ' +
+                                '<input id="password" name="password" type="text" class="form-control input-md" placeholder="Type new password..."> ' +
+                                '<span class="help-block" ' + display + '>Minimum of 6 characters</span> ' +
+                            '</div> ' +
+                        '</div> ';
+                }
+                break;
+        }
+    }
+    str +='</form> ' +
+            '</div>  ' +
+        '</div>';
+    return str;
 }
