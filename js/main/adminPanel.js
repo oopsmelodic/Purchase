@@ -96,6 +96,7 @@ $(document).ready(function () {
 
     $('#addUser').click(function (event) {
         event.preventDefault();
+        var table = $('#datatable').attr('table_name');
         var columns = [];
         var data = $('#datatable').bootstrapTable('getData');
 
@@ -117,7 +118,7 @@ $(document).ready(function () {
                             data[columns[i]]=$('#'+columns[i]).val();
                         }
                         $.ajax({
-                            url: "php/core.php?method=addUser",
+                            url: "php/core.php?method=add"+table.capitalizeFirstLetter(),
                             type: "POST",
                             data: data
                         }).success(function (data) {
@@ -193,57 +194,64 @@ window.operateEvents = {
                         for (var i=0; i<columns.length;i++){
                             data[columns[i]]=$('#'+columns[i]).val();
                         }
-
+                        data['id']=row['id'];
                         $.ajax({
-                            url: "php/core.php?method=update"+table.capitalizeFirstLetter(),
+                            url: "/php/core.php?method=update"+table.capitalizeFirstLetter(),
                             type: "POST",
+                            dataType: "json",
                             data: data
                         }).success(function (data) {
-                            if (data === "success")
-                            {
-                                $('#testtable').bootstrapTable('refresh');
-                                message = "User <strong>" + row['name'] + "</strong> was updated.";
-                            } else
-                            {
-                                message = data;
+                            if (data['type']=="success"){
+                                $('#datatable').bootstrapTable('refresh');
+                                swal("Updated!", "Updated row by name: '" + row['name'] + "'.", "success");
+                            }else{
+                                swal("Request Error!",data['error_msg'],"error");
                             }
-                            bootbox.alert(message);
                         });
                     }
                 }
             }
         }
         ).on('shown.bs.modal', function () {
-            console.log(row);
             $('.selectpicker').selectpicker();
             $('#role').selectpicker('val', parseInt(row['roleid']));
             $('#department').selectpicker('val', parseInt(row['depid']));
+            $('#budget_type').selectpicker('val',parseInt(row['budget_type']));
         });
     },
     'click .remove': function (e, value, row, index) {
         var table = $('#datatable').attr('table_name');
-        bootbox.confirm("Are you sure to delete user: <b>" + row['fullname'] + "?</b>", function (result) {
-            if (result) {
+        swal({
+            title: "Are you sure?",
+            text: "Delete row by name '"+row['name']+"'?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true,
+            closeOnCancel: true
+        }, function(isConfirm){
+            if (isConfirm) {
                 $.ajax({
                     url: "php/core.php?method=delete"+table.capitalizeFirstLetter(),
                     type: "POST",
-                    async: 0,
-                    data: {"user_id": row["id"]}
+                    dataType:"json",
+                    data: {"id": row["id"]}
                 }).success(function (data) {
-                    var message = "";
-                    if (data === "success")
-                    {
+                    if (data['type'] == "success"){
                         $('#datatable').bootstrapTable('remove', {
                             field: 'id',
                             values: [row.id]
                         });
-                        message = "User <strong>" + row['name'] + "</strong> was deleted.";
-                    } else
-                    {
-                        message = data;
+                        swal("Deleted!", "Deleted row by name: '" + row['name'] + "'.", "success");
+                    }else{
+                        swal("Request Error!",data['error_msg'],"error");
                     }
-                    bootbox.alert(message);
                 });
+            } else {
+                //swal("Cancelled", "Your imaginary file is safe :)", "error");
             }
         });
     }
@@ -255,6 +263,7 @@ function bootboxMessage(row,columns){
     var str =     '<div class="row"> ' +
                     '<div class="col-md-12"> ' +
                         '<form id="form_'+$('#datatable').attr("table_name")+'" class="form-horizontal"> ';
+    console.log(columns);
     for (var i=0;i<columns.length;i++){
         switch (columns[i]){
             case 'department':
@@ -273,16 +282,16 @@ function bootboxMessage(row,columns){
                         '</div> ' +
                     '</div> ';
                 break;
-            case 'type_name':
+            case 'budget_type':
                 str+='<div class="form-group"> ' +
-                    '<label class="col-md-4 control-label" for="name">Budget Type</label> ' +
-                    '<div class="col-md-4"> ' +
-                    '<select class="selectpicker" id="budget_type" data-width="100%" style="display:inline;">' + deproles["budget_type"] + ':</select>' +
-                    '</div> ' +
+                        '<label class="col-md-4 control-label" for="name">Budget Type</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<select class="selectpicker" id="budget_type" data-width="100%" style="display:inline;">' + deproles["budget_type"] + ':</select>' +
+                        '</div> ' +
                     '</div> ';
                 break;
             default:
-                if (columns[i]!='id' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
+                if (columns[i]!='id' && columns[i]!='budget_type' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
                     str += '<div class="form-group' + danger + '">' +
                                 '<label class="col-md-4 control-label" for="name">' + columns[i].replace(/_/g," ").capitalizeFirstLetter() + ':</label>' +
                                 '<div class="col-md-4">' +

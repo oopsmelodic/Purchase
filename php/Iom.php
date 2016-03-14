@@ -95,7 +95,7 @@ class Iom
     }
 
     public function getUsers(){
-        $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position, dp.id as depid, rl.id as roleid FROM employee as em".
+        $query="SELECT em.username as name, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position, dp.id as depid, rl.id as roleid FROM employee as em".
             " Left Join departments as dp on em.department_id=dp.id".
             " Left Join roles as rl on em.role_id=rl.id Where em.deleted=0";
 
@@ -104,8 +104,8 @@ class Iom
     }
 
     public function getBudgets(){
-        $query="Select b.id, b.date_time, b.planed_cost, bt.name as type_name, b.name From budget as b".
-                " Left Join budget_type as bt on b.type_id";
+        $query="Select b.id, b.date_time, b.planed_cost, bt.name as type_name, b.type_id as budget_type, b.name From budget as b".
+                " Left Join budget_type as bt on b.type_id=bt.id Where b.deleted=0";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
@@ -128,7 +128,7 @@ class Iom
         return ($query_results);
     }
 
-    public function addUser($insert_arr){
+    public function addEmployee($insert_arr){
         $query = "INSERT INTO `employee`(`fullname`, `position`, `role_id`, `department_id`, `username`, `password`,`email`)"
             . "VALUES ('" . $insert_arr["fullname"] . "','"
             . $insert_arr["position"] . "',"
@@ -149,38 +149,39 @@ class Iom
         return $query_results;
     }
 
-    public function deleteUser($params){
+    public function deleteEmployee($params){
         $query = "UPDATE employee SET deleted=1".
-            " WHERE id=".$params['user_id'];
+            " WHERE id=".$params['id'];
         $query_results = $this->sendQuery($query);
-        if ($query_results){
+        if (!$query_results){
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
         else {
-            return Array('type'=>'success','user_id'=>$params['user_id']);
+            return Array('type'=>'success','user_id'=>$params['id']);
         }
     }
 
     public function addBudget($insert_arr){
-        $query = "Insert Into budget (name,type_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['type_id'].",".$insert_arr['planed_cost'].")";
+        $query = "Insert Into budget (name,type_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['budget_type'].",".$insert_arr['planed_cost'].")";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
     }
 
     public function deleteBudget($params){
-        $query = "UPDATE employee SET deleted=1".
-            " WHERE id=".$params['budget_id'];
+        $query = "UPDATE budget SET deleted=1".
+            " WHERE id=".$params['id'];
+
         $query_results = $this->sendQuery($query);
-        if ($query_results){
+        if (!$query_results){
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
         else {
-            return Array('type'=>'success','budget_id'=>$params['budget_id']);
+            return Array('type'=>'success','budget_id'=>$params['id']);
         }
     }
 
-    public function updateUser($params){
+    public function updateEmployee($params){
         $passstring = "";
         if($params['password']!==""){
             $password = md5($this->FISH . md5(trim($params['password'])));
@@ -207,10 +208,11 @@ class Iom
     }
 
     public function updateBudget($params){
-        $query = "Update budget Set type_id=".$params['type_id'].",name=".$params['name'].",planed_cost=".$params['planed_cost']." Where id=".$params['id'];
+        $query = "Update budget Set type_id=".$params['budget_type'].",name='".$params['name']."',planed_cost=".$params['planed_cost']." Where id=".$params['id'];
 
         $res = $this->sendQuery($query);
 
+//        echo $query;
         if (!$res) {
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
