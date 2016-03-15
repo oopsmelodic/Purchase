@@ -99,7 +99,7 @@
                                             <div class="form-group">
                                                 <h3 class="col-lg-4"><span class="label label-default"> Files: </span></h3>
                                                 <div class="col-lg-12">
-                                                    <input id="input-1" multiple type="file" class="file file-loading" data-allowed-file-extensions='["txt","jpg","tif","doc","pdf"]'>
+                                                    <input id="input-1" multiple type="file" class="file file-loading" data-allowed-file-extensions='["txt","jpg","tif","doc","pdf","webm"]'>
                                                 </div>
                                             </div>
                                         </div>

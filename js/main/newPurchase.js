@@ -12,14 +12,6 @@ $(function (){
         //dropupAuto:false
     });
     //titles = {'id-0': 'file-name-1', 'id-1': 'file-name-2'};
-    $("#input-1").fileinput({
-        uploadUrl: "/php/upload.php", // server upload action
-        uploadAsync: true,
-        maxFileCount: 15,
-        showUpload:false,
-        showUploadedThumbs:false
-    });
-
 
     $('#budget_select').selectpicker().on('changed.bs.select',function (item,index){
         var selectedOptions= $(this).context.selectedOptions;
@@ -99,10 +91,12 @@ $(function (){
                             $('#input-1').on('filepreupload', function(event, dataz, previewId, index, jqXHR) {
                                 dataz.form.append("iom_id", data['id']);
                             });
+                            $('#input-1').on('fileuploaded', function(event, dataz, previewId, index, jqXHR) {
+                                swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
+                                console.log(data);
+                                location.href='/main';
+                            });
                             $('#input-1').fileinput('upload');
-                            swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
-                            console.log(data);
-                            location.href='/main';
                         }else{
                             swal("Error", "Just a Error", "error");
                         }
