@@ -309,6 +309,29 @@ class Iom
 
     }
 
+    public function getBudgetsGraph(){
+        $query = "Select ib.cost,i.time_stamp, b.name From iom_budgets as ib ".
+                    "Left Join budget as b on b.id=ib.budget_id ".
+                    "Left Join budget_type as bt on bt.id=b.type_id ".
+                    "Left Join iom as i on i.id=ib.iom_id ";
+
+        $results = $this->sendQuery($query);
+
+        $result_array['categories'] = null;
+        $result_array['series'] = null;
+        $mass= Array();
+        foreach ($results as $value){
+            $result_array['categories'][] = $value['time_stamp'];
+            $mass[$value['name']][] = intval($value['cost']);
+        }
+
+        foreach ($mass as $key=>$value){
+            $result_array['series'][] = Array('name'=>$key,'data'=>$value);
+        }
+
+        return $result_array;
+    }
+
     function checkIom($iom_id){
         $query = "Select im.id,im.name,count(sc.id) as need_count, ".
                   "(Select count(id) From sign_chain Where status='Approved' and iom_id=im.id) as app_count, ".

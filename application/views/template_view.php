@@ -47,6 +47,7 @@
     <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
+    <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
