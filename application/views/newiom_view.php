@@ -184,7 +184,8 @@
     $("#input-1").fileinput({
         uploadUrl: "/php/upload.php", // server upload action
         uploadAsync: true,
-        maxFileCount: 5
+        maxFileCount: 5,
+        showUpload:false
     });
 
 </script>

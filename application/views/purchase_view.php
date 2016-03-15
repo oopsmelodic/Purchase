@@ -37,11 +37,11 @@
         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav side-nav">
-                <li class="active">
+                <li>
                     <a href="/main"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
                 </li>
-                <li>
-                    <a href="/purchase"><i class="fa fa-fw fa-table"></i> Purchases</a>
+                <li class="active">
+                    <a href="/main"><i class="fa fa-fw fa-table"></i> Purchases</a>
                 </li>
                 <li>
                     <a href="/admin"><i class="fa fa-fw fa-edit"></i>  User administration</a>
@@ -57,31 +57,28 @@
 
             <!-- Page Heading -->
             <div class="row">
-                <div class="col-lg-4 col-md-7">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-table fa-5x"></i>
+                <div class="col-lg-12" style="padding:0px;">
+                    <ul class="nav nav-pills" style="margin-bottom: 15px;">
+                        <li class="active"><a data-toggle="pill" href="#home">My active appliements</a></li>
+                    </ul>
+                    <div class="tab-content" >
+                        <div id="home" class="tab-pane fade in active" style="min-height: 500px;">
+                            <div class="col-lg-12 shadow">
+                                <div id="toolbar">
+                                    <a href="/newiom/" class="btn btn-success">
+                                        <i class="glyphicon glyphicon-plus"></i> New appliements
+                                    </a>
                                 </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">26</div>
-                                    <div>New Comments!</div>
+                                <div class="table-responsive">
+                                    <table id="testtable" class="table table-bordered" style="table-layout:fixed; margin-bottom: 0px; margin-right: 10px;">
+                                    </table>
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
+                        <div id="menu2" class="tab-pane fade">
+
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-8 col-md-7">
-                    <span class="label label-primary">Latest Actions:</span>
-                    <table id="latest_actions"></table>
                 </div>
             </div>
         </div>
@@ -91,4 +88,4 @@
 </div>
 <!-- /#wrapper -->
 
-<script src="/js/main/main.js" type="text/javascript"></script>
+<script src="/js/main/purchasePanel.js" type="text/javascript"></script>
