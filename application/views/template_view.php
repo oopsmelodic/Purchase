@@ -34,7 +34,7 @@
     <![endif]-->
 
     <!-- jQuery -->
-    <script src="/js/jquery.js"></script>
+<!--    <script src="/js/jquery.js"></script>-->
     <script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
@@ -47,14 +47,22 @@
     <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
+    //Angular Part
+    <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
+    <script src="/bower_components/angular-notify-master/dist/angular-notify.min.js" type="text/javascript"></script>
+    <link href="/bower_components/angular-notify-master/dist/angular-notify.min.css" rel="stylesheet" type="text/css"/>
+    <script src="/bower_components/ng-notify-master/src/scripts/ng-notify.js" type="text/javascript"></script>
+    <link href="/bower_components/ng-notify-master/dist/ng-notify.min.css" rel="stylesheet" type="text/css"/>
+
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
     <script src="/bower_components/bootbox-4.4.0/bootbox.js" type="text/javascript"></script>
+    <script src="/js/main/app.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body  ng-app="mainApp" ng-controller="myNotify">
 
         <?php include 'application/views/'.$content_view; ?>
 

@@ -56,7 +56,7 @@
         <div class="container-fluid">
 
             <!-- Page Heading -->
-            <div class="row">
+            <div class="row shadow-block">
                 <h1 class="page-header">
                     Dashboard <small>Test Overview</small>
                 </h1>
@@ -113,6 +113,7 @@
                         <table id="latest_actions"></table>
                     </div>
                 </div>
+
             </div>
         </div>
         <!-- /.container-fluid -->

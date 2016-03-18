@@ -103,6 +103,22 @@ class Iom
         return $query_results;
     }
 
+    public function getMessages($params){
+
+        $query = "Select id,msg From messages Where status=0 and employee_id=".$params['user_session_id'];
+
+        $query_results= $this->sendQuery($query);
+
+        if ($query_results!=null){
+            foreach ($query_results as $value){
+                $this->sendQuery("Update messages Set status=1 Where id=".$value['id']);
+            }
+        }
+
+        return $query_results;
+
+    }
+
     public function getBudgets(){
         $query="Select b.id, b.date_time, b.planed_cost, bt.name as type_name, b.type_id as budget_type, b.name From budget as b".
                 " Left Join budget_type as bt on b.type_id=bt.id Where b.deleted=0";

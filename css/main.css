@@ -80,3 +80,24 @@
 .list-group-item {
     height: 100px;
 }
+
+.shadow-block{
+    background-color: #fff;
+    padding: 1px 5px 10px 10px;
+    margin-top: 5px;
+    box-shadow: 0 1px 5px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
+    /* border-radius: 2px; */
+    border: 0;
+}
+.shadow-block .footer{
+    border-top: 1px solid #e2e2e2;
+    padding: 5px;
+    font-size: 15px;
+}
+.shadow-block .footer span i{
+    font-size: 17px;
+}
+.shadow-block .footer span{
+    opacity: .7;
+    cursor: pointer;
+}
