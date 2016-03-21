@@ -1,5 +1,5 @@
 
-<div id="wrapper">
+<div id="wrapper" ng-app="mainApp" ng-controller="myNotify">
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">

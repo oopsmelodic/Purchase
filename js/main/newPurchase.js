@@ -49,7 +49,6 @@ $(function (){
             // handle the invalid form...
         } else {
             e.preventDefault();
-
             swal({
                 title: "Are you sure?",
                 text: 'Create application "'+$('#purchase_text').val()+'" ?',
@@ -66,7 +65,6 @@ $(function (){
                     var sign_chain = [];
                     var budgets_chain = [];
                     //Make Chain
-
                     $('#budget_inputs input').each(function (index,item){
                         budgets_chain.push({'id':$(item).attr('budget_id'),'value':$(item).val()});
                     });
@@ -93,16 +91,24 @@ $(function (){
                             });
                             $('#input-1').on('fileuploaded', function(event, dataz, previewId, index, jqXHR) {
                                 swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
-                                console.log(data);
-                                location.href='/main';
+                                location.href='/purchase';
+                                //console.log(data);
                             });
-                            $('#input-1').fileinput('upload');
+                            var str = $('.file-caption').text();
+
+                            var files = $('#input-1').val();
+                            if (files!="") {
+                                $('#input-1').fileinput('upload');
+                            }else{
+                                swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
+                                location.href='/purchase';
+                            }
                         }else{
-                            swal("Error", "Just a Error", "error");
+                            //swal("Error", "Just a Error", "error");
                         }
                     });
                 } else {
-                    //swal("Cancelled", "Your imaginary file is safe :)", "error");
+
                 }
             });
         }

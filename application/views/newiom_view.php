@@ -93,7 +93,7 @@
                                             <div class="form-group">
                                                 <h3 class="col-lg-6"><span class="label label-default"> Substantiation: </span></h3>
                                                 <div class="col-lg-12">
-                                                    <textarea name="summernote" id="summernote" cols="10" rows="10" required></textarea>
+                                                    <textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>
                                                 </div>
                                             </div>
                                             <div class="form-group">

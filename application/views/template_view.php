@@ -52,6 +52,7 @@
     <script src="/bower_components/angular-notify-master/dist/angular-notify.min.js" type="text/javascript"></script>
     <link href="/bower_components/angular-notify-master/dist/angular-notify.min.css" rel="stylesheet" type="text/css"/>
     <script src="/bower_components/ng-notify-master/src/scripts/ng-notify.js" type="text/javascript"></script>
+    <script src="/bower_components/angular-help-overlay-master/src/angular-help-overlay.js" type="text/javascript"></script>
     <link href="/bower_components/ng-notify-master/dist/ng-notify.min.css" rel="stylesheet" type="text/css"/>
 
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
@@ -62,7 +63,7 @@
     <script src="/js/main/app.js" type="text/javascript"></script>
 </head>
 
-<body  ng-app="mainApp" ng-controller="myNotify">
+<body>
 
         <?php include 'application/views/'.$content_view; ?>
 
