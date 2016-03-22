@@ -27,10 +27,11 @@ $(function (){
             if (cur_select != null) {
                 cur_select.forEach(function (item, i, arr) {
                     var data_content = $(selectedOptions[i]).attr('data-content');
+                    var max = $(selectedOptions[i]).attr('planed_cost');
                     var input = $('#budget_inputs').find('#bi_' + item).get(0);
                     if ($(input).size() == 0) {
                         $('#budget_inputs').append('<div id="bi_' + item + '" class="form-group"><span class="col-lg-6">' + data_content + '</span>' +
-                            '<input budget_id="'+item+'" class="form-control" type="number" min="0" data-minlength="1" placeholder="Cost size..." required/>' +
+                            '<input budget_id="'+item+'" class="form-control" type="number" min="0" max="'+max+'" data-minlength="1" placeholder="Cost size..." required/>' +
                             '<span class="glyphicon form-control-feedback" aria-hidden="true"></span><span class="help-block with-errors"></span></div>');
                         //$('#budget_inputs').validator();
                         $('#budget_inputs').validator("validate");

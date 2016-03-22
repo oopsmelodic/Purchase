@@ -12,7 +12,7 @@ class View
             extract($data);
         }
         */
-        
+
         include 'application/views/'.$template_view;
     }
 }
