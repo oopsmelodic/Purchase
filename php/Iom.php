@@ -109,11 +109,11 @@ class Iom
 
         $query_results= $this->sendQuery($query);
 
-        if ($query_results!=null){
-            foreach ($query_results as $value){
-                $this->sendQuery("Update messages Set status=1 Where id=".$value['id']);
-            }
-        }
+//        if ($query_results!=null){
+//            foreach ($query_results as $value){
+//                $this->sendQuery("Update messages Set status=1 Where id=".$value['id']);
+//            }
+//        }
 
         return $query_results;
 
@@ -144,23 +144,18 @@ class Iom
         return ($query_results);
     }
 
-    public function addEmployee($params){
+    public function addEmployee($insert_arr){
         $query = "INSERT INTO `employee`(`fullname`, `position`, `role_id`, `department_id`, `username`, `password`,`email`)"
-            . "VALUES ('" . $params["fullname"] . "','"
-            . $params["position"] || '' . "',"
-            . $params["position"] || '' . ","
-            . $params["position"] || ''  . ",'"
-            . $params["position"] . "','"
-            . md5($this->FISH . md5(trim($params['password']))) . "','"
-            . $params["email"] . "')";
+            . "VALUES ('" . $insert_arr["fullname"] . "','"
+            . $insert_arr["position"] . "',"
+            . $insert_arr["role"] . ","
+            . $insert_arr["department"] . ",'"
+            . $insert_arr["username"] . "','"
+            . md5($this->FISH . md5(trim($insert_arr['password']))) . "','"
+            . $insert_arr["email"] . "')";
 
         $query_results = $this->sendQuery($query);
-        if (!$query_results){
-            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
-        }
-        else {
-            return Array('type'=>'success','user_id'=>$params['id']);
-        }
+        return $query_results;
     }
 
     public function checkUser($params){
