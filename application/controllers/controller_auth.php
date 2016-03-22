@@ -46,6 +46,6 @@ class Controller_Auth extends Controller
                 }
         }
 
-        $this->view->generate('auth_view.php', 'template_view.php', $data);
+        $this->view->generate('', 'auth_view.php', $data);
     }
 }

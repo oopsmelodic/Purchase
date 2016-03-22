@@ -4,9 +4,8 @@ class Controller {
     
     public $model;
     public $view;
-    
-    function __construct()
-    {
+
+    function __construct(){
         $this->view = new View();
     }
     
@@ -26,10 +25,10 @@ class Controller {
             Route::loop();            
         }
     }
-    
+
     function action_index()
     {
         include './php/conn.php';
-        mylog('Start Constructor');
+//        mylog('Start Constructor');
     }
 }
