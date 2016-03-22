@@ -122,12 +122,15 @@ $(document).ready(function () {
                             type: "POST",
                             data: data
                         }).success(function (data) {
-                            if (data['type']=="success"){
+                            if (data === "success")
+                            {
                                 $('#datatable').bootstrapTable('refresh');
-                                swal("Created!", "New row [test msg]", "success");
-                            }else{
-                                swal("Request Error!",data['error_msg'],"error");
+                                message = "User <strong>" + $('#username').val() + "</strong> was registered.";
+                            } else
+                            {
+                                message = data;
                             }
+                            bootbox.alert(message);
                         });
                     }
                 }
@@ -235,6 +238,7 @@ window.operateEvents = {
                     url: "php/core.php?method=delete"+table.capitalizeFirstLetter(),
                     type: "POST",
                     dataType:"json",
+                    async: 0,
                     data: {"id": row["id"]}
                 }).success(function (data) {
                     if (data['type'] == "success"){
