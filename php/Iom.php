@@ -144,18 +144,23 @@ class Iom
         return ($query_results);
     }
 
-    public function addEmployee($insert_arr){
+    public function addEmployee($params){
         $query = "INSERT INTO `employee`(`fullname`, `position`, `role_id`, `department_id`, `username`, `password`,`email`)"
-            . "VALUES ('" . $insert_arr["fullname"] . "','"
-            . $insert_arr["position"] . "',"
-            . $insert_arr["role"] . ","
-            . $insert_arr["department"] . ",'"
-            . $insert_arr["username"] . "','"
-            . md5($this->FISH . md5(trim($insert_arr['password']))) . "','"
-            . $insert_arr["email"] . "')";
+            . "VALUES ('" . $params["fullname"] . "','"
+            . $params["position"] || '' . "',"
+            . $params["position"] || '' . ","
+            . $params["position"] || ''  . ",'"
+            . $params["position"] . "','"
+            . md5($this->FISH . md5(trim($params['password']))) . "','"
+            . $params["email"] . "')";
 
         $query_results = $this->sendQuery($query);
-        return $query_results;
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','user_id'=>$params['id']);
+        }
     }
 
     public function checkUser($params){
