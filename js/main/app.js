@@ -2,20 +2,14 @@
  * Created by melodic on 17.03.2016.
  */
 
-var app = angular.module('mainApp', ['ngNotify']);
-app.controller('myNotify', function($scope, $http, $interval,ngNotify) {
+var app = angular.module('mainApp', ['notification']);
+app.controller('myNotify', function($scope, $http, $interval,$notification) {
 
-    ngNotify.config({
-        html: true,
-        theme: 'pure',
-        position: 'top',
-        duration: 3000,
-        type: 'info',
-        sticky: false,
-        button: true
-    });
 
-    ngNotify.set('<i class="fa fa-info"></i> Last Update 18.03.2016');
+    //$notification('New message', {
+    //    body: 'You have a new message.',
+    //    delay: 3000
+    //});
 
     $interval(function (){
         $http({
@@ -24,10 +18,12 @@ app.controller('myNotify', function($scope, $http, $interval,ngNotify) {
             url : "/php/core.php?method=getMessages"
         }).then(function mySuccess(response) {
             var messages = response.data;
-            console.log(messages);
             if (Array.isArray(messages)){
                 for (var i= 0,len = messages.length; i<len;i++){
-                    ngNotify.set(messages[i]['msg']);
+                    $notification('New message', {
+                        body: messages[i]['msg'],
+                        delay: messages[i]['delay']
+                    });
                 }
             }
         }, function myError(response) {

@@ -95,7 +95,7 @@ class Iom
     }
 
     public function getUsers(){
-        $query="SELECT em.username as name, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position, dp.id as depid, rl.id as roleid FROM employee as em".
+        $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position, dp.id as depid, rl.id as roleid FROM employee as em".
             " Left Join departments as dp on em.department_id=dp.id".
             " Left Join roles as rl on em.role_id=rl.id Where em.deleted=0";
 
@@ -105,15 +105,15 @@ class Iom
 
     public function getMessages($params){
 
-        $query = "Select id,msg From messages Where status=0 and employee_id=".$params['user_session_id'];
+        $query = "Select id,msg From messages Where status=0 and (employee_id=".$params['user_session_id']. " or employee_id=0)";
 
         $query_results= $this->sendQuery($query);
 
-//        if ($query_results!=null){
-//            foreach ($query_results as $value){
-//                $this->sendQuery("Update messages Set status=1 Where id=".$value['id']);
-//            }
-//        }
+        if ($query_results!=null){
+            foreach ($query_results as $value){
+                $this->sendQuery("Update messages Set status=1 Where id=".$value['id']);
+            }
+        }
 
         return $query_results;
 
@@ -144,18 +144,28 @@ class Iom
         return ($query_results);
     }
 
-    public function addEmployee($insert_arr){
-        $query = "INSERT INTO `employee`(`fullname`, `position`, `role_id`, `department_id`, `username`, `password`,`email`)"
-            . "VALUES ('" . $insert_arr["fullname"] . "','"
-            . $insert_arr["position"] . "',"
-            . $insert_arr["role"] . ","
-            . $insert_arr["department"] . ",'"
-            . $insert_arr["username"] . "','"
-            . md5($this->FISH . md5(trim($insert_arr['password']))) . "','"
-            . $insert_arr["email"] . "')";
+    public function addEmployee($params){
+
+        $query = "INSERT INTO employee(fullname, role_id, department_id, username, password,email)"
+            . "VALUES ('" . $params["fullname"] . "',"
+            . $params["role"] . ","
+            . $params["department"]  . ",'"
+            . $params["name"] . "','"
+            . $params["email"] . "'";
+
+        if ($params['password']!=''){
+            $query.= ",".md5($this->FISH . md5(trim($params['password'])))."'";
+        }
 
         $query_results = $this->sendQuery($query);
-        return $query_results;
+        $last_id = mysqli_insert_id(GetMyConnection());
+
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','user_id'=>$last_id,'query'=>$query);
+        }
     }
 
     public function checkUser($params){
