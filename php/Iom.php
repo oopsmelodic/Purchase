@@ -31,6 +31,17 @@ class Iom
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
+            switch ($value['user_last_status']){
+                case "in progress":
+                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "Approved":
+                    $query_results[$key]['user_last_status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "Canceled":
+                    $query_results[$key]['user_last_status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+            }
             switch ($value['status']){
                 case "in progress":
                     $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
@@ -69,8 +80,6 @@ class Iom
                     $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
                     break;
             }
-            $time_array = explode('|',$value['latest_action']);
-            $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
         }
 
         return $query_results;
