@@ -1,27 +1,68 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 $(document).ready(function () {
-    $('#summer_' + index).summernote({
-        shortcuts: false
-    });
-    
-    show_signers('signers',$('#iom_id').attr('iom_id')); //загружает таблицу подписантов
-    
-    $('#summer_' + index).code(row['substantation']);
+    var iom_id = $('#iom_id').attr('iom_id');
+    $('#summernote').summernote({
+        shortcuts: false,
+        height:150
 
-    
-    $('#files_' + index).bootstrapTable({
+    });
+    $('#summernote').summernote('disable');
+
+    $('#budgets').bootstrapTable({
+        url: '/php/core.php?method=getIomBudgets',
+        contentType: 'application/x-www-form-urlencoded',
+        method: 'POST',
+        queryParams: function (p) {
+            return {
+                "iom_id": iom_id
+            }
+        },
+        columns: [{
+                field: 'budget_name',
+                title: 'Name:'
+                        //sortable:true
+            }, {
+                field: 'cur_cost',
+                title: 'Cost:'
+                        //sortable:true
+                        //filterControl:'select'
+            }]
+    });
+
+    $('#signers').bootstrapTable({
+        url: '/php/core.php?method=getIomSigners',
+        contentType: 'application/x-www-form-urlencoded',
+        method: 'POST',
+        queryParams: function (p) {
+            return {
+                "iom_id": iom_id
+            }
+        },
+        columns: [{
+                field: 'id',
+                title: '#',
+                formatter: function (id, data, index) {
+                    return index + 1;
+                }
+            }, {
+                field: 'fullname',
+                title: 'Name:'
+                        //sortable:true
+            }, {
+                field: 'status',
+                title: 'Status:'
+                        //sortable:true
+                        //filterControl:'select'
+            }]
+    });
+
+    $('#files').bootstrapTable({
         url: '/php/core.php?method=getIomFiles',
         contentType: 'application/x-www-form-urlencoded',
         method: 'POST',
         cardView: true,
         queryParams: function (p) {
             return {
-                "iom_id": row['id']
+                "iom_id": iom_id
             }
         },
         columns: [{

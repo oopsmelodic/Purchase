@@ -47,7 +47,7 @@
     <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
-    //Angular Part
+     <!--  Angular.js Part -->
     <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
     <script src="/bower_components/angular-notify-master/dist/angular-notify.min.js" type="text/javascript"></script>
     <link href="/bower_components/angular-notify-master/dist/angular-notify.min.css" rel="stylesheet" type="text/css"/>
@@ -64,8 +64,6 @@
 </head>
 
 <body>
-
         <?php include 'application/views/'.$content_view; ?>
-
 </body>
 </html>
