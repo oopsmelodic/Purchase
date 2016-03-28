@@ -17,6 +17,7 @@ if (isset($_GET['method'])){
 
     if (method_exists($iom,$method)){
         $_POST['user_session_id'] = $_SESSION['user']['id'];
+        $_POST['user_session_fullname'] = $_SESSION['user']['fullname'];
         echo json_encode($iom->$method($_POST));
     }else{
         echo json_encode(Array('error'=>'[ERROR]: Method {'.$method.'} not Found!'));

@@ -69,8 +69,8 @@ class Iom
                     $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
                     break;
             }
-            $time_array = explode('|',$value['latest_action']);
-            $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
+//            $time_array = explode('|',$value['latest_action']);
+//            $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
         }
 
         return $query_results;
@@ -103,9 +103,33 @@ class Iom
         return $query_results;
     }
 
+    function sendMessage($msg,$title,$user_id,$delay){
+
+        $query = "Insert Into messages (msg,title,employee_id,delay) Values('".$msg."','".$title."',".$user_id.",".$delay.")";
+
+        return $this->sendQuery($query);
+
+    }
+
+    function sendToSigners($iom_id,$type,$user_name){
+
+        $query = "Select em.fullname,sc.employee_id From sign_chain as sc" .
+            " Left Join employee as em on sc.employee_id=em.id" .
+            " Where sc.iom_id=".$iom_id;
+
+        $res = $this->sendQuery($query);
+
+        if ($res){
+            foreach ($res as $value){
+                $this->sendMessage('Application #'.$iom_id.' has been '.$type.' by user '.$user_name,$type,$value['employee_id'],5000);
+            }
+        }
+
+    }
+
     public function getMessages($params){
 
-        $query = "Select id,msg From messages Where status=0 and (employee_id=".$params['user_session_id']. " or employee_id=0)";
+        $query = "Select id,msg,title,delay From messages Where status=0 and employee_id=".$params['user_session_id'];
 
         $query_results= $this->sendQuery($query);
 
@@ -116,7 +140,6 @@ class Iom
         }
 
         return $query_results;
-
     }
 
     public function getBudgets(){
@@ -164,7 +187,33 @@ class Iom
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
         else {
-            return Array('type'=>'success','user_id'=>$last_id,'query'=>$query);
+            return Array('type'=>'success','user_id'=>$last_id);
+        }
+    }
+
+    public function updateEmployee($params){
+        $passstring = "";
+        if($params['password']!==""){
+            $password = md5($this->FISH . md5(trim($params['password'])));
+            $passstring="',password='".$password;
+        }else $passstring="";
+
+        $query = "UPDATE employee SET fullname='".$params['fullname'].
+            "',position='".$params['position'].
+            "',role_id=".$params['role'].
+            ",department_id=".$params['department'].
+            ",username='".$params['username'].
+            $passstring.
+            "',email='".$params['email'].
+            "' WHERE id=".$params['id'].";";
+
+        $res = mysqli_query(GetMyConnection(), $query);
+
+        if (!$res) {
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','id'=>$params['id']);
         }
     }
 
@@ -207,32 +256,6 @@ class Iom
         }
     }
 
-    public function updateEmployee($params){
-        $passstring = "";
-        if($params['password']!==""){
-            $password = md5($this->FISH . md5(trim($params['password'])));
-            $passstring="',password='".$password;
-        }else $passstring="";
-
-        $query = "UPDATE employee SET fullname='".$params['fullname'].
-            "',position='".$params['position'].
-            "',role_id=".$params['role'].
-            ",department_id=".$params['department'].
-            ",username='".$params['username'].
-            $passstring.
-            "',email='".$params['email'].
-            "' WHERE id=".$params['id'].";";
-
-        $res = mysqli_query(GetMyConnection(), $query);
-
-        if (!$res) {
-            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
-        }
-        else {
-            return Array('type'=>'success','id'=>$params['id']);
-        }
-    }
-
     public function updateBudget($params){
         $query = "Update budget Set type_id=".$params['budget_type'].",name='".$params['name']."',planed_cost=".$params['planed_cost']." Where id=".$params['id'];
 
@@ -261,6 +284,7 @@ class Iom
             if (!is_null($value)) {
                 foreach ($value as $v) {
                     $query .= "(".$iom_num.",".$v.",'in progress'),";
+                    $this->sendMessage('Application #'.$iom_num.' Created!',$params['purchase_text'],$v,3000);
                 }
             }
         }
@@ -298,6 +322,9 @@ class Iom
 
             if ($res) {
                 $this->checkIom($params['id']);
+
+                $this->sendToSigners($params['id'],$type,$params['user_session_fullname']);
+
                 return Array('type' => 'success', 'id' => $params['id']);
             } else {
                 return Array('type' => 'error', 'error_msg' => mysqli_error(GetMyConnection()));
@@ -336,10 +363,10 @@ class Iom
     }
 
     public function getBudgetsGraph(){
-        $query = "Select ib.cost,i.time_stamp, b.name From iom_budgets as ib ".
-                    "Left Join budget as b on b.id=ib.budget_id ".
-                    "Left Join budget_type as bt on bt.id=b.type_id ".
-                    "Left Join iom as i on i.id=ib.iom_id ";
+        $query = "Select ib.cost,i.time_stamp, b.name From iom_budgets as ib".
+                    " Left Join budget as b on b.id=ib.budget_id".
+                    " Left Join budget_type as bt on bt.id=b.type_id".
+                    " Left Join iom as i on i.id=ib.iom_id";
 
         $results = $this->sendQuery($query);
 
@@ -356,6 +383,32 @@ class Iom
         }
 
         return $result_array;
+    }
+
+    public function getDashboardData($params){
+
+        $return_array = Array();
+
+        $query = "Select count(id) as msg_count From messages Where employee_id=".$params['user_session_id']." and status=0";
+
+        $results = $this->sendQuery($query);
+
+        $msg_count= $results[0]['msg_count'];
+
+        $query = "Select count(id) as app_count From sign_chain Where status='in progress' and employee_id=".$params['user_session_id'];
+
+        $results = $this->sendQuery($query);
+
+        $app_count = $results[0]['app_count'];
+
+        $results = $this->getMessages($params);
+
+        $return_array['msg_count'] = $msg_count;
+        $return_array['app_count'] = $app_count;
+        $return_array['messages'] = $results;
+
+        return $return_array;
+
     }
 
     function checkIom($iom_id){
