@@ -13,6 +13,10 @@ class Iom
 
     var $FISH = 'JHENEK';
 
+    var $mail_host = 'mail.nic.ru';
+    var $mail_username = 'postmaster@oopsmelodic.ru';
+    var $mail_pwd = 'qwe12345678';
+
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
@@ -113,7 +117,7 @@ class Iom
 
     function sendToSigners($iom_id,$type,$user_name){
 
-        $query = "Select em.fullname,sc.employee_id From sign_chain as sc" .
+        $query = "Select em.fullname,sc.employee_id,em.email From sign_chain as sc" .
             " Left Join employee as em on sc.employee_id=em.id" .
             " Where sc.iom_id=".$iom_id;
 
@@ -122,6 +126,7 @@ class Iom
         if ($res){
             foreach ($res as $value){
                 $this->sendMessage('Application #'.$iom_id.' has been '.$type.' by user '.$user_name,$type,$value['employee_id'],5000);
+                $this->sendMail($value['email'],$type.' application #'.$iom_id,'Application #'.$iom_id.' has been '.$type.' by user '.$user_name.' <p><a href="'.$_SERVER['HTTP_HOST'].'/show/'.$iom_id.'">Go to Application</a></p>');
             }
         }
 
@@ -459,6 +464,32 @@ class Iom
 //        return $results;
     }
 
+    function sendMail($to,$subj,$msg){
+        require_once 'PHPMailer-master/PHPMailerAutoload.php';
+
+        $mail = new PHPMailer;
+        $mail->isSMTP();
+        $mail->SMTPDebug = 0;
+        $mail->Debugoutput = 'html';
+        $mail->Host = $this->mail_host;
+        $mail->Port = 587;
+        $mail->SMTPSecure = 'tls';
+        $mail->SMTPAuth = true;
+        $mail->Username = $this->mail_username;
+        $mail->Password = $this->mail_pwd;
+        $mail->setFrom($this->mail_username, 'Test Sender oOpsMelodicHost');
+//        $mail->addReplyTo('replyto@example.com', 'First Last');
+        $mail->addAddress($to, 'John Doe');
+        $mail->Subject = $subj;
+        $mail->msgHTML($msg);
+//        $mail->AltBody = 'This is a plain-text message body';
+//        $mail->addAttachment('images/phpmailer_mini.png');
+        if (!$mail->send()) {
+            return "Mailer Error: " . $mail->ErrorInfo;
+        } else {
+            return "Message sent!";
+        }
+    }
 
     function sendQuery($query){
         $result = mysqli_query(GetMyConnection(),$query);
@@ -515,5 +546,6 @@ class Iom
         }
         return $str;
     }
+
 
 }
