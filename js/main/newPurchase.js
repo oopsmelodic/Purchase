@@ -10,12 +10,6 @@ var footerTemplate = '<div class="file-thumbnail-footer">\n' +
         '   {actions}\n' +
         '</div>';
 $(function () {
-    var footerTemplate = '<div class="file-thumbnail-footer">\n' +
-            '   <div style="margin:5px 0">\n' +
-            '       <input name="input_comment" class="kv-input form-control input-sm" value="{caption}" placeholder="Enter caption...">\n' +
-            '   </div>\n' +
-            '   {actions}\n' +
-            '</div>';
 
     $("#input-1").fileinput({
         uploadUrl: "/php/upload.php", // server upload action
