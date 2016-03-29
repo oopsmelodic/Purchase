@@ -101,3 +101,19 @@
     opacity: .7;
     cursor: pointer;
 }
+/*.fixed{*/
+    /*top: 52px;*/
+    /*background-color: #fff;*/
+    /*position:fixed;*/
+    /*width:auto;*/
+    /*display:table;*/
+    /*border:none;*/
+/*}*/
+/*.container-fixed{*/
+    /*position: relative;*/
+    /*width: 100%;*/
+/*}*/
+/*table{*/
+    /*border-collapse:collapse;*/
+    /*width:100%;*/
+/*}*/

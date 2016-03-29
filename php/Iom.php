@@ -291,7 +291,7 @@ class Iom
             if (!is_null($value)) {
                 foreach ($value as $v) {
                     $query .= "(".$iom_num.",".$v.",'in progress'),";
-                    $this->sendMessage('Application #'.$iom_num.' Created!',$params['purchase_text'],$v,3000);
+                    $this->sendMessage('Application #'.$iom_num.' Created!',$params['purchase_text'],$v,10000);
                 }
             }
         }
