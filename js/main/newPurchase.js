@@ -3,19 +3,41 @@
  */
 
 //var last_iom_id = 0;
-
+var footerTemplate = '<div class="file-thumbnail-footer">\n' +
+        '   <div style="margin:5px 0">\n' +
+        '       <input name="input_comment" class="kv-input form-control input-sm" value="{caption}" placeholder="Enter caption...">\n' +
+        '   </div>\n' +
+        '   {actions}\n' +
+        '</div>';
 $(function () {
-    $('#summernote').summernote();
+    var footerTemplate = '<div class="file-thumbnail-footer">\n' +
+            '   <div style="margin:5px 0">\n' +
+            '       <input name="input_comment" class="kv-input form-control input-sm" value="{caption}" placeholder="Enter caption...">\n' +
+            '   </div>\n' +
+            '   {actions}\n' +
+            '</div>';
 
+    $("#input-1").fileinput({
+        uploadUrl: "/php/upload.php", // server upload action
+        uploadAsync: true,
+        maxFileCount: 5,
+        showUpload: false,
+        layoutTemplates: {footer: footerTemplate}
+    });
+
+    $('.file-preview-frame').each(function () {
+        var i = $el.data("fileindex");
+        out["input_comment" + i] = $("input[name='input_comment']", $el).val();
+        alert($("input[name='input_comment']", $el).val());
+    });
+    $('#summernote').summernote();
     $('.selectpicker').selectpicker({
         //noneSelectedText: ''
         //dropupAuto:false
     });
-
     $('select.chain_unit').on('changed.bs.select', function (e) {
         $(e.target).selectpicker('toggle');
     });
-
     //titles = {'id-0': 'file-name-1', 'id-1': 'file-name-2'};
 
     $('#budget_select').selectpicker().on('changed.bs.select', function (item, index) {
@@ -34,10 +56,11 @@ $(function () {
             if (cur_select != null) {
                 cur_select.forEach(function (item, i, arr) {
                     var data_content = $(selectedOptions[i]).attr('data-content');
+                    var max = $(selectedOptions[i]).attr('planed_cost');
                     var input = $('#budget_inputs').find('#bi_' + item).get(0);
                     if ($(input).size() == 0) {
                         $('#budget_inputs').append('<div id="bi_' + item + '" class="form-group"><span class="col-lg-6">' + data_content + '</span>' +
-                                '<input budget_id="' + item + '" class="form-control" type="number" min="0" data-minlength="1" placeholder="Cost size..." required/>' +
+                                '<input budget_id="' + item + '" class="form-control" type="number" min="0" max="' + max + '" data-minlength="1" placeholder="Cost size..." required/>' +
                                 '<span class="glyphicon form-control-feedback" aria-hidden="true"></span><span class="help-block with-errors"></span></div>');
                         //$('#budget_inputs').validator();
                         $('#budget_inputs').validator("validate");
@@ -50,7 +73,6 @@ $(function () {
             $('#expense').attr('required', '');
             $('#purchase_form').validator('validate');
             $('#budget_inputs').html('');
-
         }
     });
 
@@ -106,7 +128,6 @@ $(function () {
                                 //console.log(data);
                             });
                             var str = $('.file-caption').text();
-
                             var files = $('#input-1').val();
                             if (files != "") {
                                 $('#input-1').fileinput('upload');
@@ -124,6 +145,4 @@ $(function () {
             });
         }
     });
-
-
 });
