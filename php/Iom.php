@@ -17,6 +17,8 @@ class Iom
     var $mail_username = 'postmaster@oopsmelodic.ru';
     var $mail_pwd = 'qwe12345678';
 
+
+
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
