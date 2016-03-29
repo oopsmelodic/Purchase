@@ -6,47 +6,45 @@ window.operateEvents = {
     'click .control': function (e, value, row, index) {
         //alert(row['id']);
         var button = $(this).html();
-        if (button !== "Show") {
-            swal({
-                title: "Are you sure?",
-                text: button + " application '" + row['name'] + "'?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-                closeOnConfirm: false,
-                showLoaderOnConfirm: true,
-                closeOnCancel: true
-            }, function (isConfirm) {
-                if (isConfirm) {
-                    $.ajax({
-                        url: '/php/core.php?method=signIom',
-                        type: 'POST',
-                        dataType: 'json',
-                        async: true,
-                        data: {id: row['id'], type: button}
-                    }).success(function (data) {
-                        if (data != null) {
-                            if (data['type'] == 'success') {
-                                $('#testtable').bootstrapTable('refresh');
-                                if (button == 'Cancel') {
-                                    swal("Canceled!", "Application '" + row['name'] + "' has been canceled.", "error");
-                                } else {
-                                    swal("Confirmed!", "Application '" + row['name'] + "' has been confirmed.", "success");
-                                }
+        swal({
+            title: "Are you sure?",
+            text: button + " application '" + row['name'] + "'?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            closeOnConfirm: false,
+            showLoaderOnConfirm: true,
+            closeOnCancel: true
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    url: '/php/core.php?method=signIom',
+                    type: 'POST',
+                    dataType: 'json',
+                    async: true,
+                    data: {id: row['id'], type: button}
+                }).success(function (data) {
+                    if (data != null) {
+                        if (data['type'] == 'success') {
+                            $('#testtable').bootstrapTable('refresh');
+                            if (button == 'Cancel') {
+                                swal("Canceled!", "Application '" + row['name'] + "' has been canceled.", "error");
                             } else {
-                                swal("You can't sign the application form", data['error_msg'], "error");
+                                swal("Confirmed!", "Application '" + row['name'] + "' has been confirmed.", "success");
                             }
                         } else {
-                            swal("Request Error!", data['error_msg'], "error");
+                            swal("You can't sign the application form", data['error_msg'], "error");
                         }
-                    });
-                } else {
-                    //swal("Cancelled", "Your imaginary file is safe :)", "error");
-                }
-            });
-        }
+                    } else {
+                        swal("Request Error!", data['error_msg'], "error");
+                    }
+                });
+            } else {
+                //swal("Cancelled", "Your imaginary file is safe :)", "error");
+            }
+        });
     }
 };
 
@@ -104,7 +102,6 @@ $(document).ready(function () {
                 formatter: function (id, data) {
                     console.log(data.sign_status);
                     var controls = '';
-                    controls = '<div><button class="btn btn-success control" onclick="window.location.href=\'/show/'+data.id+'\'">Show</button></div>';
                     if (data.sign_status == 1) {
                         controls += '<div><button class="btn btn-success control">Confirm</button><button class="btn btn-danger control">Cancel</button></div>';
                     }

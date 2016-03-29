@@ -14,7 +14,7 @@ class Controller_Show extends Controller {
             $data = $this->model->get_iom_data($_SESSION['id'], $id);
 //            print_r($data);
             if ($data['id'] == null) {
-                header('Location:/main');
+                header('Location:/purchase');
             }
             $this->view->generate('show_view.php', 'template_view.php', $data);
         }

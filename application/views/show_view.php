@@ -83,13 +83,15 @@
                                             <div class="form-group">
                                                 <h3 class="col-lg-4"><span class="label label-default"> Purchase name: </span></h3>
                                                 <div class="col-lg-12">
-                                                    <textarea id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required disabled="true"><?php echo $data['name']; ?></textarea>
+                                                    <!--<textarea id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required disabled="true"></textarea>-->
+                                                    <div style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['name'];?></div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <h3 class="col-lg-6"><span class="label label-default"> Substantiation: </span></h3>
                                                 <div class="col-lg-12">
-                                                    <textarea name="summernote" id="summernote" cols="10" rows="10"><?php echo $data['substantation'];?></textarea>
+                                                    <!--<textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>-->
+                                                    <div style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['substantation'];?></div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
