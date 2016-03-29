@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" ng-app="mainApp" ng-controller="myNotify">
     <!-- Page Heading -->
     <!-- /.row -->
     <div class="row" style="margin-top:10px;">

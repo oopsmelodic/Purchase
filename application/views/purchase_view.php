@@ -1,5 +1,5 @@
 
-<div class="container-fluid">
+<div class="container-fluid"  ng-app="mainApp" ng-controller="myNotify">
 
     <!-- Page Heading -->
     <div class="row">
