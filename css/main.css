@@ -117,3 +117,21 @@
     /*border-collapse:collapse;*/
     /*width:100%;*/
 /*}*/
+
+.img-circle {
+    border-radius: 50%;
+}
+.img-user{
+    height: 25px;
+    margin-right: 5px;
+}
+
+.user-alert{
+    width:230px;
+    padding-left: 3px;
+    /*border-bottom: 1px solid #c1c1c1;*/
+    cursor: pointer;
+}
+.user-alert:hover{
+
+}

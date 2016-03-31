@@ -24,22 +24,33 @@ $(function (){
         if (data!=null){
             $('#test_chart').highcharts({
                 chart: {
-                    zoomType:'xy'
+                    zoomType:'xy',
+                    backgroundColor: 'transparent',
                 },
                 title: {
                     text: 'Budgets Graph Example',
+                    style: {"color": "#fff"},
                     x: -20 //center
+
                 },
                 subtitle: {
                     text: 'Just For test',
+                    style: {"color": "#fff"},
                     x: -20
                 },
                 xAxis: {
-                    categories: data['categories']
+                    categories: data['categories'],
+                    labels:{
+                        style: {'color':'#fff'}
+                    }
                 },
                 yAxis: {
+                    labels:{
+                        style: {'color':'#fff'}
+                    },
                     title: {
-                        text: 'Cost'
+                        text: 'Cost',
+                        style: {'color':'#fff'}
                     },
                     plotLines: [{
                         value: 0,
@@ -51,7 +62,8 @@ $(function (){
                     layout: 'vertical',
                     align: 'right',
                     verticalAlign: 'middle',
-                    borderWidth: 0
+                    borderWidth: 0,
+                    style: {'color':'#fff'}
                 },
                 series: data['series']
             });

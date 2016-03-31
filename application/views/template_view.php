@@ -31,7 +31,7 @@
     <!--[if lt IE 9]>
     <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
     <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
-    <![endif]-->
+<!--    <![endif]-->-->
 
     <!-- jQuery -->
 <!--    <script src="/js/jquery.js"></script>-->
@@ -52,6 +52,7 @@
     <script src="/bower_components/angular-help-overlay-master/src/angular-help-overlay.js" type="text/javascript"></script>
     <script src="/bower_components/angular-notification-master/angular-notification.min.js" type="text/javascript"></script>
     <script src="/bower_components/Smart-Table-master/dist/smart-table.min.js" type="text/javascript"></script>
+    <script src="/js/ui-bootstrap-tpls-1.2.5.js" type="text/javascript"></script>
 
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
@@ -62,7 +63,7 @@
 </head>
 
 <body>
-<div id="wrapper">
+<div id="wrapper" ng-app="mainApp" ng-controller="myNotify">
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -78,16 +79,19 @@
         </div>
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
+            <li>
+                <a href="#" popover-placement="bottom" popover-trigger="click" uib-popover-html="htmlPopover" popover-title="Last Alerts"><i class="fa fa-fw fa-bell"></i> </a>
+            </li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $_SESSION['user']['fullname']; ?> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/img/default-user-image.png" class="img-circle img-user"> <?php echo $_SESSION['user']['fullname']; ?> <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li>
                         <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
                     </li>
-                    <li>
+                    <li class="disabled">
                         <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
                     </li>
-                    <li>
+                    <li  class="disabled">
                         <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
                     </li>
                     <li class="divider"></li>

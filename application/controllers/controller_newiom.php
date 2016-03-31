@@ -30,7 +30,7 @@ class Controller_Newiom extends Controller
             }
 //            $data['budgets'] = $flip_budgets;
             $data['roles'] = $flip_roles;
-            $this->view->generate('newiom_view.php', 'template_view.php', $data);
+            $this->view->generate('', 'newiom_view.php', $data);
         }
     }
 }

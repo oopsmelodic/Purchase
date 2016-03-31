@@ -13,6 +13,8 @@ class Iom
 
     var $FISH = 'JHENEK';
 
+//MAIL_SETTINGS
+
     var $mail_host = 'mail.nic.ru';
     var $mail_username = 'postmaster@oopsmelodic.ru';
     var $mail_pwd = 'qwe12345678';
@@ -136,17 +138,34 @@ class Iom
 
     public function getMessages($params){
 
-        $query = "Select id,msg,title,delay From messages Where status=0 and employee_id=".$params['user_session_id'];
+        $query = "Select id,msg,title,delay From messages Where noty_status=0 and employee_id=".$params['user_session_id'];
 
         $query_results= $this->sendQuery($query);
 
         if ($query_results!=null){
             foreach ($query_results as $value){
-                $this->sendQuery("Update messages Set status=1 Where id=".$value['id']);
+                $this->sendQuery("Update messages Set noty_status=1 Where id=".$value['id']);
             }
         }
 
         return $query_results;
+    }
+
+    public function getLastFiveMessages($params){
+        $query = "Select id,msg,title,delay From messages Where employee_id=".$params['user_session_id']." Order By id DESC LIMIT 5";
+
+        $results_query = $this->sendQuery($query);
+
+        $out_mass = '';
+
+        if ($results_query){
+            if (count($results_query)>0){
+                foreach ($results_query as $value){
+                    $out_mass.= '<div class="user-alert"><span class="label label-primary">'.$value['title'].'</span> '.$value['msg'].'</div><br>';
+                }
+            }
+        }
+        return $out_mass;
     }
 
     public function getBudgets(){
@@ -396,7 +415,7 @@ class Iom
 
         $return_array = Array();
 
-        $query = "Select count(id) as msg_count From messages Where employee_id=".$params['user_session_id']." and status=0";
+        $query = "Select count(id) as msg_count From messages Where employee_id=".$params['user_session_id']." and noty_status=0";
 
         $results = $this->sendQuery($query);
 
@@ -408,11 +427,10 @@ class Iom
 
         $app_count = $results[0]['app_count'];
 
-        $results = $this->getMessages($params);
-
         $return_array['msg_count'] = $msg_count;
         $return_array['app_count'] = $app_count;
-        $return_array['messages'] = $results;
+        $return_array['messages'] = $this->getMessages($params);
+        $return_array['last_msg'] = $this->getLastFiveMessages($params);
 
         return $return_array;
 

@@ -2,9 +2,8 @@
  * Created by melodic on 17.03.2016.
  */
 
-var app = angular.module('mainApp', ['notification','smart-table']);
-app.controller('myNotify', function($scope, $http, $interval,$notification) {
-
+var app = angular.module('mainApp', ['notification','smart-table','ui.bootstrap']);
+app.controller('myNotify', function($scope, $http, $interval,$notification,$sce) {
     function getData(){
         $http({
             method : "POST",
@@ -16,7 +15,8 @@ app.controller('myNotify', function($scope, $http, $interval,$notification) {
             $scope.app_count=data['app_count'];
             $scope.msg_count=data['msg_count'];
             var messages = data.messages;
-            //console.log(data);
+            console.log(data);
+            $scope.htmlPopover = $sce.trustAsHtml(data['last_msg']);
             if (Array.isArray(messages)){
                 for (var i= 0,len = messages.length; i<len;i++){
                     $notification(messages[i]['title'], {

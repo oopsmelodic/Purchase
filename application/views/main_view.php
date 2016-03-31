@@ -1,5 +1,5 @@
-<div ng-app="mainApp">
-    <div class="container-fluid" ng-controller="myNotify">
+<div>
+    <div class="container-fluid">
 
         <!-- Page Heading -->
         <div class="row shadow-block">

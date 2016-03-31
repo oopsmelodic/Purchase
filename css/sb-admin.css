@@ -68,7 +68,9 @@ body {
     color: #fff;
     background-color: #000;
 }
-
+.top-nav>li>a>i{
+    font-size: 25px;
+}
 .top-nav>.open>.dropdown-menu {
     float: left;
     position: absolute;
