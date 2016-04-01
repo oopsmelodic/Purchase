@@ -44,14 +44,49 @@
                                         <table id="files"></table>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <h3 class="col-lg-4"><span class="label label-default"> Comments: </span></h3>
+                                    <div class="col-lg-12">
+                                        <div class='comments' ng-controller='CommentsCtrl'>
+                                            <form>
+                                                <fieldset>
+                                                    <legend>
+                                                        Your comment
+                                                    </legend>
+                                                    <div>
+                                                        <label>
+                                                            Comment:
+                                                            <textarea ng-model='text'></textarea>
+                                                        </label>
+                                                    </div>
+                                                    <div>
+                                                        <input class='button' ng-click='submit()' type='submit' value='Submit'>
+                                                    </div>
+                                                </fieldset>
+                                            </form>
+                                            <h3>
+                                                {{comments.length}} Comments
+                                            </h3>
+                                            <ul>
+                                                <li ng-repeat='comment in comments'>
+                                                    <div class='comment approved'>
+                                                        <h4>
+                                                            {{comment.text}}
+                                                        </h4>
+                                                        <div>
+                                                            {{comment.time_stamp}}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                         </fieldset>
                     </form>
                 </div>
-            </div>
-            <div id="menu2" class="tab-pane fade">
-
             </div>
         </div>
     </div>

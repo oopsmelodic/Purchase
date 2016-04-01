@@ -34,6 +34,48 @@ app.controller('myNotify', function($scope, $http, $interval,$notification,$sce)
 });
 
 
+app.controller('CommentsCtrl', function ($scope,$http,$interval) {
+
+    function getComments() {
+        $http({
+            method: "POST",
+            url: "/php/core.php?method=getComments",
+            data: 'iom_id=' + $('#iom_id').attr('iom_id'),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;'
+            }
+        }).then(function mySuccess(response) {
+            var data = response.data;
+            console.log(response);
+            $scope.comments = data;
+            $scope.submit = function () {
+                $http({
+                    method: "POST",
+                    url: "/php/core.php?method=newComment",
+                    data: 'iom_id=' + $('#iom_id').attr('iom_id') + '&text=' + $scope.text,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;'
+                    }
+                }).then(function mySuccess(response) {
+                    getComments();
+                }, function myError(response) {
+                    $scope.myWelcome = response.statusText;
+                });
+                $scope.text = '';
+                //return $scope.text = '';
+            };
+            $scope.approve = function (comment) {
+                return comment.approved = true;
+            };
+            return $scope.drop = function (comment) {
+                return $scope.comments.splice($scope.comments.indexOf(comment), 1);
+            };
+        }, function myError(response) {
+            $scope.myWelcome = response.statusText;
+        });
+    }
+    $interval(getComments,5000);
+});
 
 
 //TABLE EXAMPLE

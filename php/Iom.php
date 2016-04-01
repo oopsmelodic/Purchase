@@ -136,6 +136,21 @@ class Iom
 
     }
 
+    public function getComments($params){
+        $query = "Select id,text,time_stamp From comments Where iom_id=".$params['iom_id'];
+
+        $results = $this->sendQuery($query);
+        return $results;
+    }
+
+    public function newComment($params){
+        $query = "Insert Into comments (employee_id,iom_id,text) Values(".$params['user_session_id'].",".$params['iom_id'].",'".$params['text']."')";
+
+        $results = $this->sendQuery($query);
+
+        return $query;
+    }
+
     public function getMessages($params){
 
         $query = "Select id,msg,title,delay From messages Where noty_status=0 and employee_id=".$params['user_session_id'];
