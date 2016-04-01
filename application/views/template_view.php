@@ -50,11 +50,14 @@
     <script src="/js/sortable.min.js" type="text/javascript"></script>
     //Angular Part
     <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
+    <script src="/bower_components/angular-resource/angular-resource.min.js" type="text/javascript"></script>
+    <script src="/bower_components/angular-route/angular-route.min.js" type="text/javascript"></script>
     <script src="/bower_components/angular-help-overlay-master/src/angular-help-overlay.js" type="text/javascript"></script>
     <script src="/bower_components/angular-notification-master/angular-notification.min.js" type="text/javascript"></script>
     <script src="/bower_components/Smart-Table-master/dist/smart-table.min.js" type="text/javascript"></script>
     <script src="/js/ui-bootstrap-tpls-1.2.5.js" type="text/javascript"></script>
     <script src="/bower_components/ng-table-master/dist/ng-table.min.js" type="text/javascript"></script>
+
 
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
