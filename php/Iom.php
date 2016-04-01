@@ -151,8 +151,8 @@ class Iom
         return $query_results;
     }
 
-    public function getLastFiveMessages($params){
-        $query = "Select id,msg,title,delay From messages Where employee_id=".$params['user_session_id']." Order By id DESC LIMIT 5";
+    public function getLastMessages($params){
+        $query = "Select id,msg,title,delay,time_stamp From messages Where employee_id=".$params['user_session_id']." Order By id DESC LIMIT 5";
 
         $results_query = $this->sendQuery($query);
 
@@ -161,7 +161,7 @@ class Iom
         if ($results_query){
             if (count($results_query)>0){
                 foreach ($results_query as $value){
-                    $out_mass.= '<div class="user-alert"><span class="label label-primary">'.$value['title'].'</span> '.$value['msg'].'</div><br>';
+                    $out_mass.= '<div class="user-alert"><span class="label label-primary">'.$value['title'].'</span> '.$value['msg'].'<br><small>'.$this->time_elapsed_string($value['time_stamp']).'</small></div><dp/><br>';
                 }
             }
         }
@@ -430,7 +430,7 @@ class Iom
         $return_array['msg_count'] = $msg_count;
         $return_array['app_count'] = $app_count;
         $return_array['messages'] = $this->getMessages($params);
-        $return_array['last_msg'] = $this->getLastFiveMessages($params);
+        $return_array['last_msg'] = $this->getLastMessages($params);
 
         return $return_array;
 

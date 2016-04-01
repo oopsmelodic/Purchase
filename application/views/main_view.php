@@ -64,6 +64,7 @@
 
         </div>
     </div>
+
 <!--    <div ng-controller="safeCtrl">-->
 <!---->
 <!--        <button type="button" ng-click="addRandomItem(row)" class="btn btn-sm btn-success">-->

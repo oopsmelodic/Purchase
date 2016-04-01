@@ -25,6 +25,7 @@
     <link href="/bower_components/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="/bower_components/bootstrap-table-master/bootstrap-table.min.css" rel="stylesheet" type="text/css">
     <link href="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.css" rel="stylesheet" type="text/css">
+    <link href="/bower_components/ng-table-master/dist/ng-table.min.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -53,6 +54,7 @@
     <script src="/bower_components/angular-notification-master/angular-notification.min.js" type="text/javascript"></script>
     <script src="/bower_components/Smart-Table-master/dist/smart-table.min.js" type="text/javascript"></script>
     <script src="/js/ui-bootstrap-tpls-1.2.5.js" type="text/javascript"></script>
+    <script src="/bower_components/ng-table-master/dist/ng-table.min.js" type="text/javascript"></script>
 
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
@@ -80,7 +82,7 @@
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
             <li>
-                <a href="#" popover-placement="bottom" popover-trigger="click" uib-popover-html="htmlPopover" popover-title="Last Alerts"><i class="fa fa-fw fa-bell"></i> </a>
+                <a href="#" popover-placement="bottom" popover-trigger="focus" uib-popover-html="htmlPopover" popover-title="Last Alerts"><i class="fa fa-fw fa-bell"></i> </a>
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/img/default-user-image.png" class="img-circle img-user"> <?php echo $_SESSION['user']['fullname']; ?> <b class="caret"></b></a>

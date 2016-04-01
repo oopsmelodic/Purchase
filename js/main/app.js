@@ -15,7 +15,7 @@ app.controller('myNotify', function($scope, $http, $interval,$notification,$sce)
             $scope.app_count=data['app_count'];
             $scope.msg_count=data['msg_count'];
             var messages = data.messages;
-            console.log(data);
+            //console.log(data);
             $scope.htmlPopover = $sce.trustAsHtml(data['last_msg']);
             if (Array.isArray(messages)){
                 for (var i= 0,len = messages.length; i<len;i++){
@@ -33,6 +33,10 @@ app.controller('myNotify', function($scope, $http, $interval,$notification,$sce)
     $interval(getData,5000);
 });
 
+
+
+
+//TABLE EXAMPLE
 //app.controller('safeCtrl', ['$scope', function ($scope) {
 //
 //    var firstnames = ['Laurent', 'Blandine', 'Olivier', 'Max'];

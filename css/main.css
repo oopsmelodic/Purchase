@@ -132,6 +132,17 @@
     /*border-bottom: 1px solid #c1c1c1;*/
     cursor: pointer;
 }
-.user-alert:hover{
+.user-alert small{
+    position: absolute;
+    right: 20px;
+    color: #9C9C9C;
+}
 
+/*comment block*/
+
+.comment {
+    opacity: 0.5;
+}
+.comment.approved {
+    opacity: 1;
 }
