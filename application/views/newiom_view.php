@@ -192,15 +192,25 @@
 
 <script src="/js/main/newPurchase.js" type="text/javascript"></script>
 <script>
-    
-    
+
+
     $("#input-1").fileinput({
         uploadUrl: "/php/upload.php", // server upload action
         uploadAsync: true,
         maxFileCount: 5,
         showUpload: false,
-        layoutTemplates: {footer: footerTemplate}
+        layoutTemplates: {footer: footerTemplate},
+        uploadExtraData: function () {  // callback example
+            var out = {}, key, i = 0;
+            $('.kv-input:visible').each(function () {
+                $el = $(this);
+                key = 'new_' + i;
+                out[key] = $el.val();
+                i++;
+            });
+            return out;
+        }
     });
-    
-    
+
+
 </script>

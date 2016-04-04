@@ -2,7 +2,7 @@ $(document).ready(function () {
     var iom_id = $('#iom_id').attr('iom_id');
     $('#summernote').summernote({
         shortcuts: false,
-        height:150
+        height: 150
 
     });
     $('#summernote').summernote('disable');
@@ -63,11 +63,15 @@ $(document).ready(function () {
         queryParams: function (p) {
             return {
                 "iom_id": iom_id
-            }
+            };
         },
-        columns: [{
+        columns: [
+            {
+                field: 'title',
+                title: 'Title:'},
+            {
                 field: 'filename',
-                title: 'Name:'
+                title: 'File name:'
                         //sortable:true
             }]
     });

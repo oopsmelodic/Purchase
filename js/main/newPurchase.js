@@ -5,19 +5,13 @@
 //var last_iom_id = 0;
 var footerTemplate = '<div class="file-thumbnail-footer">\n' +
         '   <div style="margin:5px 0">\n' +
-        '       <input name="input_comment" class="kv-input form-control input-sm" value="{caption}" placeholder="Enter caption...">\n' +
+        '       <input name="input_comment" class="kv-input form-control input-sm kv-new" value="{caption}" placeholder="Enter caption...">\n' +
         '   </div>\n' +
         '   {actions}\n' +
         '</div>';
 $(function () {
 
-    $("#input-1").fileinput({
-        uploadUrl: "/php/upload.php", // server upload action
-        uploadAsync: true,
-        maxFileCount: 5,
-        showUpload: false,
-        layoutTemplates: {footer: footerTemplate}
-    });
+
 
     $('.file-preview-frame').each(function () {
         var i = $el.data("fileindex");
@@ -115,6 +109,8 @@ $(function () {
                         if (data != null) {
                             $('#input-1').on('filepreupload', function (event, dataz, previewId, index, jqXHR) {
                                 dataz.form.append("iom_id", data['id']);
+                                console.log(data);
+                                
                             });
                             $('#input-1').on('fileuploaded', function (event, dataz, previewId, index, jqXHR) {
                                 swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
