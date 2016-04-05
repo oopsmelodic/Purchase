@@ -233,12 +233,28 @@
 
 <script src="/js/main/newPurchase.js" type="text/javascript"></script>
 <script>
-
+    var footerTemplate = '<div class="file-thumbnail-footer">\n' +
+        '   <div style="margin:5px 0">\n' +
+        '       <input name="input_comment" class="kv-input form-control input-sm kv-new" value="{caption}" placeholder="Enter caption...">\n' +
+        '   </div>\n' +
+        '   {actions}\n' +
+        '</div>';
     $("#input-1").fileinput({
         uploadUrl: "/php/upload.php", // server upload action
         uploadAsync: true,
         maxFileCount: 5,
-        showUpload:false
+        showUpload:false,
+        layoutTemplates: {footer: footerTemplate},
+        uploadExtraData: function () {  // callback example
+            var out = {}, key, i = 0;
+            $('.kv-input:visible').each(function () {
+                $el = $(this);
+                key = 'new_' + i;
+                out[key] = $el.val();
+                i++;
+            });
+            return out;
+        }
     });
 
 </script>

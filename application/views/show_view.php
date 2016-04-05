@@ -15,8 +15,10 @@
                                 <div class="col-lg-12 form-group">
                                     <div class="col-lg-6">
                                         <h4 class="col-lg-6"><span class="label label-default">Budgets:</span></h4>
-                                        <table id="budgets"></table>
-
+                                        //CHANGES
+                                        <table id="budgets"></table><br>
+                                        <h4 class="col-lg-4"><span class="label label-default">Expense size:</span></h4>
+                                        <div class="col-lg-8" align="center" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 5px;"><?php echo ($data['costsize']!=="0")? $data['costsize']:"-"; ?></div>
                                     </div>
                                     <div class="col-lg-6">
                                         <h4 class="col-lg-6"><span class="label label-default">Signers:</span></h4>

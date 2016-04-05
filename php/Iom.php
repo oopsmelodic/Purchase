@@ -58,7 +58,7 @@ class Iom
     }
 
     public function getIomSigners($params){
-        $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status".
+        $query= "SELECT sc.id,em.fullname,fs.title,sc.time_stamp,sc.status".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
             " Where sc.iom_id=".$params['iom_id'];
@@ -95,7 +95,7 @@ class Iom
     }
 
     public function getIomFiles($params){
-        $query= " Select fs.filename, fs.filepath  From files as fs".
+        $query= " Select fs.filename,fs.title, fs.filepath  From files as fs".
             " Where fs.iom_id=".$params['iom_id'];
 
         $query_results = $this->sendQuery($query);
@@ -316,7 +316,7 @@ class Iom
         $budgets = json_decode($params['budgets'],true);
         $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
             . "VALUES (" . $params["employee_id"] . ",'"
-            . $params["purchase_text"]. "',0,0,0,'".$params["substantiation_text"]."')";
+            . $params["purchase_text"]. "',0," . $params["expense_size"] . ",0,'".$params["substantiation_text"]."')";
         $result = $this->sendQuery($query);
 
         $iom_num = mysqli_insert_id(GetMyConnection());
@@ -331,14 +331,14 @@ class Iom
         }
 
         $res = $this->sendQuery(trim($query,','));
+        if (count($budgets) != 0) {
+            $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
+            foreach ($budgets as $key => $value) {
+                $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
+            }
 
-        $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
-        foreach($budgets as $key=>$value){
-                    $query .= "(".$iom_num.",".$value['id'].",".$value['value']."),";
+            $res = $this->sendQuery(trim($query, ','));
         }
-
-        $res = $this->sendQuery(trim($query,','));
-
         if ($result){
             return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
         }else{
@@ -375,9 +375,9 @@ class Iom
         }
     }
 
-    public function appendFileToIom($iom_id,$filename,$file_path){
+    public function appendFileToIom($iom_id,$file_title,$filename,$file_path){
 
-        $query = "Insert Into files (iom_id,filename,filepath) Values(".$iom_id.",'".$filename."','".$file_path."')";
+        $query = "Insert Into files (iom_id,title,filename,filepath) Values(".$iom_id.",'" . $file_title . "','".$filename."','".$file_path."')";
 
         $this->sendQuery($query);
     }

@@ -72,6 +72,10 @@ $(document).ready(function () {
             field: 'filename',
             title: 'Name:'
             //sortable:true
+        },{
+            field: 'title',
+            title: 'Title:'
+            //sortable:true
         }]
     });
 });
