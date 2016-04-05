@@ -58,10 +58,11 @@ class Iom
     }
 
     public function getIomSigners($params){
-        $query= "SELECT sc.id,em.fullname,fs.title,sc.time_stamp,sc.status".
+        $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
             " Where sc.iom_id=".$params['iom_id'];
+
 
         $query_results = $this->sendQuery($query);
 
