@@ -22,6 +22,7 @@ $file_title = $_POST['new_' . $file_id];
 $success = null;
 $paths = Array();
 $filenames = $files['name'];
+$type=  end(explode(".", $filenames));
 if ($file_title === '') {
     $file_title = $filenames;
 }
@@ -30,7 +31,7 @@ $target = $_SERVER['DOCUMENT_ROOT'] . "/uploads" . DIRECTORY_SEPARATOR . $_POST[
 if (move_uploaded_file($files['tmp_name'], $target)) {
     $success = true;
     $paths[] = $target;
-    $iom->appendFileToIom($_POST['iom_id'], $filenames,$file_title, $target);
+    $iom->appendFileToIom($_POST['iom_id'], $filenames,$file_title,$type, $target);
 } else {
     $success = false;
 }

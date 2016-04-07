@@ -95,7 +95,7 @@ class Iom {
     }
 
     public function getIomFiles($params) {
-        $query = " Select fs.filename,fs.title, fs.filepath  From files as fs" .
+        $query = " Select fs.filename,fs.title,fs.type, fs.filepath  From files as fs" .
                 " Where fs.iom_id=" . $params['iom_id'];
 
         $query_results = $this->sendQuery($query);
@@ -299,9 +299,9 @@ class Iom {
         }
     }
 
-    public function appendFileToIom($iom_id, $filename, $file_title, $file_path) {
+    public function appendFileToIom($iom_id, $filename, $file_title , $file_type, $file_path) {
 
-        $query = "Insert Into files (iom_id,filename,title,filepath) Values(" . $iom_id . ",'" . $filename . "','" . $file_title . "','" . $file_path . "')";
+        $query = "Insert Into files (iom_id,filename,title,type,filepath) Values(" . $iom_id . ",'" . $filename . "','" . $file_title . "','". $file_type . "','" . $file_path . "')";
 
         $this->sendQuery($query);
     }

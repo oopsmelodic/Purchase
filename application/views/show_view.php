@@ -96,16 +96,20 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <h3 class="col-lg-6"><span class="label label-default"> Substantiation: </span></h3>
-                                                    <div class="col-lg-12">
-                                                        <!--<textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>-->
-                                                        <div class="iominfo" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['substantation']; ?></div>
+                                                    <div class="col-lg-7">
+                                                        <h3 class="col-lg-6"><span class="label label-default"> Substantiation: </span></h3>
+                                                        <div class="col-lg-12">
+                                                            <!--<textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>-->
+                                                            <div class="iominfo" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['substantation']; ?></div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <h3 class="col-lg-4"><span class="label label-default"> Files: </span></h3>
-                                                    <div class="col-lg-12">
-                                                        <table id="files"></table>
+                                                    <div class="col-lg-5">
+                                                        <h3 class="col-lg-4"><span class="label label-default"> Files: </span></h3>
+                                                        <div class="col-lg-12">
+                                                            <div class="col-lg-12" id="files" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;">
+
+                                                            </div>
+                                                        </div>   
                                                     </div>
                                                 </div>
                                             </div>
