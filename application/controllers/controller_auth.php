@@ -23,11 +23,13 @@ class Controller_Auth extends Controller
                 $data["return"] = $user;
                 if(!is_null($user))
                 {
+                   $settings = $this->model->get_employee_settings($user['id']);
                    $data["login_status"] = "access_granted";
                    session_start(); 
                    $_SESSION['id'] = $user['id'];
                    $_SESSION['user'] = $user;
                    $_SESSION['login_status'] = $data["login_status"];
+                   $_SESSION['settings']=$settings;
                    header('Location:/main');
                     //$this->view->generate('main_view.php', 'template_view.php', $data);
                 }

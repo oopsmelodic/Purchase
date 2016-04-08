@@ -41,4 +41,22 @@ class Model_Profile extends Model{
             print_r(mysqli_error(GetMyConnection()));
         }
     }
+    public function get_employee_settings($employee_id) {
+        include_once './php/conn.php';
+        $query = mysqli_query(GetMyConnection(), "SELECT `id`, `name`, `value` FROM `settings` WHERE `employee_id`=" . $employee_id . ";");
+        if ($query) {
+            if (mysqli_num_rows($query)) {
+                while ($row = mysqli_fetch_assoc($query)) {
+                    $data[$row['name']] = $row['value'];
+                    
+                }
+
+                return $data;
+            } else {
+                //Any auth
+            }
+        } else {
+            print_r(mysqli_error(GetMyConnection()));
+        }
+    }
 }

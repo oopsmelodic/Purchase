@@ -451,5 +451,14 @@ class Iom {
         }
         return $str;
     }
-
+    
+    public function setUserSetting($params) {
+        $settings= json_decode($params['settings']);
+        $_SESSION['settings']=$settings;
+        foreach ($settings as $key => $value) {
+            $query = "UPDATE settings SET value = " . $value . " WHERE employee_id=" . $params['user_session_id'] . " AND name='" . $key . "';";
+            $query_results = $this->sendQuery($query);
+        }
+        return $query_results;
+    }
 }
