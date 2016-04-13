@@ -12,8 +12,8 @@ $('#saveForm').on('submit', function (e) {
         method: 'POST',
         data: {
             "settings": JSON.stringify({
-                "email": $('#email').prop('checked') ? 1 : 0,
-                "stay_login": $('#stay_login').prop('checked') ? 1 : 0
+                "email": $('#email').prop('checked'),
+                "stay_login": $('#stay_login').prop('checked')
             })
         }
     }).success(function () {

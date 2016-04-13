@@ -453,12 +453,19 @@ class Iom {
     }
     
     public function setUserSetting($params) {
-        $settings= json_decode($params['settings']);
-        $_SESSION['settings']=$settings;
-        foreach ($settings as $key => $value) {
-            $query = "UPDATE settings SET value = " . $value . " WHERE employee_id=" . $params['user_session_id'] . " AND name='" . $key . "';";
-            $query_results = $this->sendQuery($query);
+        $settings = (array)json_decode($params['settings']);
+        $query = 'SELECT id, name FROM settings;';
+        $settings_array = $this->sendQuery($query);
+        $new_settings="";
+        for ($i = 0; $i < count($settings_array); $i++) {
+            if ($settings[$settings_array[$i]['name']] === true) {
+                $new_settings .= $settings_array[$i]['id'].",";
+            }
         }
+        $new_settings=substr($new_settings, 0, -1);
+        $query = "UPDATE employee SET settings = '" . $new_settings . "' WHERE id=" . $params['user_session_id'] . ";";
+        $query_results = $this->sendQuery($query);
+        $_SESSION['settings'] = $settings;
         return $query_results;
     }
 }

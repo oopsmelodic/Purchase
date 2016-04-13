@@ -84,14 +84,14 @@
                                             <div class="col-lg-12">
                                                 <h4 class="col-lg-12">
                                                     <div class="checkbox">
-                                                        <label><input type="checkbox" id="email" <?php echo ($data['settings']['email'] == 1 ? "checked" : "") ?>>Email notification</label>
+                                                        <label><input type="checkbox" id="email" <?php echo ($data['settings']['email'] ? "checked" : "") ?>>Email notification</label>
                                                     </div>
                                                 </h4>
                                             </div>
                                             <div class="col-lg-12">
                                                 <h4 class="col-lg-12">
                                                     <div class="checkbox">
-                                                        <label><input type="checkbox" id="stay_login" <?php echo ($data['settings']['stay_login'] == 1 ? "checked" : "") ?>>Stay login</label>
+                                                        <label><input type="checkbox" id="stay_login" <?php echo ($data['settings']['stay_login'] ? "checked" : "") ?>>Stay login</label>
                                                     </div>
                                                 </h4>
                                             </div>

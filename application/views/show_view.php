@@ -88,6 +88,7 @@
 
                                                     </div>
                                                 </div>
+                                                <?php var_dump($_SESSION['settings']);?>
                                                 <div id="pagebreaker" class="form-group">
                                                     <h3 class="col-lg-4"><span class="label label-default"> Purchase name: </span></h3>
                                                     <div class="col-lg-12">
