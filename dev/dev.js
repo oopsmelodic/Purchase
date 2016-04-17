@@ -61,4 +61,8 @@ $(function(){
         $('#myWizard a:first').tab('show')
 
     })
+
+    $(".nav li.disabled a").click(function() {
+        return false;
+    });
 });
