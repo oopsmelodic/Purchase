@@ -1,0 +1,39 @@
+
+
+
+body{
+    background-color: silver;
+}
+
+#myWizard{
+    position: fixed;
+    z-index: 9999;
+    background-color: #fff;
+    width: 33%;
+    top:0;
+    left: 0;
+    height: 100%;
+    overflow: auto;
+    -webkit-box-shadow: 3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+}
+.step-body{
+    margin-bottom: 80px;
+    position: relative;
+}
+.step-footer{
+    position: fixed;
+    background-color: #fff;
+    bottom: 0;
+    width: 30%;
+    margin-bottom: 0;
+    padding-bottom: 20px;
+    padding-top: 5px;
+    border-top: 1px solid #c1c1c1;
+    z-index: 9999;
+}
+.control-block{
+    position: absolute;
+    right: 0;
+}
