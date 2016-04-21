@@ -17,6 +17,13 @@ body{
     -webkit-box-shadow: 3px 0px 5px 0px rgba(50, 50, 50, 0.75);
     -moz-box-shadow:    3px 0px 5px 0px rgba(50, 50, 50, 0.75);
     box-shadow:         3px 0px 5px 0px rgba(50, 50, 50, 0.75);
+    -webkit-transition: .7s all;
+}
+#myWizard.left{
+    margin-left: -34%;
+}
+#myWizard.right{
+    margin-left: 0;
 }
 .step-body{
     margin-bottom: 80px;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="a71d208b-cf90-497d-b96c-8f6f53fd8aff" name="Purchase Project" url="http://ftp.oopsmelodi.nichost.ru">
+        <fileTransfer host="ftp.oopsmelodi.nichost.ru" port="21" password="df98dfc5dfd0dffbdfd0dfe9df87dfda" username="oopsmelodi_ftp">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

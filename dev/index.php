@@ -71,7 +71,7 @@
 <div class="control-block">
     <button class="btn btn-primary">Control</button>
 </div>
-<div class="container" id="myWizard">
+<div class="container left" id="myWizard">
         <hr>
         <div class="progress">
             <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="4" style="width: 20%;">
