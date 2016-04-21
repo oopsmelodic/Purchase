@@ -3,7 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/Purchase/index.php</file>
+            <file>file:/C:/xampp/htdocs/purchase/application/views/newiom_view.php</file>
+            <file>file:/C:/xampp/htdocs/purchase/php/Iom.php</file>
+            <file>file:/C:/xampp/htdocs/purchase/application/models/model_auth.php</file>
+            <file>file:/C:/xampp/htdocs/purchase/application/controllers/controller_auth.php</file>
+            <file>file:/C:/xampp/htdocs/purchase/application/views/show_view.php</file>
+            <file>file:/C:/xampp/htdocs/purchase/php/test.php</file>
         </group>
     </open-files>
 </project-private>

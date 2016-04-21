@@ -20,4 +20,29 @@ class Model_Auth extends Model{
             return null;
         }
     }
+    public function get_employee_settings($employee_id) {
+        include_once '/conn.php';
+        $query = mysqli_query(GetMyConnection(), "SELECT settings FROM employee WHERE id=" . $employee_id . ";");
+        if ($query) {
+            if (mysqli_num_rows($query)) {
+                $row = mysqli_fetch_assoc($query);
+                $settings = $row['settings'];
+                $arr = explode(',', $settings);
+                $query = mysqli_query(GetMyConnection(), "SELECT id, name FROM settings;");
+                if (mysqli_num_rows($query)) {
+                    while ($row = mysqli_fetch_assoc($query)) {
+                        if (in_array($row['id'], $arr)) {
+                            $settings_data[$row['name']] = true;
+                        } else
+                            $settings_data[$row['name']] = false;
+                    }
+                    return $settings_data;
+                }
+            } else {
+
+            }
+        } else {
+            print_r(mysqli_error(GetMyConnection()));
+        }
+    }
 }

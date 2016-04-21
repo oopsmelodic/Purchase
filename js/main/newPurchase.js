@@ -2,6 +2,13 @@
  * Created by melodic on 26.02.2016.
  */
 
+//var last_iom_id = 0;
+var footerTemplate = '<div class="file-thumbnail-footer">\n' +
+        '   <div style="margin:5px 0">\n' +
+        '       <input name="input_comment" class="kv-input form-control input-sm kv-new" value="{caption}" placeholder="Enter caption...">\n' +
+        '   </div>\n' +
+        '   {actions}\n' +
+        '</div>';
 $(function () {
 
     $('.file-preview-frame').each(function () {
@@ -39,8 +46,8 @@ $(function () {
                     var input = $('#budget_inputs').find('#bi_' + item).get(0);
                     if ($(input).size() == 0) {
                         $('#budget_inputs').append('<div id="bi_' + item + '" class="form-group"><span class="col-lg-6">' + data_content + '</span>' +
-                            '<input budget_id="' + item + '" class="form-control" type="number" min="0" max="' + max + '" data-minlength="1" placeholder="Cost size..." required/>' +
-                            '<span class="glyphicon form-control-feedback" aria-hidden="true"></span><span class="help-block with-errors"></span></div>');
+                                '<input budget_id="' + item + '" class="form-control" type="number" min="0" max="' + max + '" data-minlength="1" placeholder="Cost size..." required/>' +
+                                '<span class="glyphicon form-control-feedback" aria-hidden="true"></span><span class="help-block with-errors"></span></div>');
                         //$('#budget_inputs').validator();
                         $('#budget_inputs').validator("validate");
                     } else {
@@ -101,7 +108,7 @@ $(function () {
                             $('#input-1').on('filepreupload', function (event, dataz, previewId, index, jqXHR) {
                                 dataz.form.append("iom_id", data['id']);
                                 console.log(data);
-
+                                
                             });
                             $('#input-1').on('fileuploaded', function (event, dataz, previewId, index, jqXHR) {
                                 swal("Confirmed!", "Application '" + $('#purchase_text').val() + "' has been created.", "success");
