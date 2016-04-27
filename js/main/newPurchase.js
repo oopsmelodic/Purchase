@@ -4,6 +4,8 @@
 
 $(function () {
 
+
+
     $('.file-preview-frame').each(function () {
         var i = $el.data("fileindex");
         out["input_comment" + i] = $("input[name='input_comment']", $el).val();

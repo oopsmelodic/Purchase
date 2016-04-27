@@ -1,11 +1,13 @@
 /**
- * Created by melodic on 05.04.2016.
+ * Created by melodic on 26.04.2016.
  */
 
 $(function(){
     //$('#purchase_text').focus();
 
-    $('.control-block').on('click',function(){
+    //Control Block Template
+
+    $('#newPurchase').on('click',function(){
 
         if ($('#myWizard').hasClass('right')){
             $('#myWizard').removeClass('animated right').addClass('animated left');
@@ -76,6 +78,7 @@ $(function(){
         $('#budget_inputs').html('');
         $('#input-1').fileinput('clear');
         $('.control-block').click();
+        $('#myWizard').removeClass('right').addClass('left');
     };
 
     $('#create_app').click(function (){

@@ -12,7 +12,7 @@
                 <div id="home" class="tab-pane fade in active" style="min-height: 500px;">
                     <div class="col-lg-12 shadow">
                         <div id="toolbar">
-                            <a href="/newiom/" class="btn btn-success">
+                            <a id="newPurchase" href="#" class="btn btn-success">
                                 <i class="glyphicon glyphicon-plus"></i> New appliements
                             </a>
                         </div>

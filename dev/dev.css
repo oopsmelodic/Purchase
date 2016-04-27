@@ -25,11 +25,11 @@ body{
 #myWizard.right{
     margin-left: 0;
 }
-.step-body{
+#myWizard .step-body{
     margin-bottom: 80px;
     position: relative;
 }
-.step-footer{
+#myWizard .step-footer{
     position: fixed;
     background-color: #fff;
     bottom: 0;
