@@ -88,7 +88,7 @@
                 <a href="#" popover-placement="bottom" popover-trigger="focus" uib-popover-html="htmlPopover" popover-title="Last Alerts"><i class="fa fa-fw fa-bell"></i> </a>
             </li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/img/default-user-image.png" class="img-circle img-user"> <?php echo $_SESSION['user']['fullname']; ?> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="/img/default-user-image.png" class="img-circle img-user" department_id="<?php echo $_SESSION['user']['department_id']?>" user_id="<?php echo $_SESSION['user']['id']?>"> <?php echo $_SESSION['user']['fullname']; ?> <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li>
                         <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>

@@ -110,8 +110,8 @@ $(function(){
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        employee_id: 60,
-                        department_id: 5,
+                        employee_id: $('.img-user').attr('user_id'),
+                        department_id: $('.img-user').attr('department_id'),
                         purchase_text: $('#purchase_text').val() || 'Empty',
                         expense_size: 0,
                         substantiation_text: $("#summernote").code(),
