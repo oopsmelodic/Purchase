@@ -34,6 +34,7 @@ $(function () {
                     $(this).remove();
                 }
             });
+            console.log(cur_select);
             if (cur_select != null) {
                 cur_select.forEach(function (item, i, arr) {
                     var data_content = $(selectedOptions[i]).attr('data-content');

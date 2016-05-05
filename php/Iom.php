@@ -327,9 +327,12 @@ class Iom
                 foreach ($value as $v) {
                     $query .= "(".$iom_num.",".$v.",'in progress'),";
                     $this->sendMessage('Application #'.$iom_num.' Created!',$params['purchase_text'],$v,10000);
+
                 }
             }
         }
+        
+        $this->sendMessage('You created Application #'.$iom_num,$params['purchase_text'],$_SESSION['user']['id'],10000);
 
         $res = $this->sendQuery(trim($query,','));
         if (count($budgets) != 0) {
