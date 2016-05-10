@@ -117,6 +117,7 @@ $(document).ready(function () {
                         for (var i=0; i<columns.length;i++){
                             data[columns[i]]=$('#'+columns[i]).val();
                         }
+                        console.log(data);
                         $.ajax({
                             url: "php/core.php?method=add"+table.capitalizeFirstLetter(),
                             type: "POST",

@@ -35,7 +35,7 @@ class Controller_Auth extends Controller
                 }
                 else
                 {
-                        $data["login_status"] = "access_denied";
+                        $data["login_status"] = "invalid";
                 }
         }
         else

@@ -84,6 +84,7 @@
           <label for="inputPassword" class="col-lg-3 control-label">Password</label>
           <div class="col-lg-9">
             <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Password" autocomplete="off">
+            <?php echo ($data['login_status'] == 'invalid') ? '<span class="help-block with-errors">Ivalid username or password!</span>' : '';?>
           </div>
         </div>
         <div class="form-group">
