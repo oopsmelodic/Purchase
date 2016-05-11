@@ -1,17 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: melodic
- * Date: 01.04.2016
- * Time: 15:41
- */
 
 class Controller_Show extends Controller {
+
     function __construct() {
         $this->model = new Model_Show();
         $this->view = new View();
         $this->controller = new Controller();
     }
+
     function action_index($id) {
         session_start();
         if ($this->controller->check_session()) {
@@ -23,4 +19,5 @@ class Controller_Show extends Controller {
             $this->view->generate('show_view.php', 'template_view.php', $data);
         }
     }
+
 }

@@ -139,6 +139,7 @@ $(document).ready(function () {
         strictSearch: true,
         detailView : true,
         showRefresh:true,
+        stickyHeader:true,
         toolbar: '#toolbar',
         //groupBy:true,
         //groupByField:['status'],

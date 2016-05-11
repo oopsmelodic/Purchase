@@ -79,6 +79,7 @@ $(function(){
         $('#input-1').fileinput('clear');
         $('.control-block').click();
         $('#myWizard').removeClass('right').addClass('left');
+        $('#testtable').bootstrapTable('refresh');
     };
 
     $('#create_app').click(function (){
