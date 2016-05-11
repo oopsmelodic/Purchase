@@ -41,7 +41,7 @@
                 <!--                    <a href="/main"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>-->
                 <!--                </li>-->
                 <li class="">
-                    <a href="/main"><i class="fa fa-fw fa-table"></i> Purchases</a>
+                    <a href="/purchase"><i class="fa fa-fw fa-table"></i> Purchases</a>
                 </li>
                 <li>
                     <a href="/admin"><i class="fa fa-fw fa-edit"></i>  User administration</a>

@@ -130,8 +130,9 @@ $(document).ready(function () {
                 console.log(data.sign_status);
                 var controls='';
                 if (data.sign_status==1){
-                    controls = '<div><button class="btn btn-success control">Confirm</button><button class="btn btn-danger control">Cancel</button></div>'
+                    controls = '<div><button class="btn btn-success control">Confirm</button><button class="btn btn-danger control">Cancel</button>'
                 }
+                controls +='<a href="/show/'+data.id+'" class="btn btn-primary">Просмотр</a></div>';
                 return controls;
             }
         }],
@@ -148,7 +149,7 @@ $(document).ready(function () {
             div.append('<div class="col-lg-6">' +
                         '<span class="label label-primary">Budgets: </span>' +
                         '<table id="budget_'+index+'"></table>' +
-                        '<span class="label label-primary">Substantation: </span><br><textarea id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</textarea>' +
+                        '<span class="label label-primary">Substantation: </span><br><div style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
                         '<span class="label label-primary">Files: </span>' +
                         '<table id="files_'+index+'"></table>' +
                     '</div>');
@@ -162,9 +163,9 @@ $(document).ready(function () {
     }).on('load-success.bs.table',function (data){
         //console.log(data);
     }).on('expand-row.bs.table',function (event,index,row){
-        $('#summer_'+index).summernote({
-            shortcuts: false
-        });
+        //$('#summer_'+index).summernote({
+        //    shortcuts: false
+        //});
         $('#summer_'+index).code(row['substantation']);
         $('#signers_'+index).bootstrapTable({
             url: '/php/core.php?method=getIomSigners',
