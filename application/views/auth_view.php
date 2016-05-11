@@ -17,6 +17,7 @@
   <link href="/css/sb-admin.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/jquery.treegrid.css">
   <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/auth.css">
   <link href="/css/spinner.css" rel="stylesheet" type="text/css"/>
   <link href="/css/fileinput.min.css" rel="stylesheet" type="text/css"/>
   <link href="/css/summernote.css" rel="stylesheet" type="text/css"/>
@@ -47,7 +48,6 @@
   <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
   <script src="/js/summernote.min.js" type="text/javascript"></script>
   <script src="/js/sortable.min.js" type="text/javascript"></script>
-  //Angular Part
   <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
   <script src="/bower_components/angular-notify-master/dist/angular-notify.min.js" type="text/javascript"></script>
   <link href="/bower_components/angular-notify-master/dist/angular-notify.min.css" rel="stylesheet" type="text/css"/>
@@ -60,7 +60,7 @@
   <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
   <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
   <script src="/bower_components/bootbox-4.4.0/bootbox.js" type="text/javascript"></script>
-  <script src="/js/main/app.js" type="text/javascript"></script>
+<!--  <script src="/js/main/app.js" type="text/javascript"></script>-->
 </head>
 
 <body>
@@ -74,20 +74,20 @@
           <i class="glyphicon  glyphicon-send" aria-hidden="true"></i> Coordinator
         </legend>
         <div class="form-group">
-          <label for="inputPassword" class="col-lg-3 control-label">Username</label>
-          <div class="col-lg-9">
+<!--          <label for="inputPassword" class="col-lg-3 control-label">Username</label>-->
+          <div class="col-lg-9 col-lg-offset-2">
             <input type="text" class="form-control" name="login" id="inputUsername" placeholder="Username" autocomplete="off">
 
           </div>
         </div>
         <div class="form-group">
-          <label for="inputPassword" class="col-lg-3 control-label">Password</label>
-          <div class="col-lg-9">
+<!--          <label for="inputPassword" class="col-lg-3 control-label">Password</label>-->
+          <div class="col-lg-9  col-lg-offset-2">
             <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Password" autocomplete="off">
           </div>
         </div>
         <div class="form-group">
-          <div class="col-lg-9 col-lg-offset-3">
+          <div class="col-lg-9 col-lg-offset-2">
             <button  class="btn btn-success" id="login" style="width:100%;">Login</button>
           </div>
         </div>

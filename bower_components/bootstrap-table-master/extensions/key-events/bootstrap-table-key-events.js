@@ -19,6 +19,7 @@
 
     BootstrapTable.prototype.init = function () {
         _init.apply(this, Array.prototype.slice.apply(arguments));
+
         this.initKeyEvents();
     };
 
@@ -32,7 +33,7 @@
                     $toggle = that.$toolbar.find('button[name="toggle"]'),
                     $paginationSwitch = that.$toolbar.find('button[name="paginationSwitch"]');
 
-                if (document.activeElement === $search.get(0) || !$.contains(document.activeElement ,that.$toolbar.get(0))) {
+                if (document.activeElement === $search.get(0)) {
                     return true;
                 }
 

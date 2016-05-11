@@ -33,7 +33,7 @@
     <!--[if lt IE 9]>
     <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
     <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
-<!--    <![endif]-->-->
+<!--    <![endif]-->
 
     <!-- jQuery -->
 <!--    <script src="/js/jquery.js"></script>-->
@@ -49,7 +49,7 @@
     <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
     <script src="/js/summernote.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
-    //Angular Part
+<!--    Angular Part-->
     <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
     <script src="/bower_components/angular-resource/angular-resource.min.js" type="text/javascript"></script>
     <script src="/bower_components/angular-route/angular-route.min.js" type="text/javascript"></script>
@@ -61,7 +61,7 @@
 
 
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
-    <script src="/bower_components/bootstrap-table-master/src/bootstrap-table.js" type="text/javascript"></script>
+    <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/sticky-header/bootstrap-table-sticky-header.min.js" type="text/javascript"></script>

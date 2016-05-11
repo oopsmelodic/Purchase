@@ -43,7 +43,7 @@
     };
 
     BootstrapTable.prototype.getColumns = function () {
-        return this.columns;
+        return this.options.columns;
     };
 
     BootstrapTable.prototype.registerSearchCallback = function (callback) {

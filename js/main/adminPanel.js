@@ -16,6 +16,8 @@ $(document).ready(function () {
         deproles = JSON.parse(data);
     });
 
+
+
     $('.nav.nav-pills li').on('click',function(){
         $('#datatable').bootstrapTable('destroy');
         var table = $(this).find('a').attr('table');
@@ -92,7 +94,6 @@ $(document).ready(function () {
 
     });
 
-    $('.active').click();
 
     $('#addUser').click(function (event) {
         event.preventDefault();
@@ -140,6 +141,8 @@ $(document).ready(function () {
             $('.selectpicker').selectpicker();
         });
     });
+
+    $('.active').click();
 });
 
 function checkuserexists(username)

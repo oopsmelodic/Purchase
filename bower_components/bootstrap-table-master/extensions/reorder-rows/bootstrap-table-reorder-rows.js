@@ -44,8 +44,9 @@
 
     BootstrapTable.prototype.init = function () {
 
+        _init.apply(this, Array.prototype.slice.apply(arguments));
+
         if (!this.options.reorderableRows) {
-            _init.apply(this, Array.prototype.slice.apply(arguments));
             return;
         }
 
@@ -61,8 +62,6 @@
                 onPostBody.apply();
             }, 1);
         };
-
-        _init.apply(this, Array.prototype.slice.apply(arguments));
     };
 
     BootstrapTable.prototype.initSearch = function () {
@@ -92,7 +91,7 @@
         });
     };
 
-    BootstrapTable.prototype.onDrop = function (table, droppedRow) {
+    BootstrapTable.prototype.onDrop = function (table, row) {
         var tableBs = $(table),
             tableBsData = tableBs.data('bootstrap.table'),
             tableBsOptions = tableBs.data('bootstrap.table').options,
@@ -108,7 +107,7 @@
         tableBsOptions.data = newData;
 
         //Call the user defined function
-        tableBsOptions.onReorderRowsDrop.apply(table, [table, droppedRow]);
+        tableBsOptions.onReorderRowsDrop.apply(table, row);
 
         //Call the event reorder-row
         tableBsData.trigger('reorder-row', newData);
