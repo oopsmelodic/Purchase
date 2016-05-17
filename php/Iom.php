@@ -211,20 +211,20 @@ class Iom
 
     public function addEmployee($params){
 
-        $query = "INSERT INTO employee(fullname, role_id, department_id, username, password,email)"
+        $query = "INSERT INTO employee(fullname, role_id, department_id, username, email,password)"
             . "VALUES ('" . $params["fullname"] . "',"
             . $params["role"] . ","
             . $params["department"]  . ",'"
-            . $params["name"] . "','"
+            . $params["username"] . "','"
             . $params["email"] . "'";
 
         if ($params['password']!=''){
-            $query.= ",".md5($this->FISH . md5(trim($params['password'])))."'";
+            $query.= ",'".md5($this->FISH . md5(trim($params['password'])))."'";
         }
-
+        $query.=')';
         $query_results = $this->sendQuery($query);
         $last_id = mysqli_insert_id(GetMyConnection());
-
+        echo $query;
         if (!$query_results){
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }

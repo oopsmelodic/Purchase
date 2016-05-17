@@ -8,17 +8,18 @@ String.prototype.capitalizeFirstLetter = function() {
 $(document).ready(function () {
     $('.selectpicker').selectpicker();
 
-    //
-    //$.ajax({
-    //    url: "php/core.php?method=getDepRoles",
-    //    type: "POST"
-    //}).success(function (data) {
-    //    deproles = JSON.parse(data);
-    //});
+    //toFix
+    $.ajax({
+        url: "php/core.php?method=getDepRoles",
+        type: "POST"
+    }).success(function (data) {
+        deproles = JSON.parse(data);
+    });
+
     var columns = [];
     var groupfield = "";
     var method = "";
-    var table = $(this).find('a').attr('table');
+    var table = 'employee';
 
     columns.push({
         field:'id',
@@ -60,6 +61,7 @@ $(document).ready(function () {
             }
         }
     });
+
 
     $('.nav.nav-pills li').on('click',function(){
         $('#datatable').bootstrapTable('destroy');
@@ -141,6 +143,7 @@ $(document).ready(function () {
     $('#addUser').click(function (event) {
         event.preventDefault();
         var table = $('#datatable').attr('table_name');
+        //console.log('Tablename: '+table);
         var columns = [];
         var data = $('#datatable').bootstrapTable('getData');
 
@@ -149,6 +152,7 @@ $(document).ready(function () {
                 columns.push(key);
             }
         }
+
         bootbox.dialog({
             title: "Register user",
             message: bootboxMessage(null,columns),
@@ -157,10 +161,14 @@ $(document).ready(function () {
                     label: "Add user",
                     className: "btn-success modalbtn",
                     callback: function () {
+                        if ($('#password').val()!=''){
+                            columns.push('password');
+                        }
                         var data = {};
                         for (var i=0; i<columns.length;i++){
                             data[columns[i]]=$('#'+columns[i]).val();
                         }
+                        console.log(data);
                         $.ajax({
                             url: "php/core.php?method=add"+table.capitalizeFirstLetter(),
                             type: "POST",
@@ -183,8 +191,10 @@ $(document).ready(function () {
             $('.selectpicker').selectpicker();
         });
     });
-
+    $('#datatable').attr('table_name',table);
     //$('.active').click();
+    console.log($('#datatable').attr('table_name'));
+
 });
 
 function checkuserexists(username)
