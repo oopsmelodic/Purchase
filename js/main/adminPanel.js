@@ -8,15 +8,58 @@ String.prototype.capitalizeFirstLetter = function() {
 $(document).ready(function () {
     $('.selectpicker').selectpicker();
 
+    //
+    //$.ajax({
+    //    url: "php/core.php?method=getDepRoles",
+    //    type: "POST"
+    //}).success(function (data) {
+    //    deproles = JSON.parse(data);
+    //});
+    var columns = [];
+    var groupfield = "";
+    var method = "";
+    var table = $(this).find('a').attr('table');
 
-    $.ajax({
-        url: "php/core.php?method=getDepRoles",
-        type: "POST"
-    }).success(function (data) {
-        deproles = JSON.parse(data);
+    columns.push({
+        field:'id',
+        title: '#',
+        sortable:true
+    },{
+        field:'fullname',
+        title: 'Fullname',
+        sortable:true
+    },{
+        field:'role',
+        title: 'Role',
+        sortable:true
+    },{
+        field: 'operate',
+        title: 'Item Operate',
+        align: 'center',
+        events: operateEvents,
+        formatter: operateFormatter
     });
+    groupfield = ["department"];
+    method = "getUsers";
 
-
+    $('#datatable').bootstrapTable({
+        url: '/php/core.php?method='+method,
+        columns: columns,
+        search: true,
+        //height: 600,
+        strictSearch: true,
+        showRefresh: true,
+        detailView: false,
+        groupBy: true,
+        groupByField: groupfield,
+        method: 'POST',
+        contentType: 'application/x-www-form-urlencoded',
+        queryParams: function (p){
+            return {
+                "table":table
+            }
+        }
+    });
 
     $('.nav.nav-pills li').on('click',function(){
         $('#datatable').bootstrapTable('destroy');
@@ -136,13 +179,12 @@ $(document).ready(function () {
                     }
                 }
             }
-        }
-        ).on('shown.bs.modal', function () {
+        }).on('shown.bs.modal', function () {
             $('.selectpicker').selectpicker();
         });
     });
 
-    $('.active').click();
+    //$('.active').click();
 });
 
 function checkuserexists(username)
