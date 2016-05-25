@@ -30,7 +30,7 @@ $target = $_SERVER['DOCUMENT_ROOT']."/uploads" . DIRECTORY_SEPARATOR . $_POST['i
 if(move_uploaded_file($files['tmp_name'], $target)) {
     $success = true;
     $paths[] = $target;
-    $iom->appendFileToIom($_POST['iom_id'],$file_title,$filenames,$target);
+    $iom->appendFileToIom($_POST['iom_id'],$file_title,$filenames,$type,$target);
 
 } else {
     $success = false;

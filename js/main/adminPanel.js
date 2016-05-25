@@ -174,15 +174,12 @@ $(document).ready(function () {
                             type: "POST",
                             data: data
                         }).success(function (data) {
-                            if (data === "success")
-                            {
+                            if (data['type']=='success') {
                                 $('#datatable').bootstrapTable('refresh');
-                                message = "User <strong>" + $('#username').val() + "</strong> was registered.";
-                            } else
-                            {
-                                message = data;
+                                swal("Confirmed!", "User '" + $('#username').val() + "' has been created.", "success");
+                            }else{
+                                swal("You can't create user. Cause: ",data['error_msg'],"error");
                             }
-                            bootbox.alert(message);
                         });
                     }
                 }

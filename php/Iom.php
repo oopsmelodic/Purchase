@@ -96,7 +96,7 @@ class Iom
     }
 
     public function getIomFiles($params){
-        $query= " Select fs.filename,fs.title, fs.filepath  From files as fs".
+        $query= " Select fs.filename,fs.title,fs.type, fs.filepath  From files as fs".
             " Where fs.iom_id=".$params['iom_id'];
 
         $query_results = $this->sendQuery($query);
