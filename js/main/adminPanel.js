@@ -172,6 +172,7 @@ $(document).ready(function () {
                         $.ajax({
                             url: "php/core.php?method=add"+table.capitalizeFirstLetter(),
                             type: "POST",
+                            dataType:"json",
                             data: data
                         }).success(function (data) {
                             if (data['type']=='success') {
