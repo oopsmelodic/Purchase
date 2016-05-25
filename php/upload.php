@@ -25,12 +25,12 @@ $filenames = $files['name'];
 if ($file_title === '') {
     $file_title = $filenames;
 }
-$ext = explode('.', basename($filenames));
-$target = $_SERVER['DOCUMENT_ROOT']."/uploads" . DIRECTORY_SEPARATOR . $_POST['iom_id'] . "_" . md5(uniqid()) . "." . array_pop($ext);
+$ext = pathinfo($filenames, PATHINFO_EXTENSION);
+$target = $_SERVER['DOCUMENT_ROOT']."/uploads" . DIRECTORY_SEPARATOR . $_POST['iom_id'] . "_" . md5(uniqid()) . "." . $ext;
 if(move_uploaded_file($files['tmp_name'], $target)) {
     $success = true;
     $paths[] = $target;
-    $iom->appendFileToIom($_POST['iom_id'],$file_title,$filenames,$type,$target);
+    $iom->appendFileToIom($_POST['iom_id'],$file_title,$filenames,$ext,$target);
 
 } else {
     $success = false;

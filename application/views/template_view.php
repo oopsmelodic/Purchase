@@ -131,7 +131,7 @@
         </div>
     </div>
     <div class="form-group col-lg-12">
-        <h4 class="col-lg-12"><legend id="user_id" user_id="0"><i class="fa fa-user"></i> Test Name from IT department.</legend></h4>
+        <h4 class="col-lg-12"><legend id="user_id" user_id="0"><i class="fa fa-user"></i> <?php echo $data['fullname'] ?> from <?php echo $data['department'] ?> department.</legend></h4>
     </div>
     <div class="navbar">
         <div class="navbar-inner">
@@ -269,6 +269,7 @@
         uploadAsync: true,
         maxFileCount: 5,
         showUpload:false,
+        allowedFileTypes: ['png','pdf','xls','xlsx','jpg','jpeg','bmp','doc','docx','txt'],
         layoutTemplates: {footer: footerTemplate},
         uploadExtraData: function () {  // callback example
             var out = {}, key, i = 0;

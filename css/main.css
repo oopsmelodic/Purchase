@@ -154,7 +154,7 @@
     position: fixed;
     z-index: 9999;
     background-color: #fff;
-    width: 33%;
+    width: 40%;
     top:0;
     left: 0;
     height: 100%;
@@ -165,7 +165,7 @@
     -webkit-transition: .7s all;
 }
 #myWizard.left{
-    margin-left: -34%;
+    margin-left: -41%;
 }
 #myWizard.right{
     margin-left: 0;
@@ -178,7 +178,7 @@
     position: fixed;
     background-color: #fff;
     bottom: 0;
-    width: 30%;
+    width: 37%;
     margin-bottom: 0;
     padding-bottom: 20px;
     padding-top: 5px;

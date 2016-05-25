@@ -74,6 +74,7 @@ app.controller('CommentsCtrl', function ($scope,$http,$interval) {
             $scope.myWelcome = response.statusText;
         });
     }
+    getComments();
     $interval(getComments,5000);
 });
 

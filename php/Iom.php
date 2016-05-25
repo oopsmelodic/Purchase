@@ -25,10 +25,10 @@ class Iom
 
         $user_id = $params['user_session_id'];
         $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation,".
-            " (Select concat(' by ',em.fullname,'|',sc.time_stamp )".
+            " (Select concat(' ',sc.status,' by ',em.fullname,'|',sc.time_stamp )".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
-            " Where sc.iom_id=im.id".
+            " Where sc.iom_id=im.id and sc.status!='in progress'".
             " ORDER BY sc.time_stamp DESC".
             " LIMIT 1) as latest_action,".
             "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status,".
@@ -138,7 +138,7 @@ class Iom
     }
 
     public function getComments($params){
-        $query = "Select id,text,time_stamp From comments Where iom_id=".$params['iom_id'];
+        $query = "Select c.id,c.text,c.time_stamp,em.fullname From comments as c Left Join employee as em on c.employee_id=em.id Where iom_id=".$params['iom_id'];
 
         $results = $this->sendQuery($query);
         return $results;
@@ -379,10 +379,10 @@ class Iom
         }
     }
 
-    public function appendFileToIom($iom_id,$file_title,$filename,$file_path){
+    public function appendFileToIom($iom_id,$file_title,$filename,$type,$file_path){
 
-        $query = "Insert Into files (iom_id,title,filename,filepath) Values(".$iom_id.",'" . $file_title . "','".$filename."','".$file_path."')";
-
+        $query = "Insert Into files (iom_id,title,filename,filepath,type) Values(".$iom_id.",'" . $file_title . "','".$filename."','".$file_path."','".$type."')";
+//        echo $query;
         $this->sendQuery($query);
     }
 

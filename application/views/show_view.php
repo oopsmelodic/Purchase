@@ -1,5 +1,5 @@
 
-<div id="wrapper">
+<div id="container-fluid">
 
     <!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -76,11 +76,6 @@
                                                     <div class="col-lg-6">
                                                         <h4 class="col-lg-6"><span class="label label-default">Budgets:</span></h4>
                                                         <table id="budgets"></table>
-
-                                                        <?php
-                                                        echo ($data['costsize'] !== "0") ? '<h4 class="col-lg-12"><legend><span class="label label-default">Expense size:</span> '
-                                                                . $data['costsize'] . '</legend></h4>' : "";
-                                                        ?>
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <h4 class="col-lg-6"><span class="label label-default">Signers:</span></h4>
@@ -88,7 +83,7 @@
 
                                                     </div>
                                                 </div>
-                                                <?php var_dump($_SESSION['settings']);?>
+
                                                 <div id="pagebreaker" class="form-group">
                                                     <h3 class="col-lg-4"><span class="label label-default"> Purchase name: </span></h3>
                                                     <div class="col-lg-12">
@@ -111,6 +106,47 @@
 
                                                             </div>
                                                         </div>   
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <h3 class="col-lg-4"><span class="label label-default"> Comments: </span></h3>
+                                                    <div class="col-lg-12">
+                                                        <div class='comments' ng-controller='CommentsCtrl'>
+                                                            <h3>
+                                                                {{comments.length}} Comments
+                                                            </h3>
+                                                            <ul>
+                                                                <li ng-repeat='comment in comments'>
+                                                                    <div class='comment approved'>
+                                                                        <h4>
+                                                                            {{comment.fullname}}:
+                                                                        </h4>
+                                                                        <p>
+                                                                            {{comment.text}}
+                                                                            <small>
+                                                                                {{comment.time_stamp}}
+                                                                            </small>
+                                                                        </p>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                            <form>
+                                                                <fieldset>
+                                                                    <legend>
+                                                                        Your comment
+                                                                    </legend>
+                                                                    <div>
+                                                                        <label>
+                                                                            Comment:
+                                                                            <textarea ng-model='text'></textarea>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div>
+                                                                        <input class='button' ng-click='submit()' type='submit' value='Submit'>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

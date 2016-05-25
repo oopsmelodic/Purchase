@@ -34,6 +34,7 @@
 //    };
 //})(jQuery);
 
+var filetypes = {"txt": "text-o", "docx": "word-o", "doc": "word-o", "ptt": "powerpoint-o", "pttx": "powerpoint-o", "zip": "archive-o", "rar": "archive-o", "pdf": "pdf-o", "jpg": "image-o", "png": "image-o", "ttif": "image-o", "xls": "excel-o", "xlsx": "excel-o"};
 
 window.operateEvents = {
     'click .control': function (e, value, row, index) {
@@ -151,7 +152,7 @@ $(document).ready(function () {
                         '<table id="budget_'+index+'"></table>' +
                         '<span class="label label-primary">Substantation: </span><br><div style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
                         '<span class="label label-primary">Files: </span>' +
-                        '<table id="files_'+index+'"></table>' +
+                        '<div id="files_'+index+'"></div>' +
                     '</div>');
             div.append('<div class=col-lg-6>' +
                         '<span class="label label-primary">Signers: </span>' +
@@ -213,24 +214,46 @@ $(document).ready(function () {
                 //filterControl:'select'
             }],
         });
-        $('#files_'+index).bootstrapTable({
+        //$('#files_'+index).bootstrapTable({
+        //    url: '/php/core.php?method=getIomFiles',
+        //    contentType: 'application/x-www-form-urlencoded',
+        //    method: 'POST',
+        //    cardView: true,
+        //    queryParams: function (p){
+        //        return {
+        //            "iom_id":row['id']
+        //        }
+        //    },
+        //    columns: [{
+        //        field: 'filename',
+        //        title: 'Name:'
+        //        //sortable:true
+        //    }],
+        //});
+        $.ajax({
             url: '/php/core.php?method=getIomFiles',
             contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
             method: 'POST',
-            cardView: true,
-            queryParams: function (p){
-                return {
-                    "iom_id":row['id']
-                }
-            },
-            columns: [{
-                field: 'filename',
-                title: 'Name:'
-                //sortable:true
-            }],
+            data: { "iom_id" : row['id'] }
+        }).success(function (data) {
+            var divHTML='';
+            for(var i=0;i<data.length;i++)
+            {
+
+                var filepath = data[i]['filepath'].split('/').slice(-2).join('/');
+                divHTML+='<div class="col-lg-3" style="padding=5px; margin-bottom:10px;" align="center">'+
+                    '<div><a class="btn btn-default" href="../' + filepath + '" download="' + data[i]['title'] +'.'+ data[i]['type']+'"><div><i class="fa fa-file-' + filetypes[data[i]['type']] + ' fa-2x"></i></div></a></div>'+
+                    '<div style="font-size:12px; word-wrap:break-word;">'+data[i]['title']+'</div>'+
+                    '</div>';
+            }
+            $('#files_'+index).html(divHTML);
+            console.log(divHTML);
         });
     });
-
+    $("#testtable").on("click", "tr", function(e){
+        $(this).find(".detail-icon").triggerHandler("click");
+    });
 
     //$(".table").fixMe();
     //selects
