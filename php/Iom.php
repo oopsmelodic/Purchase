@@ -224,7 +224,7 @@ class Iom
         $query.=')';
         $query_results = $this->sendQuery($query);
         $last_id = mysqli_insert_id(GetMyConnection());
-        echo $query;
+//        echo $query;
         if (!$query_results){
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
