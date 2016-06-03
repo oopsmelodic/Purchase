@@ -185,9 +185,10 @@ class Iom
     }
 
     public function getBudgets(){
-        $query="Select b.id, b.date_time, b.planed_cost, bb.name as brand_name, b.brand_id as budget_brand, b.name, bm.name as mapping_name From budget as b".
+        $query="Select b.id, b.date_time, b.planed_cost, bb.name as brand_name, b.brand_id as budget_brand, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
                 " Left Join budget_brand as bb on b.brand_id=bb.id" .
-                " Left Join budget_mapping as bm on b.mapping_id=bm.id Where b.deleted=0";
+                " Left Join budget_mapping as bm on b.mapping_id=bm.id Where b.deleted=0" .
+                " Left Join iom_budgets as ib on b.id = ib.budget_id GROUP BY b.id";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
