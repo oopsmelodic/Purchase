@@ -185,8 +185,23 @@ class Iom
     }
 
     public function getBudgets(){
-        $query="Select b.id, b.date_time, b.planed_cost, bt.name as type_name, b.type_id as budget_type, b.name From budget as b".
-                " Left Join budget_type as bt on b.type_id=bt.id Where b.deleted=0";
+        $query="Select b.id, b.date_time, b.planed_cost, bb.name as brand_name, b.brand_id as budget_brand, b.name, bm.name as mapping_name From budget as b".
+                " Left Join budget_brand as bb on b.brand_id=bb.id" .
+                " Left Join budget_mapping as bm on b.mapping_id=bm.id Where b.deleted=0";
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
+    public function getMappings(){
+        $query = "Select id,name From budget_mapping";
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
+    public function getBrands(){
+        $query = "Select id,name From budget_brand";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
@@ -282,7 +297,42 @@ class Iom
         $query = "Insert Into budget (name,type_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['budget_type'].",".$insert_arr['planed_cost'].")";
 
         $query_results = $this->sendQuery($query);
-        return $query_results;
+        $last_id = mysqli_insert_id(GetMyConnection());
+//        echo $query;
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','user_id'=>$last_id);
+        }
+    }
+
+    public function addBudget_mapping($insert_arr){
+        $query = "Insert Into budget_mapping (name) Values('".$insert_arr['name']."')";
+
+        $query_results = $this->sendQuery($query);
+        $last_id = mysqli_insert_id(GetMyConnection());
+//        echo $query;
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','user_id'=>$last_id);
+        }
+    }
+
+    public function addBudget_brand($insert_arr){
+        $query = "Insert Into budget_brand (name) Values('".$insert_arr['name']."')";
+
+        $query_results = $this->sendQuery($query);
+        $last_id = mysqli_insert_id(GetMyConnection());
+//        echo $query;
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','user_id'=>$last_id);
+        }
     }
 
     public function deleteBudget($params){
@@ -295,6 +345,60 @@ class Iom
         }
         else {
             return Array('type'=>'success','budget_id'=>$params['id']);
+        }
+    }
+
+    public function deleteBudget_mapping($params){
+        $query = "UPDATE budget_mapping SET deleted=1".
+            " WHERE id=".$params['id'];
+
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','budget_id'=>$params['id']);
+        }
+    }
+
+    public function deleteBudget_brand($params){
+        $query = "UPDATE budget_brand SET deleted=1".
+            " WHERE id=".$params['id'];
+
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','budget_id'=>$params['id']);
+        }
+    }
+
+    public function updateBudget_brand($params){
+        $query = "Update budget_brand Set name='".$params['name']."'+ Where id=".$params['id'];
+
+        $res = $this->sendQuery($query);
+
+//        echo $query;
+        if (!$res) {
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','id'=>$params['id']);
+        }
+    }
+
+    public function updateBudget_mapping($params){
+        $query = "Update budget_mapping Set name='".$params['name']."' Where id=".$params['id'];
+
+        $res = $this->sendQuery($query);
+
+//        echo $query;
+        if (!$res) {
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','id'=>$params['id']);
         }
     }
 

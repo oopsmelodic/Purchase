@@ -99,12 +99,46 @@ $(document).ready(function () {
                         title: 'Name:',
                         sortable:true
                     },{
+                        field:'mapping_name',
+                        title: 'Mapping:',
+                        sortable:true
+                    },{
                         field:'planed_cost',
                         title: 'Planed Cost:',
                         sortable:true
                     });
-                    groupfield = ["type_name"];
+                    groupfield = ["brand_name"];
                     method = "getBudgets";
+
+                break;
+
+            case 'budget_mapping':
+                columns.push({
+                    field:'id',
+                    title: '#',
+                    sortable:true
+                },{
+                    field:'name',
+                    title: 'Name:',
+                    sortable:true
+                });
+                //groupfield = ["brand_name"];
+                method = "getMappings";
+
+                break;
+
+            case 'budget_brand':
+                columns.push({
+                    field:'id',
+                    title: '#',
+                    sortable:true
+                },{
+                    field:'name',
+                    title: 'Name:',
+                    sortable:true
+                });
+                //groupfield = ["brand_name"];
+                method = "getBrands";
 
                 break;
         }
