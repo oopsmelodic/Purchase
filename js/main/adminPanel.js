@@ -106,6 +106,10 @@ $(document).ready(function () {
                         field:'planed_cost',
                         title: 'Planed Cost:',
                         sortable:true
+                    },{
+                        field:'cur_sum',
+                        title: 'Current Sum:',
+                        sortable:true
                     });
                     groupfield = ["brand_name"];
                     method = "getBudgets";
