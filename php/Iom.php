@@ -95,6 +95,33 @@ class Iom
         return $query_results;
     }
 
+    public function getIomEvents($params){
+        $query= " Select concat( e.event_name,' by ',em.fullname) as event, e.date_time,e.id,e.cancel,e.event_name,em.id as employee_id  From iom_history as e".
+                " Left Join employee as em on e.employee_id=em.id".
+                " Where e.iom_id=".$params['iom_id'];
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+
+    }
+
+    public function cancelEvent($params){
+
+        $query = "Update iom_history Set cancel=1 Where id=".$params['id'];
+
+        $this->sendQuery($query);
+
+        $query = "Update sign_chain Set status='in progress' Where employee_id=".$params['employee_id']." and iom_id=".$params['iom_id'];
+
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','event_id'=>$params['id']);
+        }
+    }
+
     public function getIomFiles($params){
         $query= " Select fs.filename,fs.title,fs.type, fs.filepath  From files as fs".
             " Where fs.iom_id=".$params['iom_id'];
@@ -425,7 +452,11 @@ class Iom
             . $params["purchase_text"]. "',0," . $params["expense_size"] . ",0,'".$params["substantiation_text"]."')";
         $result = $this->sendQuery($query);
 
+
         $iom_num = mysqli_insert_id(GetMyConnection());
+
+        $this->addIomEvent($iom_num,$params["employee_id"],'Created');
+
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
         foreach($chain as $key=>$value){
             if (!is_null($value)) {
@@ -475,6 +506,8 @@ class Iom
 
                 $this->sendToSigners($params['id'],$type,$params['user_session_fullname']);
 
+                $this->addIomEvent($params['id'],$params['user_session_id'],$type);
+
                 return Array('type' => 'success', 'id' => $params['id']);
             } else {
                 return Array('type' => 'error', 'error_msg' => mysqli_error(GetMyConnection()));
@@ -489,6 +522,14 @@ class Iom
         $query = "Insert Into files (iom_id,title,filename,filepath,type) Values(".$iom_id.",'" . $file_title . "','".$filename."','".$file_path."','".$type."')";
 //        echo $query;
         $this->sendQuery($query);
+    }
+
+    public function addIomEvent($iom_id,$employee_id,$event_name){
+
+        $query = "Insert Into iom_history (iom_id,employee_id,event_name) Values(".$iom_id.",".$employee_id.",'".$event_name."')";
+
+        $this->sendQuery($query);
+
     }
 
     public function getLatestActions($params){

@@ -157,6 +157,8 @@ $(document).ready(function () {
             div.append('<div class=col-lg-6>' +
                         '<span class="label label-primary">Signers: </span>' +
                         '<table id="signers_'+index+'"></table>' +
+                        '<span class="label label-primary">Events: </span>' +
+                        '<table id="events_'+index+'"></table>' +
                     '</div>');
 
             return div.html();
@@ -167,6 +169,7 @@ $(document).ready(function () {
         //$('#summer_'+index).summernote({
         //    shortcuts: false
         //});
+        var iom_id = row['id']
         $('#summer_'+index).code(row['substantation']);
         $('#signers_'+index).bootstrapTable({
             url: '/php/core.php?method=getIomSigners',
@@ -212,6 +215,94 @@ $(document).ready(function () {
                 title: 'Cost:'
                 //sortable:true
                 //filterControl:'select'
+            }],
+        });
+
+        function operateFormatter(value, row, index) {
+            if (row['cancel']==0 && row['event_name']!='Created') {
+                return [
+                    '<a class="remove" href="javascript:void(0)" title="Remove">',
+                    '<i class="glyphicon glyphicon-remove"></i>',
+                    '</a>'
+                ].join('');
+            }else{
+                return '';
+            }
+        }
+        window.operateEvents = {
+            'click .remove': function (e, value, row) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Abort event ?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    closeOnConfirm: true,
+                    showLoaderOnConfirm: true,
+                    closeOnCancel: true
+                }, function(isConfirm){
+                    if (isConfirm) {
+                        $.ajax({
+                            url: "php/core.php?method=cancelEvent",
+                            type: "POST",
+                            dataType:"json",
+                            async: 0,
+                            data: {"id": row["id"],"iom_id": iom_id,"employee_id":row['employee_id']}
+                        }).success(function (data) {
+                            if (data['type'] == "success"){
+                                $('#events_'+index).bootstrapTable('refresh');
+                                $('#signers_'+index).bootstrapTable('refresh');
+                                swal("Canceled!", "Event has been Canceled.", "success");
+                            }else{
+                                swal("Request Error!",data['error_msg'],"error");
+                            }
+                        });
+                    } else {
+                        //swal("Cancelled", "Your imaginary file is safe :)", "error");
+                    }
+                });
+            }
+        };
+
+        $('#events_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomEvents',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            rowStyle: function(value,row,index){
+                if (value['cancel']==1){
+                    return{
+                        //classes: 'test',
+                        css: {"background-color" : "red"}
+                    }
+                }else{
+                    return{
+                        classes: '',
+                        css: {}
+                    }
+                }
+            },
+            columns: [{
+                field: 'event',
+                title: 'Event:'
+                //sortable:true
+            },{
+                field: 'date_time',
+                title: 'DateTime:'
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'operate',
+                title: 'Item Operate',
+                align: 'center',
+                events: operateEvents,
+                formatter: operateFormatter
             }],
         });
         //$('#files_'+index).bootstrapTable({

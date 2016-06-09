@@ -254,6 +254,7 @@ function checkuserexists(username)
     });
     return existor;
 }
+
 function operateFormatter(value, row, index) {
     return [
         '<a class="edit" href="javascript:void(0)" title="Edit">',
