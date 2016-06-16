@@ -18,7 +18,7 @@ class Route
             $controller_name = $routes[1];
         }        
         // получаем имя экшена
-        if ($controller_name!='show'){
+        if ($controller_name!='show' and $controller_name!='edit' ){
             if ( !empty($routes[2]) )
             {
                 $action_name = $routes[2];
@@ -40,7 +40,7 @@ class Route
             {
                 $param2 = $routes[3];
             }            
-        }      
+        }
         // добавляем префиксы
         $model_name = 'Model_'.$controller_name;
         $controller_name = 'Controller_'.$controller_name;
