@@ -14,6 +14,7 @@ $(document).ready(function () {
         type: "POST"
     }).success(function (data) {
         deproles = JSON.parse(data);
+        console.log(deproles);
     });
 
     var columns = [];
@@ -99,8 +100,20 @@ $(document).ready(function () {
                         title: 'Name:',
                         sortable:true
                     },{
+                        field:'brand_name',
+                        title: 'Brand:',
+                        sortable:true
+                    },{
                         field:'mapping_name',
                         title: 'Mapping:',
+                        sortable:true
+                    },{
+                        field:'department_name',
+                        title: 'Department:',
+                        sortable:true
+                    },{
+                        field:'budget_type',
+                        title: 'Budget Type:',
                         sortable:true
                     },{
                         field:'planed_cost',
@@ -112,7 +125,7 @@ $(document).ready(function () {
                         sortable:true
                     });
                     groupfield = ["brand_name"];
-                    method = "getBudgets";
+                    method = "getAllBudgets";
 
                 break;
 
@@ -196,7 +209,7 @@ $(document).ready(function () {
             message: bootboxMessage(null,columns),
             buttons: {
                 success: {
-                    label: "Add user",
+                    label: "Add "+table,
                     className: "btn-success modalbtn",
                     callback: function () {
                         if ($('#password').val()!=''){
@@ -308,7 +321,10 @@ window.operateEvents = {
             $('.selectpicker').selectpicker();
             $('#role').selectpicker('val', parseInt(row['roleid']));
             $('#department').selectpicker('val', parseInt(row['depid']));
-            $('#budget_type').selectpicker('val',parseInt(row['budget_type']));
+            $('#department_name').selectpicker('val', parseInt(row['budget_department']));
+            $('#brand_name').selectpicker('val', parseInt(row['budget_brand']));
+            $('#mapping_name').selectpicker('val', parseInt(row['budget_mapping']));
+            $('#budget_type').selectpicker('val',row['budget_type']);
         });
     },
     'click .remove': function (e, value, row, index) {
@@ -375,21 +391,45 @@ function bootboxMessage(row,columns){
                         '</div> ' +
                     '</div> ';
                 break;
+            case 'budget_department':
+                str+='<div class="form-group"> ' +
+                    '<label class="col-md-4 control-label" for="name">Department</label> ' +
+                    '<div class="col-md-4"> ' +
+                    '<select class="selectpicker" id="department_name" data-width="100%" style="display:inline;">' + deproles["departments"] + ':</select>' +
+                    '</div> ' +
+                    '</div> ';
+                break;
+            case 'budget_brand':
+                str+='<div class="form-group"> ' +
+                    '<label class="col-md-4 control-label" for="name">Budget Brand:</label> ' +
+                    '<div class="col-md-4"> ' +
+                    '<select class="selectpicker" id="brand_name" data-width="100%" style="display:inline;">' + deproles["brand_name"] + ':</select>' +
+                    '</div> ' +
+                    '</div> ';
+                break;
+            case 'budget_mapping':
+                str+='<div class="form-group"> ' +
+                    '<label class="col-md-4 control-label" for="name">Mapping Brand:</label> ' +
+                    '<div class="col-md-4"> ' +
+                    '<select class="selectpicker" id="mapping_name" data-width="100%" style="display:inline;">' + deproles["mapping_name"] + ':</select>' +
+                    '</div> ' +
+                    '</div> ';
+                break;
             case 'budget_type':
                 str+='<div class="form-group"> ' +
                         '<label class="col-md-4 control-label" for="name">Budget Type</label> ' +
                         '<div class="col-md-4"> ' +
-                            '<select class="selectpicker" id="budget_type" data-width="100%" style="display:inline;">' + deproles["budget_type"] + ':</select>' +
+                            '<select class="selectpicker" id="budget_type" data-width="100%" style="display:inline;"><option data-content="CAPEX">CAPEX</option><option data-content="OPEX">OPEX</option></select>' +
                         '</div> ' +
                     '</div> ';
                 break;
             default:
-                if (columns[i]!='id' && columns[i]!='budget_type' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
+                if (columns[i]!='id' && columns[i]!='budget_type' && columns[i]!='cur_sum' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='mapping_name' && columns[i]!='department_name' && columns[i]!='brand_name' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
                     str += '<div class="form-group' + danger + '">' +
                                 '<label class="col-md-4 control-label" for="name">' + columns[i].replace(/_/g," ").capitalizeFirstLetter() + ':</label>' +
                                 '<div class="col-md-4">' +
                                     '<input id="' + columns[i] + '" name="' + columns[i] + '" type="text" class="form-control input-md" value="' + ((row!=null)? row[columns[i]] : '') + '">' +
-                                    '<span class="help-block"' + display + '>Only letters</span> ' +
+                                    //'<span class="help-block"' + display + '>Only letters</span> ' +
                                 '</div>' +
                             '</div>';
                 }

@@ -42,23 +42,6 @@ class Model_Purchase extends Model{
         }
     }
 
-    public function get_budgets(){
-
-        include_once './php/conn.php';
-        $query=mysqli_query(GetMyConnection(),"Select bt.id ,bt.name as budget_name,bt.date_time,bt.planed_cost,bt.date_time, bb.name as budget_type_name, (bt.planed_cost-sum(ib.cost)) as cur_sum From budget as bt Left Join budget_brand as bb on bt.type_id=bb.id Left Join iom_budgets as ib on bt.id = ib.budget_id GROUP BY bt.id");
-        if ($query){
-            if (mysqli_num_rows($query)){
-                while ($row = mysqli_fetch_assoc($query)) {
-                    $rows[] = $row;
-                }
-                return $rows;
-            }else{
-                return null;
-            }
-        }else{
-            print_r(mysqli_error(GetMyConnection()));
-        }
-    }
 
     public function get_mapping(){
 

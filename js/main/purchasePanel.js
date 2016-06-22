@@ -284,6 +284,7 @@ $(document).ready(function () {
                 if($('.img-user').attr('user_id')==data.employee_id) {
                     controls += '<button class="btn btn-warning control">Restart</button>';
                 }
+                controls += '<a href="/show/'+data.id+'" target="_blank" class="btn btn-primary">View</a>';
                 return controls;
             }
         }],
@@ -360,12 +361,22 @@ $(document).ready(function () {
                 }
             },
             columns: [{
-                field: 'budget_name',
+                field: 'name',
                 title: 'Name:'
                 //sortable:true
             },{
+                field: 'date_time',
+                title: 'Date:',
+                //sortable:true
+                //filterControl:'select'
+            },{
                 field: 'cur_cost',
                 title: 'Cost:'
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'planed_cost',
+                title: 'Planed:'
                 //sortable:true
                 //filterControl:'select'
             }],

@@ -98,9 +98,8 @@ class Iom
     }
 
     public function getIomBudgets($params){
-        $query= " Select concat(bt.name,' ',b.name) as budget_name, ib.cost as cur_cost, ib.budget_id  From iom_budgets as ib".
+        $query= " Select  b.name,b.budget_type,ib.cost as cur_cost, ib.budget_id,b.planed_cost,b.date_time  From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
-                " Left Join budget_type as bt on b.type_id=bt.id".
                 " Where ib.iom_id=".$params['iom_id'];
 
         $query_results = $this->sendQuery($query);
@@ -224,10 +223,21 @@ class Iom
     }
 
     public function getBudgets(){
-        $query="Select b.id, b.date_time, b.planed_cost, bb.name as brand_name, b.brand_id as budget_brand, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+        $query="Select b.id, b.date_time, b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
                 " Left Join budget_brand as bb on b.brand_id=bb.id" .
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
                 " Left Join iom_budgets as ib on b.id = ib.budget_id Where b.deleted=0 and b.department_id=".$_SESSION['user']['department_id']." GROUP BY b.id";
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
+    public function getAllBudgets(){
+        $query="Select b.id, b.date_time,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+            " Left Join budget_brand as bb on b.brand_id=bb.id" .
+            " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
+            " Left Join departments as dep on b.department_id=dep.id" .
+            " Left Join iom_budgets as ib on b.id = ib.budget_id Where b.deleted=0 GROUP BY b.id";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
@@ -257,10 +267,14 @@ class Iom
     public function getDepRoles(){
         $query = "Select id,name,power From roles";
         $query2 = "Select id,name,sub From departments";
-        $query3 = "Select id,name From budget_type";
+//        $query3 = "Select id,name From budget_type";
+        $query4 = "Select id,name From budget_brand";
+        $query5 = "Select id,name From budget_mapping";
         $query_results['roles'] = $this->make_string_select($this->sendQuery($query));
         $query_results['departments'] = $this->make_string_select($this->sendQuery($query2));
-        $query_results['budget_type'] = $this->make_string_select($this->sendQuery($query3));
+//        $query_results['budget_type'] = $this->make_string_select($this->sendQuery($query3));
+        $query_results['brand_name'] = $this->make_string_select($this->sendQuery($query4));
+        $query_results['mapping_name'] = $this->make_string_select($this->sendQuery($query5));
         return ($query_results);
     }
 
@@ -334,11 +348,11 @@ class Iom
     }
 
     public function addBudget($insert_arr){
-        $query = "Insert Into budget (name,type_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['budget_type'].",".$insert_arr['planed_cost'].")";
+        $query = "Insert Into budget (name,brand_id,mapping_id,budget_type,department_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['brand_name'].",".$insert_arr['mapping_name'].",'".$insert_arr['budget_type']."',".$insert_arr['department_name'].",".$insert_arr['planed_cost'].")";
 
+        echo $query;
         $query_results = $this->sendQuery($query);
         $last_id = mysqli_insert_id(GetMyConnection());
-//        echo $query;
         if (!$query_results){
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
@@ -443,7 +457,7 @@ class Iom
     }
 
     public function updateBudget($params){
-        $query = "Update budget Set type_id=".$params['budget_type'].",name='".$params['name']."',planed_cost=".$params['planed_cost']." Where id=".$params['id'];
+        $query = "Update budget Set budget_type='".$params['budget_type']."',brand_id=".$params['brand_name'].",mapping_id=".$params['mapping_name'].",name='".$params['name']."',department_id=".$params['department_name'].",planed_cost=".$params['planed_cost']." Where id=".$params['id'];
 
         $res = $this->sendQuery($query);
 

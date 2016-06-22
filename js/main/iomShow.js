@@ -12,21 +12,31 @@ $(document).ready(function () {
         url: '/php/core.php?method=getIomBudgets',
         contentType: 'application/x-www-form-urlencoded',
         method: 'POST',
-        queryParams: function (p) {
+        queryParams: function (p){
             return {
-                "iom_id": iom_id
+                "iom_id":iom_id
             }
         },
         columns: [{
-            field: 'budget_name',
+            field: 'name',
             title: 'Name:'
             //sortable:true
-        }, {
+        },{
+            field: 'date_time',
+            title: 'Date:',
+            //sortable:true
+            //filterControl:'select'
+        },{
             field: 'cur_cost',
             title: 'Cost:'
             //sortable:true
             //filterControl:'select'
-        }]
+        },{
+            field: 'planed_cost',
+            title: 'Planed:'
+            //sortable:true
+            //filterControl:'select'
+        }],
     });
 
     $('#signers').bootstrapTable({
