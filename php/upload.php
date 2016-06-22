@@ -26,7 +26,7 @@ if ($file_title === '') {
     $file_title = $filenames;
 }
 $ext = pathinfo($filenames, PATHINFO_EXTENSION);
-$target = $_SERVER['DOCUMENT_ROOT']."/uploads" . DIRECTORY_SEPARATOR . $_POST['iom_id'] . "_" . md5(uniqid()) . "." . $ext;
+$target = $_SERVER['DOCUMENT_ROOT']."/uploads/" . $_POST['iom_id'] . "_" . md5(uniqid()) . "." . $ext;
 if(move_uploaded_file($files['tmp_name'], $target)) {
     $success = true;
     $paths[] = $target;

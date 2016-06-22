@@ -22,7 +22,7 @@ class Controller_Edit extends Controller {
             if ($data['id'] == null) {
                 header('Location:/purchase');
             }
-            $this->view->generate('show_view.php', 'template_view.php', $data);
+            $this->view->generate('edit_view.php', 'template_view.php', $data);
         }
     }
 

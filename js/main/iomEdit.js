@@ -17,16 +17,27 @@ $(document).ready(function () {
                 "iom_id": iom_id
             }
         },
-        columns: [{
+        columns: [{checkbox:true},{
             field: 'budget_name',
             title: 'Name:'
             //sortable:true
         }, {
             field: 'cur_cost',
-            title: 'Cost:'
+            title: 'Cost:',
+            formatter: function (id, data, index) {
+                return '<a href="#" class="budget_col">'+data['cur_cost']+'</a>';
+            }
             //sortable:true
             //filterControl:'select'
         }]
+    }).on('load-success.bs.table',function (data){
+        $('.budget_col').editable({
+            type: 'text',
+            title: 'Enter username',
+            success: function(response, newValue) {
+                alert(123);
+            }
+        });
     });
 
     $('#signers').bootstrapTable({

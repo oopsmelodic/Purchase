@@ -27,7 +27,7 @@
     <link href="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.css" rel="stylesheet" type="text/css">
     <link href="/bower_components/ng-table-master/dist/ng-table.min.css" rel="stylesheet" type="text/css">
     <link href="/bower_components/bootstrap-table-master/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet" type="text/css">
-
+    <link href="/bower_components/bootstrap3-editable-1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" type="text/css"/>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -62,7 +62,7 @@
 
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
-    <script src="/bower_components/bootstrap-table-master/extensions/editable/bootstrap-table-editable.js" type="text/javascript"></script>
+    <script src="/bower_components/bootstrap3-editable-1.5.1/bootstrap3-editable/js/bootstrap-editable.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/sticky-header/bootstrap-table-sticky-header.min.js" type="text/javascript"></script>
@@ -126,6 +126,7 @@
 
 <div class="container left" id="myWizard">
     <hr>
+    <legend iom_id="" id="legend_iom">Create Application</legend>
     <div class="progress">
         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="4" style="width: 20%;">
             Step 1 of 3
@@ -146,7 +147,7 @@
         </div>
     </div>
     <div class="tab-content">
-        <form class="tab-pane fade in active" id="step1">
+        <form class="tab-pane fade in active step" id="step1">
 
             <div class="well">
                 <label>Purchase Name: </label>
@@ -162,16 +163,17 @@
                 <button class="btn btn-danger btn-lg first" href="#">Cancel</button>
             </div>
         </form>
-        <form class="tab-pane fade" id="step2">
+        <form class="tab-pane fade step" id="step2">
 
             <div class="form-group col-lg-12 step-body">
-                <div class="col-lg-12 well">
+                <div class="col-lg-12">
                     <label>Expense type: </label>
-                    <select id="budget_select" data-live-search="true" data-minlength="1" data-selector="true" class="selectpicker form-control" data-width="100%" multiple data-selected-text-format="count" required>
-                        <?php echo $data['budgets'];?>
-                    </select>
+<!--                    <select id="budget_select" data-live-search="true" data-minlength="1" data-selector="true" class="selectpicker form-control" data-width="100%" multiple data-selected-text-format="count" required>-->
+<!--                        --><?php //echo $data['budgets'];?>
+<!--                    </select>-->
+                    <table id="purchase_budget_table"></table>
                 </div>
-                <div class="col-lg-12 well" id="budget_inputs">
+                <div class="col-lg-12" id="budget_inputs">
                 </div>
             </div>
             <div class="step-footer form-group">
@@ -181,7 +183,7 @@
             </div>
 
         </form>
-        <form class="tab-pane fade" id="step3">
+        <form class="tab-pane fade step" id="step3">
             <div class="step-body">
                 <ul class="list-group" id="chain_list">
                     <li class="list-group-item">
@@ -241,8 +243,10 @@
                 <button class="btn btn-danger btn-lg first" href="#">Cancel</button>
             </div>
         </form>
-        <form class="tab-pane fade" id="step4">
-
+        <form class="tab-pane fade step" id="step4">
+            <div class="form-group col-lg-12 step-body">
+                <div id="reset_files"></div>
+            </div>
             <div class="form-group col-lg-12 step-body">
                 <input id="input-1" multiple type="file" class="file file-loading" data-allowed-file-extensions='["txt","jpg","tif","doc","pdf","webm"]'>
             </div>

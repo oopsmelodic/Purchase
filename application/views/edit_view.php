@@ -1,15 +1,7 @@
-
-/**
- * Created by PhpStorm.
- * User: melodic
- * Date: 16.06.2016
- * Time: 3:05
- */
-
 <div id="container-fluid">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -78,8 +70,19 @@
                                                 <h4 class="col-lg-4"><legend id="user_id" user_id="<?php echo $data['employee_id'] ?>"><span class="label label-default">Initiator:</span>  <?php echo $data['fullname']; ?> </legend></h4>
                                                 <h4 class="col-lg-4"><legend id="department_id" department_id="<?php echo $data['department_id'] ?>"><span class="label label-default">Department:</span> <?php echo $data['department']; ?></legend></h4>
                                                 <h4 class="col-lg-4"><legend><span class="label label-default">Date:</span> <?php echo date('d.m.Y', strtotime($data['time_stamp'])); ?></legend></h4>
+                                                <h3 class="col-lg-4"><span class="label label-default"> Purchase name: </span></h3>
+                                                <div class="col-lg-12">
+                                                    <!--<textarea id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required disabled="true"></textarea>-->
+                                                    <input class="form-control" name="purchasename" value="<?php echo $data['name']; ?>">
+                                                </div>
+                                                <h3 class="col-lg-6"><span class="label label-default"> Substantiation: </span></h3>
+                                                <div class="col-lg-12">
+                                                    <!--<textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>-->
+<!--                                                    <div class="iominfo" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;">--><?php //echo $data['substantation']; ?><!--</div>-->
+                                                    <textarea name="summernote" id="summernote" cols="10" rows="10"><?php echo $data['substantation']; ?></textarea>
+                                                </div>
                                             </div>
-                                            <div class="col-lg-12 form-group">
+                                            <div class="form-group col-lg-12 ">
                                                 <div class="col-lg-6">
                                                     <h4 class="col-lg-6"><span class="label label-default">Budgets:</span></h4>
                                                     <table id="budgets"></table>
@@ -87,23 +90,50 @@
                                                 <div class="col-lg-6">
                                                     <h4 class="col-lg-6"><span class="label label-default">Signers:</span></h4>
                                                     <table id="signers"></table>
-
                                                 </div>
                                             </div>
 
-                                            <div id="pagebreaker" class="form-group">
-                                                <h3 class="col-lg-4"><span class="label label-default"> Purchase name: </span></h3>
-                                                <div class="col-lg-12">
-                                                    <!--<textarea id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required disabled="true"></textarea>-->
-                                                    <div class="iominfo" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['name']; ?></div>
-                                                </div>
-                                            </div>
+
                                             <div class="form-group">
                                                 <div class="col-lg-7">
-                                                    <h3 class="col-lg-6"><span class="label label-default"> Substantiation: </span></h3>
+                                                    <h3 class="col-lg-4"><span class="label label-default"> Comments: </span></h3>
                                                     <div class="col-lg-12">
-                                                        <!--<textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>-->
-                                                        <div class="iominfo" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['substantation']; ?></div>
+                                                        <div class='comments' ng-controller='CommentsCtrl'>
+                                                            <h3>
+                                                                {{comments.length}} Comments
+                                                            </h3>
+                                                            <ul>
+                                                                <li ng-repeat='comment in comments'>
+                                                                    <div class='comment approved'>
+                                                                        <h4>
+                                                                            {{comment.fullname}}:
+                                                                        </h4>
+                                                                        <p>
+                                                                            {{comment.text}}
+                                                                            <small>
+                                                                                {{comment.time_stamp}}
+                                                                            </small>
+                                                                        </p>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                            <form>
+                                                                <fieldset>
+                                                                    <legend>
+                                                                        Your comment
+                                                                    </legend>
+                                                                    <div>
+                                                                        <label>
+                                                                            Comment:
+                                                                            <textarea ng-model='text'></textarea>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div>
+                                                                        <input class='button' ng-click='submit()' type='submit' value='Submit'>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-5">
@@ -112,47 +142,6 @@
                                                         <div class="col-lg-12" id="files" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;">
 
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <h3 class="col-lg-4"><span class="label label-default"> Comments: </span></h3>
-                                                <div class="col-lg-12">
-                                                    <div class='comments' ng-controller='CommentsCtrl'>
-                                                        <h3>
-                                                            {{comments.length}} Comments
-                                                        </h3>
-                                                        <ul>
-                                                            <li ng-repeat='comment in comments'>
-                                                                <div class='comment approved'>
-                                                                    <h4>
-                                                                        {{comment.fullname}}:
-                                                                    </h4>
-                                                                    <p>
-                                                                        {{comment.text}}
-                                                                        <small>
-                                                                            {{comment.time_stamp}}
-                                                                        </small>
-                                                                    </p>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                        <form>
-                                                            <fieldset>
-                                                                <legend>
-                                                                    Your comment
-                                                                </legend>
-                                                                <div>
-                                                                    <label>
-                                                                        Comment:
-                                                                        <textarea ng-model='text'></textarea>
-                                                                    </label>
-                                                                </div>
-                                                                <div>
-                                                                    <input class='button' ng-click='submit()' type='submit' value='Submit'>
-                                                                </div>
-                                                            </fieldset>
-                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>

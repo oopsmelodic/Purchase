@@ -24,18 +24,19 @@ class Iom
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
-        $query= "SELECT im.id, im.employee_id, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation,".
-            " (Select concat(' ',sc.status,' by ',em.fullname,'|',sc.time_stamp )".
-            " From sign_chain as sc".
-            " Left Join employee as em on em.id=sc.employee_id".
-            " Where sc.iom_id=im.id and sc.status!='in progress'".
-            " ORDER BY sc.time_stamp DESC".
+        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+            " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )".
+            " From iom_history as ih".
+            " Left Join employee as em on em.id=ih.employee_id".
+            " Where ih.iom_id=im.id".
+            " ORDER BY ih.date_time DESC".
             " LIMIT 1) as latest_action,".
             "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status,".
             "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id) as user_last_status".
             " FROM iom as im".
-            " Left Join employee as em on im.employee_id=em.id".
-            " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id;
+            " Left Join employee as em on im.employee_id=em.id" .
+            " Left Join departments as dep on em.department_id=dep.id".
+            " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id." ORDER BY im.id DESC";
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
@@ -50,6 +51,17 @@ class Iom
                     $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
                     break;
             }
+            switch ($value['user_last_status']){
+                case "in progress":
+                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "Approved":
+                    $query_results[$key]['user_last_status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "Canceled":
+                    $query_results[$key]['user_last_status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+            }
             $time_array = explode('|',$value['latest_action']);
             $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
         }
@@ -58,7 +70,7 @@ class Iom
     }
 
     public function getIomSigners($params){
-        $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status".
+        $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status,sc.employee_id".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
             " Where sc.iom_id=".$params['iom_id'];
@@ -86,7 +98,7 @@ class Iom
     }
 
     public function getIomBudgets($params){
-        $query= " Select concat(bt.name,' ',b.name) as budget_name, ib.cost as cur_cost  From iom_budgets as ib".
+        $query= " Select concat(bt.name,' ',b.name) as budget_name, ib.cost as cur_cost, ib.budget_id  From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
                 " Left Join budget_type as bt on b.type_id=bt.id".
                 " Where ib.iom_id=".$params['iom_id'];
@@ -215,7 +227,7 @@ class Iom
         $query="Select b.id, b.date_time, b.planed_cost, bb.name as brand_name, b.brand_id as budget_brand, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
                 " Left Join budget_brand as bb on b.brand_id=bb.id" .
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
-                " Left Join iom_budgets as ib on b.id = ib.budget_id Where b.deleted=0 GROUP BY b.id";
+                " Left Join iom_budgets as ib on b.id = ib.budget_id Where b.deleted=0 and b.department_id=".$_SESSION['user']['department_id']." GROUP BY b.id";
 
         $query_results = $this->sendQuery($query);
         return $query_results;
@@ -444,7 +456,7 @@ class Iom
         }
     }
 
-    public function addIomReq($params){
+    public function createIomReq($params){
         $chain = json_decode($params['sign_chain']);
         $budgets = json_decode($params['budgets'],true);
         $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
@@ -488,6 +500,57 @@ class Iom
 
     }
 
+    public function updateIomReq($params){
+        $chain = json_decode($params['sign_chain']);
+        $budgets = json_decode($params['budgets'],true);
+        $query = "Update iom Set name='".$params["purchase_text"]."', substantation='".$params['substantiation_text']."'".
+            " Where id=".$params['iom_id'];
+        $result = $this->sendQuery($query);
+
+
+        $iom_num = $params['iom_id'];
+
+        $this->addIomEvent($iom_num,$params["employee_id"],'Restarted');
+
+        $query = "Delete From sign_chain Where iom_id=".$params['iom_id'];
+
+        $result = $this->sendQuery($query);
+
+        $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
+        foreach($chain as $key=>$value){
+            if (!is_null($value)) {
+                foreach ($value as $v) {
+                    $query .= "(".$iom_num.",".$v.",'in progress'),";
+                    $this->sendMessage('Application #'.$iom_num.' Updated!',$params['purchase_text'],$v,10000);
+                }
+            }
+        }
+
+        $this->sendMessage('Application #'.$iom_num.' has been Restarted',$params['purchase_text'],$_SESSION['user']['id'],10000);
+
+        $res = $this->sendQuery(trim($query,','));
+
+        $query = "Delete From iom_budgets Where iom_id=".$params['iom_id'];
+
+        $result = $this->sendQuery($query);
+
+        if (count($budgets) != 0) {
+            $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
+            foreach ($budgets as $key => $value) {
+                $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
+            }
+
+            $res = $this->sendQuery(trim($query, ','));
+        }
+        if ($result){
+            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
+        }else{
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+
+
+    }
+
     public function signIom($params){
         $type='Error';
         if ($params['type']=='Confirm'){
@@ -507,6 +570,11 @@ class Iom
                 $this->sendToSigners($params['id'],$type,$params['user_session_fullname']);
 
                 $this->addIomEvent($params['id'],$params['user_session_id'],$type);
+
+                if ($params['comment']!='') {
+                    $mass =  Array('user_session_id' => $params['user_session_id'], 'iom_id' => $params['id'], 'text' => $params['comment']);
+                    $this->newComment($mass);
+                }
 
                 return Array('type' => 'success', 'id' => $params['id']);
             } else {
