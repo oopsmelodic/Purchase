@@ -346,15 +346,15 @@ window.operateEvents = {
                     url: "php/core.php?method=delete"+table.capitalizeFirstLetter(),
                     type: "POST",
                     dataType:"json",
-                    async: 0,
+                    async: 1,
                     data: {"id": row["id"]}
                 }).success(function (data) {
                     if (data['type'] == "success"){
+                        swal("Deleted!", "Deleted row by name: '" + row['name'] + "'.", "success");
                         $('#datatable').bootstrapTable('remove', {
                             field: 'id',
                             values: [row.id]
                         });
-                        swal("Deleted!", "Deleted row by name: '" + row['name'] + "'.", "success");
                     }else{
                         swal("Request Error!",data['error_msg'],"error");
                     }

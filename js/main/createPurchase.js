@@ -69,7 +69,9 @@ $(function(){
         $(e.target).selectpicker('toggle');
     });
 
-    $('#summernote').summernote();
+    $('#summernote').summernote({
+        height: 150
+    });
 
     $('.tab-pane').validator().on('submit', function (e) {
         if (e.isDefaultPrevented()) {
@@ -108,7 +110,17 @@ $(function(){
 
         //e.relatedTarget // previous tab
 
-    })
+    });
+
+    $('#myWizardMini').click(function (e){
+        if ($('#myWizard').hasClass('right')){
+            $('#myWizard').removeClass('animated right').addClass('animated half');
+            $('#myWizardMini i').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+        }else{
+            $('#myWizard').removeClass('animated half').addClass('animated right');
+            $('#myWizardMini i').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+        }
+    });
 
     $('.first').click(function(){
         resetForm();

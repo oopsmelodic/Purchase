@@ -97,8 +97,12 @@ class Iom
         return $query_results;
     }
 
+    public function sendInvoiceSum(){
+
+    }
+
     public function getIomBudgets($params){
-        $query= " Select  b.name,b.budget_type,ib.cost as cur_cost, ib.budget_id,b.planed_cost,b.date_time  From iom_budgets as ib".
+        $query= " Select  b.name,b.budget_type,ib.cost as cur_cost, ib.budget_id,b.planed_cost,b.date_time From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
                 " Where ib.iom_id=".$params['iom_id'];
 
@@ -517,7 +521,7 @@ class Iom
     public function updateIomReq($params){
         $chain = json_decode($params['sign_chain']);
         $budgets = json_decode($params['budgets'],true);
-        $query = "Update iom Set name='".$params["purchase_text"]."', substantation='".$params['substantiation_text']."'".
+        $query = "Update iom Set name='".$params["purchase_text"]."', substantation='".$params['substantiation_text']."',status='in progress'".
             " Where id=".$params['iom_id'];
         $result = $this->sendQuery($query);
 

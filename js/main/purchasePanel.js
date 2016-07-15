@@ -226,7 +226,7 @@ window.operateEvents = {
 
 $(document).ready(function () {
 
-    $('#summernote').summernote();
+    //$('#summernote').summernote();
 
     $('.selectpicker').selectpicker({
         noneSelectedText: '',
@@ -234,7 +234,7 @@ $(document).ready(function () {
     });
     //getUsersJSON();
     //$('#chain_list').validator();
-    $('#summernote').summernote({height: 300});
+    $('#summernote').summernote({height: 150});
     //$('.personOK').click(function (event) {
     //    event.preventDefault();
     //    if (event.target.nodeName == "BUTTON")
@@ -299,19 +299,21 @@ $(document).ready(function () {
         detailFormatter: function (index, row){
             var div = $('<div class="col-lg-12"></div>');
             div.append('<div class="col-lg-6">' +
-                        '<span class="label label-primary">Budgets: </span>' +
-                        '<table id="budget_'+index+'"></table>' +
-                        '<span class="label label-primary">Substantation: </span><br><div style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
-                        '<span class="label label-primary">Comments: </span>' +
-                        '<div id="comments_'+index+'"></div>' +
-                        '<span class="label label-primary">Files: </span>' +
+                        '<legend>Budgets: </legend>' +
+                        '<table class="box-shadow table-bordered" id="budget_'+index+'"></table>' +
+                        '<legend>Substantation: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
+                        '<legend>Comments: </legend>' +
+                        '<div class="box-shadow comments-table" id="comments_'+index+'"></div>' +
+                        '<legend>Files: </legend>' +
                         '<div id="files_'+index+'"></div>' +
                     '</div>');
             div.append('<div class=col-lg-6>' +
-                        '<span class="label label-primary">Signers: </span>' +
-                        '<table id="signers_'+index+'"></table>' +
-                        '<span class="label label-primary">Events: </span>' +
-                        '<table id="events_'+index+'"></table>' +
+                        '<legend>Signers: </legend>' +
+                        '<table class="table-bordered" id="signers_'+index+'"></table>' +
+                        '<legend>Events: </legend>' +
+                        '<table class="table-bordered" id="events_'+index+'"></table>' +
+                        '<legend>Test: </legend>'+
+                        '<input id="invoiceSum" type="number" class="form-control"><button class="btn btn-primary">Apply Sum</button>'+
                     '</div>');
 
             return div.html();
@@ -370,13 +372,13 @@ $(document).ready(function () {
                 //sortable:true
                 //filterControl:'select'
             },{
-                field: 'cur_cost',
-                title: 'Cost:'
+                field: 'planed_cost',
+                title: 'Available Balance:'
                 //sortable:true
                 //filterControl:'select'
             },{
-                field: 'planed_cost',
-                title: 'Planed:'
+                field: 'cur_cost',
+                title: 'Iom Cost:'
                 //sortable:true
                 //filterControl:'select'
             }],
@@ -394,20 +396,23 @@ $(document).ready(function () {
             },
             columns: [{
                 field: 'fullname',
-                title: 'User: ',
+                title: '',
                 width:'100%',
-                align:'left'
+                align:'left',
+                formatter: function(id,data,index){
+                    return '<span style="text-decoration:underline;"><i class="fa fa-commenting-o"></i>&nbsp;'+data['fullname']+'</span>';
+                }
                 //sortable:true
             },{
                 field: 'text',
-                title: 'Comment: ',
+                title: '',
                 width:'100%',
                 align:'left'
                 //sortable:true
                 //filterControl:'select'
             },{
                 field: 'time_stamp',
-                title: ' ',
+                title: '',
                 width:'100%',
                 align:'left'
                 //sortable:true

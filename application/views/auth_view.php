@@ -71,7 +71,7 @@
     <form  role="form" action="" method="post" class="form-horizontal " autocomplete="off">
       <fieldset>
         <legend>
-          <i class="glyphicon  glyphicon-send" aria-hidden="true"></i> Coordinator
+          <img src="/img/logo.png" style="height: 64px">
         </legend>
         <div class="form-group">
 <!--          <label for="inputPassword" class="col-lg-3 control-label">Username</label>-->

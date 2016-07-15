@@ -4,7 +4,7 @@
     <!-- Page Heading -->
     <div class="row">
         <div class="col-lg-12" style="padding:0px;">
-            <ul class="nav nav-pills" style="margin-bottom: 15px;">
+            <ul class="nav nav-pills" style="margin-bottom: 15px; display: none;">
                 <li class="active"><a data-toggle="pill" href="#home">My active appliements</a></li>
 <!--                <li class=""><a data-toggle="pill" href="#menu2">My active 123</a></li>-->
             </ul>
@@ -17,7 +17,7 @@
                             </a>
                         </div>
                         <div class="table-responsive">
-                            <table id="testtable" class="table table-bordered" style="table-layout:fixed; margin-bottom: 0px; margin-right: 10px;">
+                            <table id="testtable" class="table table-striped table-bordered" style="table-layout:fixed; margin-bottom: 0px; margin-right: 10px;">
                             </table>
                         </div>
                     </div>

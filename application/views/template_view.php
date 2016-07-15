@@ -74,7 +74,7 @@
 <div id="wrapper" ng-app="mainApp" ng-controller="myNotify">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-fixed-top" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -83,7 +83,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/"><i class="glyphicon  glyphicon-send" aria-hidden="true"></i> Coordinator</a>
+            <a class="navbar-brand" href="/"><img src="/img/logo.png" style="display: inline-block;" height="30"> IOM Manager</a>
         </div>
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
@@ -125,8 +125,8 @@
 </div>
 
 <div class="container left" id="myWizard">
-    <hr>
-    <legend iom_id="" id="legend_iom">Create Application</legend>
+    <br>
+    <legend iom_id="" id="legend_iom">Create Application</legend><button id="myWizardMini" class="btn btn-default"><i class="fa fa-chevron-left"></i></button>
     <div class="progress">
         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="4" style="width: 20%;">
             Step 1 of 3
@@ -154,7 +154,7 @@
                 <input id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required>
                 <span class="help-block with-errors"></span>
                 <label>Substantiation: </label>
-                <textarea name="summernote" id="summernote" cols="10" rows="10"></textarea>
+                <textarea name="summernote" id="summernote" cols="10" rows="10"><br></textarea>
                 <!--                <span class="help-block with-errors"></span>-->
             </div>
             <div class="step-footer form-group">
@@ -191,6 +191,16 @@
                         <div class="col-lg-9 form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['Department leader']);?>
+                            </select>
+                            <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                            <span class="help-block with-errors"></span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial assistant</h5>
+                        <div class="col-lg-9  form-group">
+                            <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
+                                <?php echo implode('', $data['roles']['Financial assistant']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
                             <span class="help-block with-errors"></span>

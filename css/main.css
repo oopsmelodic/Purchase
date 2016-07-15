@@ -57,7 +57,7 @@
     position: absolute;
     top:50%;
     width: 500px;
-    height: 220px;
+    height: 255px;
     left: 50%;	
     margin-left: -250px;	
     margin-top: -110px;	
@@ -154,7 +154,7 @@
     position: fixed;
     z-index: 9999;
     background-color: #fff;
-    width: 40%;
+    width: 100%;
     top:0;
     left: 0;
     height: 100%;
@@ -165,10 +165,13 @@
     -webkit-transition: .7s all;
 }
 #myWizard.left{
-    margin-left: -41%;
+    margin-left: -100%;
 }
 #myWizard.right{
     margin-left: 0;
+}
+#myWizard.half{
+    margin-left: -98%;
 }
 #myWizard .step-body{
     margin-bottom: 80px;
@@ -178,14 +181,71 @@
     position: fixed;
     background-color: #fff;
     bottom: 0;
-    width: 37%;
+    width: 97%;
     margin-bottom: 0;
     padding-bottom: 20px;
     padding-top: 5px;
     border-top: 1px solid #c1c1c1;
     z-index: 9999;
 }
+#myWizardMini{
+    position: absolute;
+    right: 1px;
+    top: 15px;
+}
 .control-block{
     position: absolute;
     right: 0;
+}
+.detail-view:hover{
+    background-color: #fff!important;
+}
+.box-shadow{
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0, .65);
+    -moz-box-shadow: 0 0 10px rgba(0,0,0, .65);
+    box-shadow: 0 0 10px rgba(0,0,0, .65);
+}
+
+.comments-table tr{
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    background-color: #E1E1E1;
+    color: #000;
+    -webkit-transition: background-color 0.5s ease-out;
+    -moz-transition: background-color 0.5s ease-out;
+    -o-transition: background-color 0.5s ease-out;
+    transition: background-color 0.5s ease-out;
+    width: 100%;
+    position: relative;
+}
+
+.comments-table tr:nth-child(even){
+    background-color:#4679BD;
+    color:#fff;
+}
+
+.comments-table tr .card-view:first-child{
+    /*width:0px!important;*/
+}
+
+.fixed-table-container{
+    border: 0px!important;
+}
+
+.comments-table .card-view .title {
+    min-width: 0!important;
+    width: 0 !important;;
+}
+
+.comments-table tbody>tr:hover {
+    background-color: #B5B5B5!important;
+}
+
+.comments-table tbody>tr:nth-child(even):hover {
+    background-color: #5E9FF7!important;
+}
+.comments-table tr td .card-view:last-child{
+    font-size: 0.8em;
+    float: right;
+    margin-top: 15px;
+    opacity: .6;
 }
