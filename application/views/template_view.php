@@ -70,7 +70,7 @@
     <script src="/js/main/app.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body lang="en">
 <div id="wrapper" ng-app="mainApp" ng-controller="myNotify">
 
     <!-- Navigation -->
@@ -83,7 +83,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/"><img src="/img/logo.png" style="display: inline-block;" height="30"> IOM Manager</a>
+            <a class="navbar-brand" href="/"><img src="/img/logo.png" style="display: inline-block;" height="30"> IOM Tracking System</a>
         </div>
         <!-- Top Menu Items -->
         <ul class="nav navbar-right top-nav">
@@ -147,13 +147,13 @@
         </div>
     </div>
     <div class="tab-content">
-        <form class="tab-pane fade in active step" id="step1">
+        <form class="tab-pane fade in active step" lang="en" id="step1">
 
             <div class="well">
-                <label>Purchase Name: </label>
+                <label>IOM Name: </label>
                 <input id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required>
                 <span class="help-block with-errors"></span>
-                <label>Substantiation: </label>
+                <label>Description: </label>
                 <textarea name="summernote" id="summernote" cols="10" rows="10"><br></textarea>
                 <!--                <span class="help-block with-errors"></span>-->
             </div>
@@ -167,7 +167,7 @@
 
             <div class="form-group col-lg-12 step-body">
                 <div class="col-lg-12">
-                    <label>Expense type: </label>
+                    <label>Budgets: </label>
 <!--                    <select id="budget_select" data-live-search="true" data-minlength="1" data-selector="true" class="selectpicker form-control" data-width="100%" multiple data-selected-text-format="count" required>-->
 <!--                        --><?php //echo $data['budgets'];?>
 <!--                    </select>-->

@@ -13,7 +13,7 @@
                     <div class="col-lg-12 shadow">
                         <div id="toolbar">
                             <a id="newPurchase" href="#" class="btn btn-success">
-                                <i class="glyphicon glyphicon-plus"></i> New appliements
+                                <i class="glyphicon glyphicon-plus"></i> New IOM
                             </a>
                         </div>
                         <div class="table-responsive">

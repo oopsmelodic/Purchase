@@ -227,6 +227,10 @@
     /*width:0px!important;*/
 }
 
+.comments-table{
+    border-bottom: none!important;
+}
+
 .fixed-table-container{
     border: 0px!important;
 }
@@ -248,4 +252,7 @@
     float: right;
     margin-top: 15px;
     opacity: .6;
+}
+legend{
+    margin-bottom: 5px!important;
 }

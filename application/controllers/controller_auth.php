@@ -40,7 +40,7 @@ class Controller_Auth extends Controller
         {
                 session_start();
                 if (isset($_SESSION["login_status"])){
-                    header('Location:/main');
+                    header('Location:/purchase');
                 }else{
                     session_destroy();
                 }

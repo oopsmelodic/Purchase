@@ -24,7 +24,7 @@ class Iom
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
-        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp, im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
             " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )".
             " From iom_history as ih".
             " Left Join employee as em on em.id=ih.employee_id".
@@ -97,8 +97,16 @@ class Iom
         return $query_results;
     }
 
-    public function sendInvoiceSum(){
+    public function sendInvoiceSum($params){
+        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
 
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','event_id'=>$params['iom_id']);
+        }
     }
 
     public function getIomBudgets($params){

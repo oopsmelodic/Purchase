@@ -301,10 +301,10 @@ $(document).ready(function () {
             div.append('<div class="col-lg-6">' +
                         '<legend>Budgets: </legend>' +
                         '<table class="box-shadow table-bordered" id="budget_'+index+'"></table>' +
-                        '<legend>Substantation: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
+                        '<legend>Description: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
                         '<legend>Comments: </legend>' +
                         '<div class="box-shadow comments-table" id="comments_'+index+'"></div>' +
-                        '<legend>Files: </legend>' +
+                        '<legend>Attachments: </legend>' +
                         '<div id="files_'+index+'"></div>' +
                     '</div>');
             div.append('<div class=col-lg-6>' +
@@ -312,8 +312,8 @@ $(document).ready(function () {
                         '<table class="table-bordered" id="signers_'+index+'"></table>' +
                         '<legend>Events: </legend>' +
                         '<table class="table-bordered" id="events_'+index+'"></table>' +
-                        '<legend>Test: </legend>'+
-                        '<input id="invoiceSum" type="number" class="form-control"><button class="btn btn-primary">Apply Sum</button>'+
+                        '<legend>Invoice Sum: </legend>'+
+                        '<input id="invoiceSum_'+index+'" type="number" class="form-control"><button id="applysum_'+index+'" class="btn btn-primary">Apply Sum</button>'+
                     '</div>');
 
             return div.html();
@@ -325,6 +325,7 @@ $(document).ready(function () {
         //    shortcuts: false
         //});
         console.log(row);
+
         var iom_id = row['id']
         $('#summer_'+index).code(row['substantation']);
         $('#signers_'+index).bootstrapTable({
@@ -381,6 +382,11 @@ $(document).ready(function () {
                 title: 'Iom Cost:'
                 //sortable:true
                 //filterControl:'select'
+            },{
+                title: 'Reformed Balance:',
+                formatter: function(id,data,index){
+                    return data['planed_cost']-data['cur_cost'];
+                }
             }],
         });
 
@@ -535,6 +541,26 @@ $(document).ready(function () {
             $('#files_'+index).html(divHTML);
             console.log(divHTML);
         });
+
+        $('#invoiceSum_'+index).val(parseInt(row['actualcost']));
+
+        $('#applysum_'+index).off('click').on('click',function (){
+            $.ajax({
+                url: '/php/core.php?method=sendInvoiceSum',
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                method: 'POST',
+                data: { "iom_id" : row['id'],"invoice": $('#invoiceSum_'+index).val() }
+            }).success(function (data) {
+                if (data['type']=='success'){
+                    swal("Success!", "Success update invoice sum.", "success");
+                    $('#testtable').bootstrapTable('refresh');
+                }else{
+                    swal("Canceled!", "Unknown error.", "success");
+                }
+            });
+        });
+
     });
 
     //$(".table").fixMe();
