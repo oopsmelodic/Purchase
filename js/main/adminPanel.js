@@ -1,6 +1,11 @@
 var valid = ["username", "email", "fullname", "position", "password"];
 var deproles;
 
+function format_money(n) {
+    var fixed = parseInt(n);
+    return  fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
+}
+
 String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
@@ -96,6 +101,15 @@ $(document).ready(function () {
                         title: '#',
                         sortable:true
                     },{
+                        title:'ID',
+                        sortable:true,
+                        formatter: function(id,data){
+
+                            var d = new Date.parse(data['budget_date'])
+
+                            return 'FY-'+d.toString('yyyy');
+                        }
+                    },{
                         field:'name',
                         title: 'Name:',
                         sortable:true
@@ -118,13 +132,23 @@ $(document).ready(function () {
                     },{
                         field:'planed_cost',
                         title: 'Planed Cost:',
-                        sortable:true
+                        sortable:true,
+                        formatter: function(id,data){
+                            return format_money(data['planed_cost'])
+                        }
                     },{
                         field:'cur_sum',
                         title: 'Current Sum:',
-                        sortable:true
+                        sortable:true,
+                        formatter: function(id,data){
+                            if (data['cur_sum']!=null) {
+                                return format_money(data['cur_sum']);
+                            }else{
+                                return format_money(data['planed_cost']);
+                            }
+                        }
                     });
-                    groupfield = ["brand_name"];
+                    groupfield = ["department_name"];
                     method = "getAllBudgets";
 
                 break;

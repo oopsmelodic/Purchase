@@ -34,6 +34,12 @@
 //    };
 //})(jQuery);
 
+function format_money(n) {
+    var fixed = parseInt(n);
+    return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
+}
+
+
 var filetypes = {"txt": "text-o", "docx": "word-o", "doc": "word-o", "ptt": "powerpoint-o", "pttx": "powerpoint-o", "zip": "archive-o", "rar": "archive-o", "pdf": "pdf-o", "jpg": "image-o", "png": "image-o", "ttif": "image-o", "xls": "excel-o", "xlsx": "excel-o"};
 
 window.operateEvents = {
@@ -127,12 +133,18 @@ window.operateEvents = {
                     title: 'Name:',
                 },{
                     field: 'cur_sum',
-                    title: 'Current Sum:'
+                    title: 'Current Sum:',
+                    formatter: function(id,data){
+                        return format_money(data['cur_sum'])
+                    }
                     //sortable:true
                     //filterControl:'select'
                 },{
                     field: 'planed_cost',
-                    title: 'Planed Cost:'
+                    title: 'Planed Cost:',
+                    formatter: function(id,data){
+                        return format_money(data['planed_cost'])
+                    }
                     //sortable:true
                     //filterControl:'select'
                 },{
@@ -374,18 +386,25 @@ $(document).ready(function () {
                 //filterControl:'select'
             },{
                 field: 'planed_cost',
-                title: 'Available Balance:'
+                title: 'Available Balance:',
+                formatter: function(id,data){
+                    return format_money(data['planed_cost'])
+                }
                 //sortable:true
                 //filterControl:'select'
             },{
                 field: 'cur_cost',
-                title: 'Iom Cost:'
+                title: 'Iom Cost:',
+                formatter: function(id,data){
+                    return format_money(data['cur_cost'])
+                }
                 //sortable:true
                 //filterControl:'select'
             },{
                 title: 'Reformed Balance:',
                 formatter: function(id,data,index){
-                    return data['planed_cost']-data['cur_cost'];
+                    var sum = data['planed_cost']-data['cur_cost'];
+                    return format_money(sum);
                 }
             }],
         });

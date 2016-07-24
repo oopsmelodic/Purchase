@@ -42,6 +42,7 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/validator.js"></script>
+    <script src="/js/date.js"></script>
     <script src="/js/sweetalert.min.js" type="text/javascript"></script>
     <!--    <script src="/js/main/purchasePanel.js" type="text/javascript"></script>-->
     <script type="text/javascript" src="/js/jquery.treegrid.js"></script>

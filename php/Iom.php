@@ -245,7 +245,7 @@ class Iom
     }
 
     public function getAllBudgets(){
-        $query="Select b.id, b.date_time,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+        $query="Select b.id, b.date_time,b.budget_date,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
             " Left Join budget_brand as bb on b.brand_id=bb.id" .
             " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
             " Left Join departments as dep on b.department_id=dep.id" .
@@ -496,12 +496,17 @@ class Iom
         $this->addIomEvent($iom_num,$params["employee_id"],'Created');
 
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
+        $status = 'pending';
         foreach($chain as $key=>$value){
             if (!is_null($value)) {
                 foreach ($value as $v) {
-                    $query .= "(".$iom_num.",".$v.",'in progress'),";
+                    if ($v === reset($value)){
+                        $status = 'in progress';
+                    }else{
+                        $status = 'pending';
+                    }
+                    $query .= "(".$iom_num.",".$v.",'".$status."'),";
                     $this->sendMessage('Application #'.$iom_num.' Created!',$params['purchase_text'],$v,10000);
-
                 }
             }
         }

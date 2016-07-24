@@ -197,6 +197,9 @@
     position: absolute;
     right: 0;
 }
+.detail-view{
+    border-bottom: 3px solid #ef9c00;
+}
 .detail-view:hover{
     background-color: #fff!important;
 }
