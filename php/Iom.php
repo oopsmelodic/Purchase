@@ -47,6 +47,9 @@ class Iom
                 case "pending":
                     $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
                     break;
+                case "N/A":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
                 case "Approved":
                     $query_results[$key]['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['status'].'</span>';
                     break;
@@ -59,6 +62,9 @@ class Iom
                     $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
                     break;
                 case "pending":
+                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "N/A":
                     $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
                     break;
                 case "Approved":
@@ -91,6 +97,9 @@ class Iom
                     break;
                 case "pending":
                     $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "N/A":
+                    $query_results[$key]['status']='<span class="label label-primary"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
                     break;
                 case "Approved":
                     $query_results[$key]['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['status'].'</span>';
@@ -538,7 +547,7 @@ class Iom
                     }
                     if ($value == end($chain)){
                         if ($iom_cost<300000){
-                            $query .= "(" . $iom_num . "," . $v . ",'Approved'),";
+                            $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
                         }else{
                             $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
                         }
@@ -578,6 +587,24 @@ class Iom
 
         $result = $this->sendQuery($query);
 
+        $query = "Delete From iom_budgets Where iom_id=".$params['iom_id'];
+
+        $result = $this->sendQuery($query);
+
+        $iom_cost = 0;
+
+        if (count($budgets) != 0) {
+            $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
+            foreach ($budgets as $key => $value) {
+                $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
+                $iom_cost+=intval($value['value']);
+            }
+
+            $res = $this->sendQuery(trim($query, ','));
+        }
+
+        $this->addIomEvent($iom_num,$params["employee_id"],'Created');
+
         $query = "INSERT INTO sign_chain(iom_id,employee_id,status) Values ";
 
         $status ='pending';
@@ -593,27 +620,23 @@ class Iom
                     if ($status == 'in progress'){
                         $this->sendMessage('IOM #' . $iom_num . ' Created!', $params['purchase_text'], $v, 3000);
                     }
-                    $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
+                    if ($value == end($chain)){
+                        if ($iom_cost<300000){
+                            $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
+                        }else{
+                            $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
+                        }
+                    }else{
+                        $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
+                    }
                 }
             }
         }
 
-        $this->sendMessage('IOM #'.$iom_num.' has been Restarted',$params['purchase_text'],$_SESSION['user']['id'],10000);
+        $this->sendMessage('You created IOM #'.$iom_num,$params['purchase_text'],$_SESSION['user']['id'],10000);
 
         $res = $this->sendQuery(trim($query,','));
 
-        $query = "Delete From iom_budgets Where iom_id=".$params['iom_id'];
-
-        $result = $this->sendQuery($query);
-
-        if (count($budgets) != 0) {
-            $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
-            foreach ($budgets as $key => $value) {
-                $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
-            }
-
-            $res = $this->sendQuery(trim($query, ','));
-        }
         if ($result){
             return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
         }else{
@@ -645,7 +668,7 @@ class Iom
 
             $next_id = intval($row['id'])+1;
 
-            $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved'";
+            $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved' or status=!='N/A'";
 
             $res2 = mysqli_query(GetMyConnection(), $query);
 
@@ -756,7 +779,7 @@ class Iom
 
     function checkIom($iom_id){
         $query = "Select im.id,im.name,count(sc.id) as need_count, ".
-                  "(Select count(id) From sign_chain Where status='Approved' and iom_id=im.id) as app_count, ".
+                  "(Select count(id) From sign_chain Where (status='Approved' or status='N/A') and iom_id=im.id) as app_count, ".
                   "(Select count(id) From sign_chain Where status='Canceled' and iom_id=im.id) as cancel_count ".
                 "From iom as im ".
                   "Left Join sign_chain as sc on im.id=sc.iom_id ".
