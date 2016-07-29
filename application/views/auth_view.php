@@ -67,28 +67,26 @@
 
 <div class="maxer">
   <div class="blur"></div>
+  <legend class="logo-auth"><img src="/img/logo.png"><span>IOM Tracking System</span></legend>
   <div class="inner-wrapper shadow">
     <form  role="form" action="" method="post" class="form-horizontal " autocomplete="off">
       <fieldset>
-        <legend>
-          <img src="/img/logo.png" style="height: 64px">
-        </legend>
         <div class="form-group">
 <!--          <label for="inputPassword" class="col-lg-3 control-label">Username</label>-->
           <div class="col-lg-9 col-lg-offset-2">
-            <input type="text" class="form-control" name="login" id="inputUsername" placeholder="Username" autocomplete="off">
+            <input type="text" class="form-control" name="login" id="inputUsername" placeholder="Enter Username" autocomplete="off">
 
           </div>
         </div>
         <div class="form-group">
 <!--          <label for="inputPassword" class="col-lg-3 control-label">Password</label>-->
           <div class="col-lg-9  col-lg-offset-2">
-            <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Password" autocomplete="off">
+            <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Enter Password" autocomplete="off">
           </div>
         </div>
         <div class="form-group">
           <div class="col-lg-9 col-lg-offset-2">
-            <button  class="btn btn-success" id="login" style="width:100%;">Login</button>
+            <button  class="btn btn-warning" id="login" style="width:100%;">Login</button>
           </div>
         </div>
       </fieldset>

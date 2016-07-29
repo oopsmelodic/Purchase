@@ -132,6 +132,9 @@ window.operateEvents = {
                     field: 'name',
                     title: 'Name:',
                 },{
+                        field: 'budget_type',
+                        title: 'Budget Type:',
+                    },{
                     field: 'cur_sum',
                     title: 'Current Sum:',
                     formatter: function(id,data){
@@ -269,34 +272,34 @@ $(document).ready(function () {
             title: 'Name:',
             sortable:true
         },{
+            field: 'time_stamp',
+            title: 'Created on:',
+            sortable:true
+        },{
+            field: 'status',
+            title: 'IOM Status:',
+            sortable:true
+        },{
             field: 'latest_action',
-            title: 'Latest Action:',
+            title: 'Last Event:',
             sortable:true
             //filterControl:'select'
         },{
-            field: 'status',
-            title: 'Iom Status:',
-            sortable:true
-        },{
-            field: 'time_stamp',
-            title: 'Iom Date:',
-            sortable:true
-        },{
-            title:'Controls:',
+            title:'Actions:',
             align: 'center',
             events: operateEvents,
             formatter: function(id,data){
                 console.log(data.sign_status);
                 var controls='';
                 if (data.sign_status==1){
-                    controls = '<button class="btn btn-success control">Confirm</button><button class="btn btn-danger control">Cancel</button>'
+                    controls = '<button class="btn btn-success control btn-sm">Confirm</button><button class="btn btn-danger btn-sm control">Cancel</button>'
                 }else{
-                    controls += data.user_last_status || '';
+                    controls += data.user_last_status+'<br><br>' || '';
                 }
                 if($('.img-user').attr('user_id')==data.employee_id) {
-                    controls += '<button class="btn btn-warning control">Restart</button>';
+                    controls += '<button class="btn btn-warning control btn-sm">Restart</button>';
                 }
-                controls += '<a href="/show/'+data.id+'" target="_blank" class="btn btn-primary">View</a>';
+                controls += '<a href="/show/'+data.id+'" target="_blank" class="btn btn-primary btn-sm">View</a>';
                 return controls;
             }
         }],
@@ -313,18 +316,18 @@ $(document).ready(function () {
             div.append('<div class="col-lg-6">' +
                         '<legend>Budgets: </legend>' +
                         '<table class="box-shadow table-bordered" id="budget_'+index+'"></table>' +
-                        '<legend>Description: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
-                        '<legend>Comments: </legend>' +
+                        '<br><legend>Description: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
+                        '<br><legend>Comments: </legend>' +
                         '<div class="box-shadow comments-table" id="comments_'+index+'"></div>' +
-                        '<legend>Attachments: </legend>' +
+                        '<br><legend>Attachments: </legend>' +
                         '<div id="files_'+index+'"></div>' +
                     '</div>');
             div.append('<div class=col-lg-6>' +
-                        '<legend>Signers: </legend>' +
+                        '<legend>Approved by: </legend>' +
                         '<table class="table-bordered" id="signers_'+index+'"></table>' +
-                        '<legend>Events: </legend>' +
+                        '<br><legend>Events: </legend>' +
                         '<table class="table-bordered" id="events_'+index+'"></table>' +
-                        '<legend>Invoice Sum: </legend>'+
+                        '<br><legend>Invoice Sum: </legend>'+
                         '<input id="invoiceSum_'+index+'" type="number" class="form-control"><button id="applysum_'+index+'" class="btn btn-primary">Apply Sum</button>'+
                     '</div>');
 
@@ -380,8 +383,17 @@ $(document).ready(function () {
                 title: 'Name:'
                 //sortable:true
             },{
-                field: 'date_time',
+                        field: 'budget_type',
+                        title: 'Budget Type:',
+                    },{
+                field: 'budget_date',
                 title: 'Date:',
+						formatter: function(id,data){
+
+                            var d = new Date.parse(data['budget_date'])
+
+                            return d.toString('MMMM, yy');
+                        }						
                 //sortable:true
                 //filterControl:'select'
             },{
@@ -394,14 +406,18 @@ $(document).ready(function () {
                 //filterControl:'select'
             },{
                 field: 'cur_cost',
-                title: 'Iom Cost:',
+                title: 'IOM Cost:',
                 formatter: function(id,data){
-                    return format_money(data['cur_cost'])
+                            if (data['cur_cost']!=null) {
+                                return format_money(data['cur_cost']);
+                            }else{
+                                return format_money(data['planed_cost']);
+                            }
                 }
                 //sortable:true
                 //filterControl:'select'
             },{
-                title: 'Reformed Balance:',
+                title: 'Current Balance:',
                 formatter: function(id,data,index){
                     var sum = data['planed_cost']-data['cur_cost'];
                     return format_money(sum);
@@ -418,6 +434,11 @@ $(document).ready(function () {
                 return {
                     "iom_id":row['id']
                 }
+            },
+            rowStyle: function(value,row,index){
+                return {
+                    classes: value['status'],
+                };
             },
             columns: [{
                 field: 'fullname',
@@ -503,16 +524,31 @@ $(document).ready(function () {
                 }
             },
             rowStyle: function(value,row,index){
-                if (value['cancel']==1){
-                    return{
-                        //classes: 'test',
-                        css: {"background-color" : "red"}
-                    }
-                }else{
-                    return{
-                        classes: '',
-                        css: {}
-                    }
+                switch (value['event_name']){
+                    case "Approved":
+                        return{
+                            //classes: 'test',
+                            css: {"color" : "#5cb85c"}
+                        }
+                        break;
+                    case "Created":
+                        return{
+                            //classes: 'test',
+                            css: {"color" : "#337ab7"}
+                        }
+                        break;
+                    case "Canceled":
+                        return{
+                            //classes: 'test',
+                            css: {"color" : "#d9534f"}
+                        }
+                        break;
+                    case "Restarted":
+                        return{
+                            //classes: 'test',+
+                            css: {"color" : "#ed9c28"}
+                        }
+                        break;
                 }
             },
             columns: [{

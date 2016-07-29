@@ -1,3 +1,16 @@
 body{
-    background: url('/img/texture-metal1.jpg');
+    background: url('/img/bg2.jpg');
+    /*background-color: #fff;*/
+}
+.logo-auth{
+    border-bottom: 5px solid #ef9c00;
+    color: #7c7c7c;
+    font-size: 56px;
+}
+.logo-auth span{
+    margin-left: 20px;
+}
+.logo-auth img{
+    margin-left: 20px;
+    margin-bottom: 10px;
 }

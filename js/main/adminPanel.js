@@ -97,22 +97,28 @@ $(document).ready(function () {
                 break;
             case 'budget':
                     columns.push({
-                        field:'id',
-                        title: '#',
-                        sortable:true
-                    },{
                         title:'ID',
                         sortable:true,
                         formatter: function(id,data){
 
                             var d = new Date.parse(data['budget_date'])
 
-                            return 'FY-'+d.toString('yyyy');
+                            return 'FY 16-17';
                         }
                     },{
                         field:'name',
                         title: 'Name:',
                         sortable:true
+                    },{
+                        field:'budget_date',
+                        title: 'Budget Date:',
+                        sortable:true,
+						formatter: function(id,data){
+
+                            var d = new Date.parse(data['budget_date'])
+
+                            return d.toString('MMMM');
+                        }						
                     },{
                         field:'brand_name',
                         title: 'Brand:',
@@ -124,21 +130,21 @@ $(document).ready(function () {
                     },{
                         field:'department_name',
                         title: 'Department:',
-                        sortable:true
+                        sortable:false
                     },{
                         field:'budget_type',
                         title: 'Budget Type:',
                         sortable:true
                     },{
                         field:'planed_cost',
-                        title: 'Planed Cost:',
+                        title: 'OB Value:',
                         sortable:true,
                         formatter: function(id,data){
                             return format_money(data['planed_cost'])
                         }
                     },{
                         field:'cur_sum',
-                        title: 'Current Sum:',
+                        title: 'Balance:',
                         sortable:true,
                         formatter: function(id,data){
                             if (data['cur_sum']!=null) {

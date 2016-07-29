@@ -17,26 +17,38 @@ $(document).ready(function () {
                 "iom_id":iom_id
             }
         },
-        columns: [{
-            field: 'name',
-            title: 'Name:'
-            //sortable:true
-        },{
-            field: 'date_time',
-            title: 'Date:',
-            //sortable:true
-            //filterControl:'select'
-        },{
-            field: 'cur_cost',
-            title: 'Cost:'
-            //sortable:true
-            //filterControl:'select'
-        },{
-            field: 'planed_cost',
-            title: 'Planed:'
-            //sortable:true
-            //filterControl:'select'
-        }],
+            columns: [{
+                field: 'name',
+                title: 'Name:'
+                //sortable:true
+            },{
+                field: 'date_time',
+                title: 'Date:',
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'planed_cost',
+                title: 'Available Balance:',
+                formatter: function(id,data){
+                    return format_money(data['planed_cost'])
+                }
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'cur_cost',
+                title: 'Iom Cost:',
+                formatter: function(id,data){
+                    return format_money(data['cur_cost'])
+                }
+                //sortable:true
+                //filterControl:'select'
+            },{
+                title: 'Reformed Balance:',
+                formatter: function(id,data,index){
+                    var sum = data['planed_cost']-data['cur_cost'];
+                    return format_money(sum);
+                }
+            }],
     });
 
     $('#signers').bootstrapTable({

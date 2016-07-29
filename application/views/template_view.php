@@ -188,62 +188,61 @@
             <div class="step-body">
                 <ul class="list-group" id="chain_list">
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department leader</h5>
+                        <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department Leader</h5>
                         <div class="col-lg-9 form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['Department leader']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            <span class="help-block with-errors"></span>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial assistant</h5>
+                        <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial Assistant</h5>
                         <div class="col-lg-9  form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['Financial assistant']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            <span class="help-block with-errors"></span>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial</h5>
+                        <h5 class="list-group-item-heading">3. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial</h5>
                         <div class="col-lg-9  form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['Financial']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            <span class="help-block with-errors"></span>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">3. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial controller</h5>
+                        <h5 class="list-group-item-heading">4. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial Controller</h5>
                         <div class="col-lg-9  form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['Financial controller']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            <span class="help-block with-errors"></span>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">4. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial director</h5>
+                        <h5 class="list-group-item-heading">5. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Financial Director</h5>
                         <div class="col-lg-9  form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['Financial director']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            <span class="help-block with-errors"></span>
+                            
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">5. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> General director</h5>
+                        <h5 class="list-group-item-heading">6. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> General Director</h5>
                         <div class="col-lg-9  form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" required>
                                 <?php echo implode('', $data['roles']['General director']);?>
                             </select>
-                            <span class="help-block with-errors"></span>
                         </div>
                     </li>
                 </ul>

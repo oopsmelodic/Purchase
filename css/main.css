@@ -1,4 +1,4 @@
-.shadow
+﻿.shadow
 {
     background-color: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.5); 
@@ -57,13 +57,14 @@
     position: absolute;
     top:50%;
     width: 500px;
-    height: 255px;
+    height: 172px;
     left: 50%;	
     margin-left: -250px;	
     margin-top: -110px;	
     z-index: 100; /* текст не размыт */
     text-align: center;
     background-color: rgba(255, 255, 255, 0.8);
+    padding-left: 0px;
 }
 .blur {
     background-image: url(../../../admin_panel/images/background.jpg);
@@ -221,7 +222,12 @@
     position: relative;
 }
 
-.comments-table tr:nth-child(even){
+.comments-table tr.Approved{
+    background-color:#5cb85c;
+    color:#000;
+}
+
+.comments-table tr.Canceled{
     background-color:#4679BD;
     color:#fff;
 }
@@ -243,13 +249,14 @@
     width: 0 !important;;
 }
 
-.comments-table tbody>tr:hover {
-    background-color: #B5B5B5!important;
+.comments-table tbody>tr.Approved:hover {
+    background-color: #3adc3a!important;
 }
 
-.comments-table tbody>tr:nth-child(even):hover {
-    background-color: #5E9FF7!important;
+.comments-table tbody>tr.Canceled:hover {
+    background-color: #ec0d06!important;
 }
+
 .comments-table tr td .card-view:last-child{
     font-size: 0.8em;
     float: right;
@@ -258,4 +265,7 @@
 }
 legend{
     margin-bottom: 5px!important;
+}
+.filter-option small{
+    margin-left: 5px;
 }

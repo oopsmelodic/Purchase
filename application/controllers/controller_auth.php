@@ -28,7 +28,7 @@ class Controller_Auth extends Controller
                    $_SESSION['id'] = $user['id'];
                    $_SESSION['user'] = $user;
                    $_SESSION['login_status'] = $data["login_status"];
-                   header('Location:/main');
+                   header('Location:/purchase');
                     //$this->view->generate('main_view.php', 'template_view.php', $data);
                 }
                 else

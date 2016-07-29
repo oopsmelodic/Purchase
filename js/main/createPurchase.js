@@ -4,6 +4,11 @@
 
 String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
+function format_money(n) {
+    var fixed = parseInt(n);
+    return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
 }
 
 $(function(){
@@ -35,13 +40,26 @@ $(function(){
                         field: 'name',
                         title: 'Name:',
                     },{
+                        field: 'budget_type',
+                        title: 'Budget Type:',
+                    },{
                         field: 'cur_sum',
-                        title: 'Current Sum:'
+                        title: 'Current Sum:',
+                        formatter: function(id,data){
+                            if (data['cur_sum']!=null) {
+                                return format_money(data['cur_sum']);
+                            }else{
+                                return format_money(data['planed_cost']);
+                            }
+                        }
                         //sortable:true
                         //filterControl:'select'
                     },{
                         field: 'planed_cost',
-                        title: 'Planed Cost:'
+                        title: 'Planed Cost:',
+                        formatter: function(id,data){
+                            return format_money(data['planed_cost'])
+                        }
                         //sortable:true
                         //filterControl:'select'
                     },{
