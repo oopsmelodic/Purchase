@@ -536,7 +536,15 @@ class Iom
                     if ($status == 'in progress'){
                         $this->sendMessage('IOM #' . $iom_num . ' Created!', $params['purchase_text'], $v, 3000);
                     }
-                    $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
+                    if ($value == end($chain)){
+                        if ($iom_cost<300000){
+                            $query .= "(" . $iom_num . "," . $v . ",'Approved'),";
+                        }else{
+                            $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
+                        }
+                    }else{
+                        $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
+                    }
                 }
             }
         }
