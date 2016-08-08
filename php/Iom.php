@@ -518,11 +518,14 @@ class Iom
 
         $iom_cost = 0;
 
+        $budget_type = '';
+
         if (count($budgets) != 0) {
             $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
             foreach ($budgets as $key => $value) {
                 $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
                 $iom_cost+=intval($value['value']);
+                $budget_type = $value['budget_type'];
             }
 
             $res = $this->sendQuery(trim($query, ','));
@@ -546,8 +549,12 @@ class Iom
                         $this->sendMessage('IOM #' . $iom_num . ' Created!', $params['purchase_text'], $v, 3000);
                     }
                     if ($value == end($chain)){
-                        if ($iom_cost<300000){
-                            $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
+                        if ($budget_type!='CAPEX') {
+                            if ($iom_cost < 300000) {
+                                $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
+                            } else {
+                                $query .= "(" . $iom_num . "," . $v . ",'" . $status . "'),";
+                            }
                         }else{
                             $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
                         }
@@ -563,7 +570,7 @@ class Iom
         $res = $this->sendQuery(trim($query,','));
 
         if ($result){
-            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
+            return Array('type'=>'success','id'=>$iom_num,'query'=>$query,'budget'=>$budgets);
         }else{
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
@@ -578,6 +585,7 @@ class Iom
             " Where id=".$params['iom_id'];
         $result = $this->sendQuery($query);
 
+        $budget_type = '';
 
         $iom_num = $params['iom_id'];
 
@@ -598,6 +606,7 @@ class Iom
             foreach ($budgets as $key => $value) {
                 $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
                 $iom_cost+=intval($value['value']);
+                $budget_type = $value['budget_type'];
             }
 
             $res = $this->sendQuery(trim($query, ','));
@@ -621,8 +630,12 @@ class Iom
                         $this->sendMessage('IOM #' . $iom_num . ' Created!', $params['purchase_text'], $v, 3000);
                     }
                     if ($value == end($chain)){
-                        if ($iom_cost<300000){
-                            $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
+                        if ($budget_type!='CAPEX') {
+                            if ($iom_cost < 300000) {
+                                $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
+                            } else {
+                                $query .= "(" . $iom_num . "," . $v . ",'" . $status . "'),";
+                            }
                         }else{
                             $query .= "(" . $iom_num . "," . $v . ",'".$status."'),";
                         }
@@ -638,7 +651,7 @@ class Iom
         $res = $this->sendQuery(trim($query,','));
 
         if ($result){
-            return Array('type'=>'success','id'=>$iom_num,'query'=>$query);
+            return Array('type'=>'success','id'=>$iom_num,'query'=>$query,'budget'=>$budget_type);
         }else{
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
@@ -660,11 +673,12 @@ class Iom
             $res = mysqli_query(GetMyConnection(), $query);
 
 
-            $query = "Select id,employee_id From sign_chain  Where iom_id=" . $params['id'] . " and employee_id=" . $params['user_session_id'];
+            $query = "Select sc.id,sc.employee_id From sign_chain as sc  Where sc.iom_id=" . $params['id'] . " and sc.employee_id=" . $params['user_session_id'];
 
             $last = mysqli_query(GetMyConnection(), $query);
 
             $row = mysqli_fetch_array($last, MYSQLI_ASSOC);
+
 
             $next_id = intval($row['id'])+1;
 

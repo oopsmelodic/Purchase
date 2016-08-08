@@ -1,6 +1,8 @@
 body{
     background: url('/img/bg2.jpg');
     /*background-color: #fff;*/
+    min-width: 900px;
+    overflow: auto;
 }
 .logo-auth{
     border-bottom: 5px solid #ef9c00;

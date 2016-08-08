@@ -26,14 +26,17 @@ $(function(){
                     url: '/php/core.php?method=getBudgets',
                     contentType: 'application/x-www-form-urlencoded',
                     method: 'POST',
-                    clickToSelect:true,
+                    clickToSelect:false,
+                    toolbar:'#toolbar_purchase_budget_table',
+                    filterControl:true,
                     columns: [{checkbox:true},{
                         field: 'id',
                         title: '#:'
                         //sortable:true
                     },{
                         field: 'brand_name',
-                        title: 'Brand:'
+                        title: 'Brand:',
+                        filterControl:'select'
                         //sortable:true
                         //filterControl:'select'
                     },{
@@ -42,6 +45,7 @@ $(function(){
                     },{
                         field: 'budget_type',
                         title: 'Budget Type:',
+                        filterControl:'select'
                     },{
                         field: 'cur_sum',
                         title: 'Current Sum:',
@@ -67,17 +71,27 @@ $(function(){
                         align: 'center',
                         events: operateEvents,
                         formatter: function(id,data){
-                            var controls='<input budget_id="'+data['id']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="0" type="number" min="0" max="'+data['cur_sum']+'">';
+                            var controls='<input budget_id="'+data['id']+'" budget_type="'+data['budget_type']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="0" type="number" min="0" max="'+data['cur_sum']+'">';
                             return controls;
                         }
                     }],
                 }).off('check.bs.table').on('check.bs.table', function (event,row,el){
                     //console.log(row);
                     $('#budget_input_'+row['id']).prop('disabled','');
+                }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
+                    //console.log(row);
+                    $('#purchase_budget_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
+                    console.log(event);
+                    console.log(row);
+                    console.log(index);
                 }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
                     $('#budget_input_'+row['id']).prop('disabled','disabled').val(0);
                 }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){
-
+                    $('#toolbar_purchase_budget_table button').on('click',function (e){
+                        var str = $(this).text();
+                        console.log(str.trim());
+                        //$('#purchase_budget_table').bootstrapTable('filterBy',{'id':'6'});
+                    });
                 });
             }
     });
@@ -193,7 +207,7 @@ $(function(){
                 //Make Chain
                 $('.purchase_budget_inputs').each(function (index, item) {
                     if ($(item).val()!=0) {
-                        budgets_chain.push({'id': $(item).attr('budget_id'), 'value': $(item).val()});
+                        budgets_chain.push({'id': $(item).attr('budget_id'), 'value': $(item).val(),'budget_type':$(item).attr('budget_type')});
                     }
                 });
                 //console.log(JSON.stringify(budgets_chain));

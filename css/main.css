@@ -222,19 +222,22 @@
     position: relative;
 }
 
-.comments-table tr.Approved{
-    background-color:#5cb85c;
-    color:#000;
+.comments-table tr.Approved .card-view:first-child{
+    color:#2db72d;
 }
 
-.comments-table tr.Canceled{
-    background-color:#d9534f;
-    color:#fff;
+.comments-table tr.Canceled .card-view:first-child{
+    color:rgb(212, 17, 11);
 }
 
 .comments-table tr .card-view:first-child{
     /*width:0px!important;*/
 }
+
+/*.comments-table tr:nth-child(even){*/
+    /*background-color:#4679BD;*/
+    /*color:#fff;*/
+/*}*/
 
 .comments-table{
     border-bottom: none!important;
@@ -249,13 +252,13 @@
     width: 0 !important;;
 }
 
-.comments-table tbody>tr.Approved:hover {
-    background-color: #3adc3a!important;
+.comments-table tbody>tr:hover {
+    background-color: #B5B5B5!important;
 }
 
-.comments-table tbody>tr.Canceled:hover {
-    background-color: #ec0d06!important;
-}
+/*.comments-table tbody>tr:nth-child(even):hover {*/
+    /*background-color: #5E9FF7!important;*/
+/*}*/
 
 .comments-table tr td .card-view:last-child{
     font-size: 0.8em;

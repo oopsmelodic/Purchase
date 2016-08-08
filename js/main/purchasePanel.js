@@ -113,7 +113,8 @@ window.operateEvents = {
                 url: '/php/core.php?method=getBudgets',
                 contentType: 'application/x-www-form-urlencoded',
                 method: 'POST',
-                clickToSelect:true,
+                clickToSelect:false,
+                toolbar:'#toolbar_purchase_budget_table',
                 queryParams: function (p){
                     return {
                         "iom_id":iom_id
@@ -132,9 +133,9 @@ window.operateEvents = {
                     field: 'name',
                     title: 'Name:',
                 },{
-                        field: 'budget_type',
-                        title: 'Budget Type:',
-                    },{
+                    field: 'budget_type',
+                    title: 'Budget Type:',
+                },{
                     field: 'cur_sum',
                     title: 'Current Sum:',
                     formatter: function(id,data){
@@ -162,6 +163,10 @@ window.operateEvents = {
             }).off('check.bs.table').on('check.bs.table', function (event,row,el){
                 //console.log(row);
                 $('#budget_input_'+row['id']).prop('disabled','');
+            }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,el){
+                //console.log(row);
+                //$('#purchase_budget_table').bootstrapTable('check',);
+                console.log(row);
             }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
                 $('#budget_input_'+row['id']).prop('disabled','disabled').val(0);
             }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){

@@ -64,6 +64,7 @@
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap3-editable-1.5.1/bootstrap3-editable/js/bootstrap-editable.js" type="text/javascript"></script>
+<!--    <script src="/bower_components/bootstrap-table-master/extensions/filter-control/bootstrap-table-filter-control.js" type="text/javascript"></script>-->
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/sticky-header/bootstrap-table-sticky-header.min.js" type="text/javascript"></script>
@@ -172,6 +173,20 @@
 <!--                    <select id="budget_select" data-live-search="true" data-minlength="1" data-selector="true" class="selectpicker form-control" data-width="100%" multiple data-selected-text-format="count" required>-->
 <!--                        --><?php //echo $data['budgets'];?>
 <!--                    </select>-->
+                    <div id="toolbar_purchase_budget_table" class="btn-group">
+                        <button type="button" class="btn btn-default">
+                            OPEX
+                        </button>
+                        <button type="button" class="btn btn-default">
+                            CAPEX
+                        </button>
+<!--                        <button type="button" class="btn btn-default">-->
+<!--                            <i class="glyphicon glyphicon-heart"></i>-->
+<!--                        </button>-->
+<!--                        <button type="button" class="btn btn-default">-->
+<!--                            <i class="glyphicon glyphicon-trash"></i>-->
+<!--                        </button>-->
+                    </div>
                     <table id="purchase_budget_table"></table>
                 </div>
                 <div class="col-lg-12" id="budget_inputs">

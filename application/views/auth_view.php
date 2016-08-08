@@ -69,7 +69,7 @@
   <div class="blur"></div>
   <legend class="logo-auth"><img src="/img/logo.png"><span>IOM Tracking System</span></legend>
   <div class="inner-wrapper shadow">
-    <form  role="form" action="" method="post" class="form-horizontal " autocomplete="off">
+    <form  role="form" action="" method="post" class="form-horizontal" autocomplete="off">
       <fieldset>
         <div class="form-group">
 <!--          <label for="inputPassword" class="col-lg-3 control-label">Username</label>-->
