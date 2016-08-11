@@ -273,6 +273,7 @@
                 <div id="reset_files"></div>
             </div>
             <div class="form-group col-lg-12 step-body">
+                <legend>Upload Iom Files:</legend>
                 <input id="input-1" multiple type="file" class="file file-loading" data-allowed-file-extensions='["txt","jpg","tif","doc","pdf","webm"]'>
             </div>
             <div class="step-footer form-group">
@@ -299,7 +300,8 @@
         uploadAsync: true,
         maxFileCount: 5,
         showUpload:false,
-        allowedFileTypes: ['png','pdf','xls','xlsx','jpg','jpeg','bmp','doc','docx','txt'],
+        dropZoneEnabled:false,
+        allowedFileTypes: ['png','pdf','xls','xlsx','jpg','jpeg','bmp','doc','docx','txt','msg'],
         layoutTemplates: {footer: footerTemplate},
         uploadExtraData: function () {  // callback example
             var out = {}, key, i = 0;

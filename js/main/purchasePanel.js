@@ -333,7 +333,8 @@ $(document).ready(function () {
                         '<br><legend>Events: </legend>' +
                         '<table class="table-bordered" id="events_'+index+'"></table>' +
                         '<br><legend>Invoice Sum: </legend>'+
-                        '<input id="invoiceSum_'+index+'" type="number" class="form-control"><button id="applysum_'+index+'" class="btn btn-primary">Apply Sum</button>'+
+                        '<table class="table-bordered" id="invoice_'+index+'"></table><br>' +
+                        '<input id="invoiceSum_'+index+'" type="number" class="form-control" style="width: 200px;float: left;margin-right: 10px"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Cost</button>'+
                     '</div>');
 
             return div.html();
@@ -370,6 +371,32 @@ $(document).ready(function () {
             },{
                 field: 'status',
                 title: 'Status:'
+                //sortable:true
+                //filterControl:'select'
+            }],
+        });
+        $('#invoice_'+index).bootstrapTable({
+            url: '/php/core.php?method=getInvoiceSum',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            columns: [{
+                field: 'id',
+                title: '#',
+                formatter: function(id,data,index){
+                    return index+1;
+                }
+            }, {
+                field: 'date_time',
+                title: 'Invoice Time:',
+                //sortable:true
+            },{
+                field: 'cost',
+                title: 'Invoice Cost:'
                 //sortable:true
                 //filterControl:'select'
             }],
@@ -602,21 +629,24 @@ $(document).ready(function () {
             console.log(divHTML);
         });
 
-        $('#invoiceSum_'+index).val(parseInt(row['actualcost']));
-
         $('#applysum_'+index).off('click').on('click',function (){
+            $(this).addClass('disabled');
             $.ajax({
                 url: '/php/core.php?method=sendInvoiceSum',
                 contentType: 'application/x-www-form-urlencoded',
                 dataType: 'json',
                 method: 'POST',
-                data: { "iom_id" : row['id'],"invoice": $('#invoiceSum_'+index).val() }
+                data: { "iom_id" : row['id'],"cost": $('#invoiceSum_'+index).val() }
             }).success(function (data) {
                 if (data['type']=='success'){
                     swal("Success!", "Success update invoice sum.", "success");
-                    $('#testtable').bootstrapTable('refresh');
+                    $('#invoice_'+index).bootstrapTable('refresh');
+                    $('#invoiceSum_'+index).val(0)
+                    $('#applysum_'+index).removeClass('disabled');
                 }else{
+                    $('#invoiceSum_'+index).val(0)
                     swal("Canceled!", "Unknown error.", "success");
+                    $('#applysum_'+index).removeClass('disabled');
                 }
             });
         });

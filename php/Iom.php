@@ -115,8 +115,23 @@ class Iom
         return $query_results;
     }
 
+    public function getInvoiceSum($params){
+        $query = "Select ii.date_time,ii.cost From iom_invoice as ii Where ii.iom_id=".$params['iom_id'];
+
+        $query_results = $this->sendQuery($query);
+
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return $query_results;
+        }
+    }
+
     public function sendInvoiceSum($params){
-        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
+//        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
+
+        $query = "Insert Into iom_invoice (cost,iom_id) Values(".$params['cost'].",".$params['iom_id'].")";
 
         $query_results = $this->sendQuery($query);
         if (!$query_results){
