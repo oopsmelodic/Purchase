@@ -299,7 +299,11 @@ $(document).ready(function () {
                 if (data.sign_status==1){
                     controls = '<button class="btn btn-success control btn-sm">Confirm</button><button class="btn btn-danger btn-sm control">Cancel</button>'
                 }else{
-                    controls += data.user_last_status+'<br><br>' || '';
+                    if (data.user_last_status != null) {
+                        controls += data.user_last_status + '<br><br>' || '';
+                    }else{
+                        controls +='';
+                    }
                 }
                 if($('.img-user').attr('user_id')==data.employee_id) {
                     controls += '<button class="btn btn-warning control btn-sm">Restart</button>';
@@ -390,13 +394,16 @@ $(document).ready(function () {
                 formatter: function(id,data,index){
                     return index+1;
                 }
-            }, {
+            },{
                 field: 'date_time',
                 title: 'Invoice Time:',
                 //sortable:true
             },{
                 field: 'cost',
-                title: 'Invoice Cost:'
+                title: 'Invoice Cost:',
+                formatter: function(id,data){
+                    return format_money(data['cost'])
+                }
                 //sortable:true
                 //filterControl:'select'
             }],

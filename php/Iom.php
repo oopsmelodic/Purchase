@@ -223,7 +223,7 @@ class Iom
     }
 
     public function getComments($params){
-        $query = "Select c.id,c.text,c.time_stamp,em.fullname,sc.status From comments as c Left Join employee as em on c.employee_id=em.id".
+        $query = "Select c.id,c.text,c.time_stamp,em.fullname,sc.status From comments as c Left Join employee as em on +c.employee_id=em.id".
                  " Left Join sign_chain as sc on c.employee_id=sc.employee_id and c.iom_id=sc.iom_id".
                  " Where c.iom_id=".$params['iom_id'];
 
@@ -331,7 +331,7 @@ class Iom
     public function addEmployee($params){
 
         $query = "INSERT INTO employee(fullname, role_id, department_id, username, email,password)"
-            . "VALUES ('" . $params["fullname"] . "',"
+            . " VALUES ('" . $params["fullname"] . "',"
             . $params["role"] . ","
             . $params["department"]  . ",'"
             . $params["username"] . "','"

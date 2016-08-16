@@ -43,9 +43,9 @@
                 <li class="">
                     <a href="/purchase"><i class="fa fa-fw fa-table"></i> Purchases</a>
                 </li>
-                <li>
-                    <a href="/admin"><i class="fa fa-fw fa-edit"></i>  User administration</a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="/admin"><i class="fa fa-fw fa-edit"></i>  User administration</a>-->
+<!--                </li>-->
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -73,7 +73,7 @@
                                                     <h4 class="col-lg-4"><legend><span class="label label-default">Date:</span> <?php echo date('d.m.Y', strtotime($data['time_stamp'])); ?></legend></h4>
                                                 </div>
                                                 <div id="pagebreaker" class="form-group">
-                                                    <h3 class="col-lg-4"><span class="label label-default"> IOM name: </span></h3>
+                                                    <h4 class="col-lg-4"><span class="label label-default"> IOM name: </span></h4>
                                                     <div class="col-lg-12">
                                                         <!--<textarea id="purchase_text" rows="4" style="width:100%; max-width: 100%; " class="form-control" required disabled="true"></textarea>-->
                                                         <div class="iominfo" style="border: 1px solid #ccc; border-radius:4px; background: #F5F5F5; padding: 15px;"><?php echo $data['name']; ?></div>

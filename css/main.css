@@ -1,4 +1,11 @@
-﻿.shadow
+﻿body{
+    min-width: 900px;
+    overflow: auto;
+}
+.navbar-toggle .icon-bar{
+    background-color: #000;
+}
+.shadow
 {
     background-color: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.5); 
