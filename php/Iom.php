@@ -293,6 +293,16 @@ class Iom
         return $query_results;
     }
 
+    public function getBudgetIoms($params){
+        $query="Select im.id,im.name,em.fullname,im.time_stamp,sum(ib.cost) iom_cost From iom_budgets as ib Left Join iom as im on im.id=ib.iom_id" .
+            " Left Join employee as em on em.id=im.employee_id" .
+            " Where ib.budget_id=" .$params['budget_id'].
+            " Group By im.id";
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
     public function getMappings(){
         $query = "Select id,name From budget_mapping";
 
