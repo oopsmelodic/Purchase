@@ -13,11 +13,11 @@ $(document).ready(function () {
     $('#testtable').bootstrapTable({
         url: '/php/core.php?method=getAllBudgets',
         filterControl:true,
-        groupBy:true,
-        groupByField:['department_name'],
         showFooter:true,
+        pagination: true,
+        showExport:true,
         columns: [{
-            title:'ID',
+            title:'Fin Year:',
             sortable:true,
             width:'5%',
             formatter: function(id,data){
@@ -118,7 +118,7 @@ $(document).ready(function () {
         }
     }).on('load-success.bs.table',function (data){
         //console.log(data);
-    }).on('expand-row.bs.table',function (event,index,row){
+    }).off('expand-row.bs.table').on('expand-row.bs.table',function (event,index,row){
         //$('#summer_'+index).summernote({
         //    shortcuts: false
         //});
@@ -128,6 +128,7 @@ $(document).ready(function () {
             url: '/php/core.php?method=getBudgetIoms',
             contentType: 'application/x-www-form-urlencoded',
             method: 'POST',
+            pagination: true,
             queryParams: function (p){
                 return {
                     "budget_id":row['id']

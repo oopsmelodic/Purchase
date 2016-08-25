@@ -60,13 +60,17 @@
     <script src="/js/ui-bootstrap-tpls-1.2.5.js" type="text/javascript"></script>
     <script src="/bower_components/ng-table-master/dist/ng-table.min.js" type="text/javascript"></script>
 
-
     <script src="/bower_components/highcharts-4.1.9/js/highcharts.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/bootstrap-table-all.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/bower_components/tableExport.jquery.plugin-master/libs/FileSaver/FileSaver.min.js"></script>
+    <script type="text/javascript" src="/bower_components/tableExport.jquery.plugin-master/libs/jsPDF/jspdf.min.js"></script>
+    <script type="text/javascript" src="/bower_components/tableExport.jquery.plugin-master/libs/html2canvas/html2canvas.min.js"></script>
+    <script type="text/javascript" src="/bower_components/tableExport.jquery.plugin-master/tableExport.min.js"></script>
     <script src="/bower_components/bootstrap3-editable-1.5.1/bootstrap3-editable/js/bootstrap-editable.js" type="text/javascript"></script>
 <!--    <script src="/bower_components/bootstrap-table-master/extensions/filter-control/bootstrap-table-filter-control.js" type="text/javascript"></script>-->
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
+    <script src="/bower_components/bootstrap-table-master/extensions/export/bootstrap-table-export.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/sticky-header/bootstrap-table-sticky-header.min.js" type="text/javascript"></script>
     <script src="/bower_components/bootbox-4.4.0/bootbox.js" type="text/javascript"></script>
     <script src="/js/main/app.js" type="text/javascript"></script>

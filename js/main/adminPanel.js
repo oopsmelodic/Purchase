@@ -52,6 +52,7 @@ $(document).ready(function () {
     $('#datatable').bootstrapTable({
         url: '/php/core.php?method='+method,
         columns: columns,
+        pagination: true,
         search: true,
         //height: 600,
         strictSearch: true,
@@ -200,6 +201,7 @@ $(document).ready(function () {
         $('#datatable').bootstrapTable({
             url: '/php/core.php?method='+method,
             columns: columns,
+            pagination: true,
             search: true,
             //height: 600,
             strictSearch: true,

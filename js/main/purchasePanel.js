@@ -114,6 +114,7 @@ window.operateEvents = {
                 contentType: 'application/x-www-form-urlencoded',
                 method: 'POST',
                 clickToSelect:false,
+                pagination: true,
                 toolbar:'#toolbar_purchase_budget_table',
                 queryParams: function (p){
                     return {
@@ -313,6 +314,7 @@ $(document).ready(function () {
             }
         }],
         search: true,
+        pagination: true,
         strictSearch: true,
         detailView : true,
         showRefresh:true,
@@ -469,6 +471,7 @@ $(document).ready(function () {
             contentType: 'application/x-www-form-urlencoded',
             method: 'POST',
             cardView:true,
+            pagination: true,
             queryParams: function (p){
                 return {
                     "iom_id":row['id']
@@ -557,6 +560,7 @@ $(document).ready(function () {
             url: '/php/core.php?method=getIomEvents',
             contentType: 'application/x-www-form-urlencoded',
             method: 'POST',
+            pagination: true,
             queryParams: function (p){
                 return {
                     "iom_id":row['id']
