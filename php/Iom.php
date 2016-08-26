@@ -707,7 +707,7 @@ class Iom
 
             $next_id = intval($row['id'])+1;
 
-            $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved' or status=!='N/A'";
+            $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved' and status!='N/A'";
 
             $res2 = mysqli_query(GetMyConnection(), $query);
 
@@ -723,7 +723,7 @@ class Iom
                     $this->newComment($mass);
                 }
 
-                return Array('type' => 'success', 'id' => $params['id']);
+                return Array('type' => 'success', 'id' => $params['id'],'next'=> $next_id);
             } else {
                 return Array('type' => 'error', 'error_msg' => mysqli_error(GetMyConnection()));
             }
