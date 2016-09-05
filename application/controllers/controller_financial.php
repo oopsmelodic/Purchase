@@ -6,7 +6,7 @@
  * Time: 14:26
  */
 
-class Controller_Test extends Controller
+class Controller_Financial extends Controller
 {
     function __construct()
     {
@@ -17,7 +17,7 @@ class Controller_Test extends Controller
 
     function action_index()
     {
-        $this->view->generate('test_view.php', 'template_view.php');
+        $this->view->generate('financial_view.php', 'template_view.php');
     }
 
 }

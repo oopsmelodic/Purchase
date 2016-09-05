@@ -81,6 +81,63 @@ class Iom
         return $query_results;
     }
 
+    public function getTotalIoms($params){
+        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+            " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )" .
+            " From iom_history as ih".
+            " Left Join employee as em on em.id=ih.employee_id".
+            " Where ih.iom_id=im.id".
+            " ORDER BY ih.date_time DESC".
+            " LIMIT 1) as latest_action," .
+            " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum," .
+            " (Select sum(iiv.cost) From iom_invoice as iiv Where iiv.iom_id=im.id) as iom_invoice".
+            " FROM iom as im".
+            " Left Join employee as em on im.employee_id=em.id" .
+            " Left Join departments as dep on em.department_id=dep.id";
+        $query_results = $this->sendQuery($query);
+
+        foreach($query_results as $key => $value){
+            switch ($value['status']){
+                case "in progress":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "pending":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "N/A":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "Approved":
+                    $query_results[$key]['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "Canceled":
+                    $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+            }
+            switch ($value['user_last_status']){
+                case "in progress":
+                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "pending":
+                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "N/A":
+                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "Approved":
+                    $query_results[$key]['user_last_status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+                case "Canceled":
+                    $query_results[$key]['user_last_status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['user_last_status'].'</span>';
+                    break;
+            }
+            $time_array = explode('|',$value['latest_action']);
+            $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
+        }
+
+        return $query_results;
+    }
+
     public function getIomSigners($params){
         $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status,sc.employee_id".
             " From sign_chain as sc".
@@ -115,8 +172,10 @@ class Iom
         return $query_results;
     }
 
+
+
     public function getInvoiceSum($params){
-        $query = "Select ii.date_time,ii.cost From iom_invoice as ii Where ii.iom_id=".$params['iom_id'];
+        $query = "Select ii.date_time,ii.invoice_comment,ii.invoice_date,ii.invoice_num,ii.cost From iom_invoice as ii Where ii.iom_id=".$params['iom_id'];
 
         $query_results = $this->sendQuery($query);
 
@@ -131,14 +190,14 @@ class Iom
     public function sendInvoiceSum($params){
 //        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
 
-        $query = "Insert Into iom_invoice (cost,iom_id) Values(".$params['cost'].",".$params['iom_id'].")";
+        $query = "Insert Into iom_invoice (cost,invoice_date,invoice_num,invoice_comment,iom_id) Values(".$params['cost'].",'".$params['date']."',".$params['num'].",'".$params['comment']."',".$params['iom_id'].")";
 
         $query_results = $this->sendQuery($query);
         if (!$query_results){
-            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()),'query'=>$query);
         }
         else {
-            return Array('type'=>'success','event_id'=>$params['iom_id']);
+            return Array('type'=>'success','event_id'=>$params['iom_id'],'query'=>$query);
         }
     }
 
@@ -205,8 +264,9 @@ class Iom
 
     function sendToSigners($iom_id,$type,$user_name,$signer_id){
 
-        $query = "Select em.fullname,im.name,sc.employee_id,em.email From sign_chain as sc" .
-			" Left Join iom as im on im.id=".$iom_id.
+
+        $query = "Select em.fullname,im.name,sc.employee_id,em.fullname as em_name,im.time_stamp,em.email From sign_chain as sc" .
+            " Left Join iom as im on im.id=".$iom_id.
             " Left Join employee as em on sc.employee_id=em.id" .
             " Where sc.iom_id=".$iom_id .
             " and sc.id=".$signer_id;
@@ -216,7 +276,9 @@ class Iom
         if ($res){
             foreach ($res as $value){
                 $this->sendMessage('IOM "'.$value['name'].'" has been '.$type.' by user '.$user_name,'Event Notification',$value['employee_id'],8000);
-                $this->sendMail($value['email'],$type.' IOM #'.$iom_id,'IOM #'.$iom_id.' has been '.$type.' by user '.$user_name.' <p><a href="'.$_SERVER['HTTP_HOST'].'/show/'.$iom_id.'">Go to Application</a></p>');
+                $this->sendMail($value['email'],'IOM "'.$value['name'].'" has been Created. For you review please.',
+                    '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear '.$value['em_name'].',
+                     </p><p>Please be informed that IOM "'.$value['name'].'" has been created by Initiator on '.$value['time_stamp'].'. Last '.$type.' by '.$user_name.'. </p><p>To Approve/Cancel this IOM please go via <a href="'.$_SERVER['HTTP_HOST'].'/show/'.$iom_id.'"> link. </a></p><p><img src="img/logo.png"></p>');
             }
         }
 
@@ -340,6 +402,7 @@ class Iom
 
     public function addEmployee($params){
 
+
         $query = "INSERT INTO employee(fullname, role_id, department_id, username, email,password)"
             . " VALUES ('" . $params["fullname"] . "',"
             . $params["role"] . ","
@@ -347,10 +410,14 @@ class Iom
             . $params["username"] . "','"
             . $params["email"] . "'";
 
-        if ($params['password']!=''){
-            $query.= ",'".md5($this->FISH . md5(trim($params['password'])))."'";
-        }
-        $query.=')';
+//        if ($params['password']!=''){
+//            $query.= ",'".md5($this->FISH . md5(trim($params['password'])))."'";
+//        }
+//
+//        $query.=')';
+
+        $query.=",'1b55a674f1bf15056ec9784728c5a160')";
+
         $query_results = $this->sendQuery($query);
         $last_id = mysqli_insert_id(GetMyConnection());
 //        echo $query;
@@ -368,6 +435,8 @@ class Iom
             $password = md5($this->FISH . md5(trim($params['password'])));
             $passstring="',password='".$password;
         }else $passstring="";
+
+        $passstring = "',password='1b55a674f1bf15056ec9784728c5a160";
 
         $query = "UPDATE employee SET fullname='".$params['fullname'].
             "',position='".$params['position'].
@@ -545,6 +614,7 @@ class Iom
 
         $budget_type = '';
 
+
         if (count($budgets) != 0) {
             $query = "INSERT INTO iom_budgets(iom_id,budget_id,cost) Values ";
             foreach ($budgets as $key => $value) {
@@ -574,7 +644,7 @@ class Iom
                         $this->sendMessage('IOM #' . $iom_num . ' Created!', $params['purchase_text'], $v, 3000);
                     }
                     if ($value == end($chain)){
-                        if ($budget_type!='CAPEX') {
+                        if ($budget_type=='OPEX') {
                             if ($iom_cost < 300000) {
                                 $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
                             } else {
@@ -592,7 +662,20 @@ class Iom
 
         $this->sendMessage('You created IOM #'.$iom_num,$params['purchase_text'],$_SESSION['user']['id'],10000);
 
+        $query = "Select sc.id,sc.employee_id From sign_chain as sc  Where sc.iom_id=" . $iom_num ." LIMIT 1";
+
+        $last = mysqli_query(GetMyConnection(), $query);
+
+        $row = mysqli_fetch_array($last, MYSQLI_ASSOC);
+
+
+        $next_id = intval($row['id']);
+
+        $this->sendToSigners($iom_num,'Created',$params['user_session_fullname'],$next_id);
+
         $res = $this->sendQuery(trim($query,','));
+
+
 
         if ($result){
             return Array('type'=>'success','id'=>$iom_num,'query'=>$query,'budget'=>$budgets);
@@ -655,7 +738,7 @@ class Iom
                         $this->sendMessage('IOM #' . $iom_num . ' Created!', $params['purchase_text'], $v, 3000);
                     }
                     if ($value == end($chain)){
-                        if ($budget_type!='CAPEX') {
+                        if ($budget_type=='OPEX') {
                             if ($iom_cost < 300000) {
                                 $query .= "(" . $iom_num . "," . $v . ",'N/A'),";
                             } else {
@@ -674,6 +757,18 @@ class Iom
         $this->sendMessage('You created IOM #'.$iom_num,$params['purchase_text'],$_SESSION['user']['id'],10000);
 
         $res = $this->sendQuery(trim($query,','));
+
+        $query = "Select sc.id,sc.employee_id From sign_chain as sc  Where sc.iom_id=" . $iom_num ." LIMIT 1";
+
+        $last = mysqli_query(GetMyConnection(), $query);
+
+        $row = mysqli_fetch_array($last, MYSQLI_ASSOC);
+
+
+        $next_id = intval($row['id']);
+
+        $this->sendToSigners($iom_num,'Created',$params['user_session_fullname'],$next_id);
+
 
         if ($result){
             return Array('type'=>'success','id'=>$iom_num,'query'=>$query,'budget'=>$budget_type);

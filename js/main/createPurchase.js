@@ -29,6 +29,7 @@ $(function(){
                     clickToSelect:false,
                     toolbar:'#toolbar_purchase_budget_table',
                     filterControl:true,
+                    pagination: true,
                     columns: [{checkbox:true},{
                         field: 'id',
                         title: '#:'

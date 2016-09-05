@@ -1,12 +1,11 @@
 ﻿body{
-    min-width: 900px;
+    min-width: 1000px;
     overflow: auto;
 }
 .navbar-toggle .icon-bar{
     background-color: #000;
 }
-.shadow
-{
+.shadow{
     background-color: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.5); 
 }
@@ -19,15 +18,13 @@
     overflow-y:auto;
     margin-bottom: 20px;
 }
-.radi
-{
+.radi{
     -webkit-border-radius: 20px;
     -moz-border-radius: 20px;
     border-radius: 20px;
     height:80px;
 }
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover
-{
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover{
     background-color:#5cb85c;   
     border-color:#4cae4c;
 }
@@ -46,8 +43,7 @@
     width:100%;
     height:100%;
 }
-.maxer
-{
+.maxer{
     width:100%;
     height:100%;
 }
@@ -60,18 +56,36 @@
     display: inline;
 }
 .inner-wrapper {
-    padding:20px;
+    padding-left: 40px;
+    padding-top: 20px;
+    padding-right: 40px;
     position: absolute;
     top:50%;
-    width: 500px;
+    width: 500px;+
     height: 172px;
-    left: 50%;	
+    left: 50%;
     margin-left: -250px;	
     margin-top: -110px;	
     z-index: 100; /* текст не размыт */
     text-align: center;
     background-color: rgba(255, 255, 255, 0.8);
-    padding-left: 0px;
+}
+@media screen and (max-width:1000px) { /* Минимум 512 цветов */
+    .inner-wrapper {
+        padding-left: 40px;
+        padding-top: 20px;
+        padding-right: 40px;
+        position: absolute;
+        top:50%;
+        width: 500px;
+         height: 172px;
+        left: 450px;
+        margin-left: -250px;
+        margin-top: -110px;
+        z-index: 100; /* текст не размыт */
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
 }
 .blur {
     background-image: url(../../../admin_panel/images/background.jpg);

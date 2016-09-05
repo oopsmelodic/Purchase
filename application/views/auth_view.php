@@ -73,19 +73,19 @@
       <fieldset>
         <div class="form-group">
 <!--          <label for="inputPassword" class="col-lg-3 control-label">Username</label>-->
-          <div class="col-lg-9 col-lg-offset-2">
+          <div class="">
             <input type="text" class="form-control" name="login" id="inputUsername" placeholder="Enter Username" autocomplete="off">
 
           </div>
         </div>
         <div class="form-group">
 <!--          <label for="inputPassword" class="col-lg-3 control-label">Password</label>-->
-          <div class="col-lg-9  col-lg-offset-2">
+          <div class="">
             <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Enter Password" autocomplete="off">
           </div>
         </div>
         <div class="form-group">
-          <div class="col-lg-9 col-lg-offset-2">
+          <div class="">
             <button  class="btn btn-warning" id="login" style="width:100%;">Login</button>
           </div>
         </div>

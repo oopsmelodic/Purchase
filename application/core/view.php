@@ -7,7 +7,7 @@ class View
     public $dropdown = Array(Array('status'=>'disabled','title'=>'Dashboard','name'=>'main','icon'=>'fa-dashboard','power'=>0,'href'=>'/main')
                     ,Array('status'=>'','title'=>'Purchases','name'=>'purchase','icon'=>'fa-table','power'=>0,'href'=>'/purchase')
                     ,Array('status'=>'','title'=>'Administration','name'=>'admin','icon'=>'fa-lock','power'=>100,'href'=>'/admin'),
-                    Array('status'=>'','title'=>'Financial','name'=>'test','icon'=>'fa-lock','power'=>85,'href'=>'/test'));
+                    Array('status'=>'','title'=>'Financial','name'=>'financial','icon'=>'fa-lock','power'=>85,'href'=>'/financial'));
 
     function dropdown_active($active){
         $result_str = '';

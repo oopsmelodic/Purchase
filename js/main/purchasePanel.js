@@ -114,6 +114,7 @@ window.operateEvents = {
                 contentType: 'application/x-www-form-urlencoded',
                 method: 'POST',
                 clickToSelect:false,
+                filterControl:true,
                 pagination: true,
                 toolbar:'#toolbar_purchase_budget_table',
                 queryParams: function (p){
@@ -127,7 +128,8 @@ window.operateEvents = {
                     //sortable:true
                 },{
                     field: 'brand_name',
-                    title: 'Brand:'
+                    title: 'Brand:',
+                    filterControl:'select'
                     //sortable:true
                     //filterControl:'select'
                 },{
@@ -136,11 +138,16 @@ window.operateEvents = {
                 },{
                     field: 'budget_type',
                     title: 'Budget Type:',
+                    filterControl:'select'
                 },{
                     field: 'cur_sum',
                     title: 'Current Sum:',
                     formatter: function(id,data){
-                        return format_money(data['cur_sum'])
+                        if (data['cur_sum']!=null) {
+                            return format_money(data['cur_sum']);
+                        }else{
+                            return format_money(data['planed_cost']);
+                        }
                     }
                     //sortable:true
                     //filterControl:'select'
@@ -183,7 +190,6 @@ window.operateEvents = {
                             if (row[i]['id']==data[j]['budget_id']) {
                                 $('#purchase_budget_table').bootstrapTable('check', i);
                                 $('#budget_input_'+data[j]['budget_id']).val(data[j]['cur_cost']);
-
                             }else{
                             }
                         }
@@ -340,7 +346,7 @@ $(document).ready(function () {
                         '<table class="table-bordered" id="events_'+index+'"></table>' +
                         '<br><legend>Invoice Sum: </legend>'+
                         '<table class="table-bordered" id="invoice_'+index+'"></table><br>' +
-                        '<input id="invoiceSum_'+index+'" type="number" class="form-control" style="width: 200px;float: left;margin-right: 10px"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Cost</button>'+
+                        '<div id="invoice_toolbar_'+index+'"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Pay</button></div>'+
                     '</div>');
 
             return div.html();
@@ -385,6 +391,7 @@ $(document).ready(function () {
             url: '/php/core.php?method=getInvoiceSum',
             contentType: 'application/x-www-form-urlencoded',
             method: 'POST',
+            toolbar:'#invoice_toolbar_'+index,
             queryParams: function (p){
                 return {
                     "iom_id":row['id']
@@ -397,17 +404,25 @@ $(document).ready(function () {
                     return index+1;
                 }
             },{
-                field: 'date_time',
-                title: 'Invoice Time:',
+                field: 'invoice_num',
+                title: 'Num:',
+                //sortable:true
+            },{
+                field: 'invoice_date',
+                title: 'Date:',
                 //sortable:true
             },{
                 field: 'cost',
-                title: 'Invoice Cost:',
+                title: 'Cost:',
                 formatter: function(id,data){
                     return format_money(data['cost'])
                 }
                 //sortable:true
                 //filterControl:'select'
+            },{
+                field: 'invoice_comment',
+                title: 'Comment:',
+                //sortable:true
             }],
         });
         $('#budget_'+index).bootstrapTable({
@@ -641,24 +656,60 @@ $(document).ready(function () {
         });
 
         $('#applysum_'+index).off('click').on('click',function (){
-            $(this).addClass('disabled');
-            $.ajax({
-                url: '/php/core.php?method=sendInvoiceSum',
-                contentType: 'application/x-www-form-urlencoded',
-                dataType: 'json',
-                method: 'POST',
-                data: { "iom_id" : row['id'],"cost": $('#invoiceSum_'+index).val() }
-            }).success(function (data) {
-                if (data['type']=='success'){
-                    swal("Success!", "Success update invoice sum.", "success");
-                    $('#invoice_'+index).bootstrapTable('refresh');
-                    $('#invoiceSum_'+index).val(0)
-                    $('#applysum_'+index).removeClass('disabled');
-                }else{
-                    $('#invoiceSum_'+index).val(0)
-                    swal("Canceled!", "Unknown error.", "success");
-                    $('#applysum_'+index).removeClass('disabled');
+
+            bootbox.dialog({
+                title: "Apply Invoice Payment",
+                message:      '<div class="row"> ' +
+                '<div class="col-md-12"> ' +
+                '<form id="form_invoice_"'+index+' class="form-horizontal"> ' +
+                    '<div class="form-group"> ' +
+                        '<label class="col-md-4 control-label" for="name">Num</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<input id="invoiceNum_'+index+'" name="invoiceN++++um" type="number" class="form-control input-md">'  +
+                        '</div> ' +
+                    '</div>' +
+                    '<div class="form-group"> ' +
+                        '<label class="col-md-4 control-label" for="name">Date</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<input id="invoiceDate_'+index+'" name="invoiceDate" type="date" class="form-control input-md">'  +
+                        '</div> ' +
+                    '</div>'+
+                    '<div class="form-group"> ' +
+                        '<label class="col-md-4 control-label" for="name">Cost</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<input id="invoiceCost_'+index+'" name="invoiceCost" type="number" class="form-control input-md">'  +
+                        '</div> ' +
+                    '</div>'+
+                    '<div class="form-group"> ' +
+                        '<label class="col-md-4 control-label" for="name">Comment</label> ' +
+                        '<div class="col-md-4"> ' +
+                            '<textarea id="invoiceComment_'+index+'" name="invoiceComment" type="text" class="form-control input-md"></textarea>'  +
+                        '</div> ' +
+                    '</div>' +
+                    '</form></div>',
+                buttons: {
+                    success: {
+                        label: "Apply",
+                        className: "btn-success modalbtn",
+                        callback: function () {
+                            $.ajax({
+                                url: '/php/core.php?method=sendInvoiceSum',
+                                contentType: 'application/x-www-form-urlencoded',
+                                dataType: 'json',
+                                method: 'POST',
+                                data: { "iom_id" : row['id'],"cost": $('#invoiceCost_'+index).val(),"date":$('#invoiceDate_'+index).val(),'num': $('#invoiceNum_'+index).val(),'comment':$('#invoiceComment_'+index).val()}
+                            }).success(function (data) {
+                                if (data['type']=='success'){
+                                    $('#invoice_'+index).bootstrapTable('refresh');
+                                    swal("Success!", "Success update invoice sum.", "success");
+                                }else{
+                                    swal("Canceled!", "Unknown error.", "success");
+                                }
+                            });
+                        }
+                    }
                 }
+            }).on('shown.bs.modal', function () {
             });
         });
 
