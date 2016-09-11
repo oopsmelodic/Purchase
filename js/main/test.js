@@ -191,6 +191,10 @@ $(document).ready(function () {
             title: 'Name:',
             sortable:true
         },{
+            field: 'department_name',
+            title: 'Department:',
+            sortable:true
+        },{
             field: 'time_stamp',
             title: 'Created on:',
             sortable:true

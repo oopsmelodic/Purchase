@@ -12,6 +12,13 @@ $(document).ready(function () {
         url: '/php/core.php?method=getIomBudgets',
         contentType: 'application/x-www-form-urlencoded',
         method: 'POST',
+		showFooter:true,
+		rowStyle: function (row,index){
+			  return {
+				classes: '',
+				css: {"font-size": "10px"}
+			  };				
+			},		
         queryParams: function (p){
             return {
                 "iom_id":iom_id
@@ -22,30 +29,61 @@ $(document).ready(function () {
                 title: 'Name:'
                 //sortable:true
             },{
-                field: 'date_time',
+                        field: 'budget_type',
+                        title: 'Type:',
+                    },{
+                field: 'budget_date',
                 title: 'Date:',
+						formatter: function(id,data){
+
+                            var d = new Date.parse(data['budget_date'])
+
+                            return d.toString('MMMM, yy');
+                        }						
                 //sortable:true
                 //filterControl:'select'
             },{
-                field: 'planed_cost',
-                title: 'Available Balance:',
+                field: 'current_balance',
+                title: 'Available:',
                 formatter: function(id,data){
-                    return format_money(data['planed_cost'])
-                }
+					var sum = data['planed_cost']-data['current_balance'];						
+                    return format_money(sum);
+                },
+				footerFormatter:function(data){
+					return 'Total:';
+				}
                 //sortable:true
                 //filterControl:'select'
             },{
                 field: 'cur_cost',
-                title: 'Iom Cost:',
+                title: 'IOM Cost:',
                 formatter: function(id,data){
-                    return format_money(data['cur_cost'])
-                }
+                            if (data['cur_cost']!=null) {
+                                return format_money(data['cur_cost']);
+                            }else{
+                                return format_money(data['planed_cost']);
+                            }
+                },
+				footerFormatter:function(data){
+					var sum = 0;
+					for (var i= 0,len = data.length;i<len;i++){
+						//sum += data[i]['planed_cost'];
+						var obj  = data[i];
+						if (obj['planed_cost']!=null) {
+							sum += parseInt(obj['cur_cost']);
+						}else{
+							sum +=0;
+						}
+					}
+					return format_money(sum);
+				}				
                 //sortable:true
                 //filterControl:'select'
             },{
-                title: 'Reformed Balance:',
+                title: 'C/F Balance:',
                 formatter: function(id,data,index){
-                    var sum = data['planed_cost']-data['cur_cost'];
+                    var sum = data['planed_cost']-data['current_balance'];
+					sum = sum - data['cur_cost'];
                     return format_money(sum);
                 }
             }],
@@ -60,22 +98,35 @@ $(document).ready(function () {
                 "iom_id": iom_id
             }
         },
+		rowStyle: function (row,index){
+			  return {
+				classes: '',
+				css: {"font-size": "11px"}
+			  };				
+		},
         columns: [{
-            field: 'id',
-            title: '#',
-            formatter: function (id, data, index) {
-                return index + 1;
-            }
-        }, {
-            field: 'fullname',
-            title: 'Name:'
-            //sortable:true
-        }, {
-            field: 'status',
-            title: 'Status:'
-            //sortable:true
-            //filterControl:'select'
-        }]
+                field: 'id',
+                title: '#',
+                formatter: function(id,data,index){
+                    return index+1;
+                }
+            },{
+                field: 'fullname',
+                title: 'Name:',
+                //sortable:true
+            },{
+                field: 'dep_name',
+                title: 'Desig.,Dept.:',
+				formatter: function(id,data,index){
+                    return data['role_name']+', '+data['dep_name'];
+                }
+                //sortable:true
+            },{
+                field: 'status',
+                title: 'Status:'
+                //sortable:true
+                //filterControl:'select'
+            }]
     });
 
     $.ajax({

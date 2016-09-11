@@ -164,7 +164,7 @@ window.operateEvents = {
                     align: 'center',
                     events: operateEvents,
                     formatter: function(id,data){
-                        var controls='<input budget_id="'+data['id']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="0" type="number" min="0" max="'+data['cur_sum']+'">';
+                        var controls='<input budget_id="'+data['id']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" budget_type="'+data['budget_type']+'" value="0" type="number" min="0" max="'+data['cur_sum']+'">';
                         return controls;
                     }
                 }],
@@ -277,11 +277,18 @@ $(document).ready(function () {
         url: '/php/core.php?method=getAllIoms',
         columns: [{
             field: 'id',
-            title: '# IOM',
-            sortable:true
+            title: 'IOM ID:',
+            sortable:true,
+            formatter: function(id,data,index){
+                return '201609-'+index;
+            }			
         }, {
             field: 'name',
             title: 'Name:',
+            sortable:true
+        }, {
+            field: 'department_name',
+            title: 'Department:',
             sortable:true
         },{
             field: 'time_stamp',
@@ -342,7 +349,7 @@ $(document).ready(function () {
             div.append('<div class=col-lg-6>' +
                         '<legend>Approved by: </legend>' +
                         '<table class="table-bordered" id="signers_'+index+'"></table>' +
-                        '<br><legend>Events: </legend>' +
+                        '<br><legend>IOM Events: </legend>' +
                         '<table class="table-bordered" id="events_'+index+'"></table>' +
                         '<br><legend>Invoice Sum: </legend>'+
                         '<table class="table-bordered" id="invoice_'+index+'"></table><br>' +
@@ -370,22 +377,35 @@ $(document).ready(function () {
                     "iom_id":row['id']
                 }
             },
+			rowStyle: function (row,index){
+			  return {
+				classes: '',
+				css: {"font-size": "12px"}
+			  };				
+			},
             columns: [{
                 field: 'id',
                 title: '#',
                 formatter: function(id,data,index){
                     return index+1;
                 }
-            }, {
+            },{
                 field: 'fullname',
                 title: 'Name:',
+                //sortable:true
+            },{
+                field: 'dep_name',
+                title: 'Desig./Dep-t:',
+				formatter: function(id,data,index){
+                    return data['role_name']+'/ '+data['dep_name'];
+                }
                 //sortable:true
             },{
                 field: 'status',
                 title: 'Status:'
                 //sortable:true
                 //filterControl:'select'
-            }],
+            }]
         });
         $('#invoice_'+index).bootstrapTable({
             url: '/php/core.php?method=getInvoiceSum',
@@ -429,6 +449,19 @@ $(document).ready(function () {
             url: '/php/core.php?method=getIomBudgets',
             contentType: 'application/x-www-form-urlencoded',
             method: 'POST',
+			showFooter:true,
+			rowStyle: function (row,index){
+			  return {
+				classes: '',
+				css: {"font-size": "12px"}
+			  };				
+			},
+			footerStyle: function (value,row,index){
+				return {
+					classes:'',
+					css: { "font-weight": "bold" }
+				};
+			},
             queryParams: function (p){
                 return {
                     "iom_id":row['id']
@@ -440,7 +473,7 @@ $(document).ready(function () {
                 //sortable:true
             },{
                         field: 'budget_type',
-                        title: 'Budget Type:',
+                        title: 'Type:',
                     },{
                 field: 'budget_date',
                 title: 'Date:',
@@ -453,11 +486,15 @@ $(document).ready(function () {
                 //sortable:true
                 //filterControl:'select'
             },{
-                field: 'planed_cost',
-                title: 'Available Balance:',
+                field: 'current_balance',
+                title: 'Available:',
                 formatter: function(id,data){
-                    return format_money(data['planed_cost'])
-                }
+					var sum = data['planed_cost']-data['current_balance'];						
+                    return format_money(sum);
+                },
+				footerFormatter:function(data){
+					return 'Total:';
+				}
                 //sortable:true
                 //filterControl:'select'
             },{
@@ -469,13 +506,27 @@ $(document).ready(function () {
                             }else{
                                 return format_money(data['planed_cost']);
                             }
-                }
+                },
+				footerFormatter:function(data){
+					var sum = 0;
+					for (var i= 0,len = data.length;i<len;i++){
+						//sum += data[i]['planed_cost'];
+						var obj  = data[i];
+						if (obj['planed_cost']!=null) {
+							sum += parseInt(obj['cur_cost']);
+						}else{
+							sum +=0;
+						}
+					}
+					return format_money(sum);
+				}				
                 //sortable:true
                 //filterControl:'select'
             },{
-                title: 'Current Balance:',
+                title: 'C/F Balance:',
                 formatter: function(id,data,index){
-                    var sum = data['planed_cost']-data['cur_cost'];
+                    var sum = data['planed_cost']-data['current_balance'];
+					sum = sum - data['cur_cost'];
                     return format_money(sum);
                 }
             }],

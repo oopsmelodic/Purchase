@@ -32,6 +32,10 @@ $(document).ready(function () {
         title: '#',
         sortable:true
     },{
+        field:'username',
+        title: 'Username:',
+        sortable:true
+    },{
         field:'fullname',
         title: 'Fullname',
         sortable:true

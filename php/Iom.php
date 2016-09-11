@@ -15,9 +15,14 @@ class Iom
 
 //MAIL_SETTINGS
 
+
     var $mail_host = 'mail.nic.ru';
     var $mail_username = 'postmaster@oopsmelodic.ru';
     var $mail_pwd = 'qwe12345678';
+
+//    var $mail_host = '10.6.5.121';
+//    var $mail_username = 'docflow.russia@sunpharma.com';
+//    var $mail_pwd = 'india@123';
 
 
 
@@ -139,9 +144,11 @@ class Iom
     }
 
     public function getIomSigners($params){
-        $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status,sc.employee_id".
+        $query= "SELECT sc.id,em.fullname,sc.time_stamp,sc.status,sc.employee_id,dep.name as dep_name,rol.name as role_name".
             " From sign_chain as sc".
             " Left Join employee as em on em.id=sc.employee_id".
+			" Left Join departments as dep on em.department_id=dep.id".
+			" Left Join roles as rol on em.role_id=rol.id".
             " Where sc.iom_id=".$params['iom_id'];
 
 
@@ -202,7 +209,9 @@ class Iom
     }
 
     public function getIomBudgets($params){
-        $query= " Select  b.name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time From iom_budgets as ib".
+        $query= " Select  b.name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
+		" (Select sum(cost) From iom_budgets Where budget_id=b.id and iom_id!=".$params['iom_id'].") as current_balance".
+		" From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
                 " Where ib.iom_id=".$params['iom_id'];
 
@@ -659,6 +668,8 @@ class Iom
                 }
             }
         }
+		
+		$res = $this->sendQuery(trim($query,','));
 
         $this->sendMessage('You created IOM #'.$iom_num,$params['purchase_text'],$_SESSION['user']['id'],10000);
 
@@ -672,9 +683,7 @@ class Iom
         $next_id = intval($row['id']);
 
         $this->sendToSigners($iom_num,'Created',$params['user_session_fullname'],$next_id);
-
-        $res = $this->sendQuery(trim($query,','));
-
+        
 
 
         if ($result){
@@ -967,14 +976,14 @@ class Iom
         $mail->SMTPDebug = 0;
         $mail->Debugoutput = 'html';
         $mail->Host = $this->mail_host;
-        $mail->Port = 587;
-        $mail->SMTPSecure = 'tls';
-        $mail->SMTPAuth = true;
+        $mail->Port = 25;
+        //$mail->SMTPSecure = 'tls';
+        //$mail->SMTPAuth = true;
         $mail->Username = $this->mail_username;
         $mail->Password = $this->mail_pwd;
-        $mail->setFrom($this->mail_username, 'Test Sender oOpsMelodicHost');
+        $mail->setFrom($this->mail_username, 'IOM Tracking System');
 //        $mail->addReplyTo('replyto@example.com', 'First Last');
-        $mail->addAddress($to, 'John Doe');
+        $mail->addAddress($to, '');
         $mail->Subject = $subj;
         $mail->msgHTML($msg);
 //        $mail->AltBody = 'This is a plain-text message body';

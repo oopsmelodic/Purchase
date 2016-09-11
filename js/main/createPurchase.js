@@ -215,6 +215,7 @@ $(function(){
                 $('#chain_list select').each(function (index, item) {
                     sign_chain.push($(item).selectpicker('val'));
                 });
+				console.log(sign_chain);
                 $.ajax({
                     url: '/php/core.php?method='+type+'IomReq',
                     type: 'POST',
