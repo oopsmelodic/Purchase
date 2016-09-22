@@ -15,14 +15,9 @@ class Iom
 
 //MAIL_SETTINGS
 
-
-    var $mail_host = 'mail.nic.ru';
-    var $mail_username = 'postmaster@oopsmelodic.ru';
-    var $mail_pwd = 'qwe12345678';
-
-//    var $mail_host = '10.6.5.121';
-//    var $mail_username = 'docflow.russia@sunpharma.com';
-//    var $mail_pwd = 'india@123';
+    var $mail_host = '10.6.5.121';
+    var $mail_username = 'docflow.russia@sunpharma.com';
+    var $mail_pwd = 'india@123';
 
 
 
@@ -95,7 +90,7 @@ class Iom
             " ORDER BY ih.date_time DESC".
             " LIMIT 1) as latest_action," .
             " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum," .
-            " (Select sum(iiv.cost) From iom_invoice as iiv Where iiv.iom_id=im.id) as iom_invoice".
+            " (Select sum(iiv.cost) From iom_invoice as iiv Where iiv.iom_id=im.id) as iom_invoice" .
             " FROM iom as im".
             " Left Join employee as em on im.employee_id=em.id" .
             " Left Join departments as dep on em.department_id=dep.id";
@@ -117,23 +112,6 @@ class Iom
                     break;
                 case "Canceled":
                     $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
-                    break;
-            }
-            switch ($value['user_last_status']){
-                case "in progress":
-                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
-                    break;
-                case "pending":
-                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
-                    break;
-                case "N/A":
-                    $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
-                    break;
-                case "Approved":
-                    $query_results[$key]['user_last_status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['user_last_status'].'</span>';
-                    break;
-                case "Canceled":
-                    $query_results[$key]['user_last_status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['user_last_status'].'</span>';
                     break;
             }
             $time_array = explode('|',$value['latest_action']);
@@ -407,6 +385,20 @@ class Iom
         $query_results['brand_name'] = $this->make_string_select($this->sendQuery($query4));
         $query_results['mapping_name'] = $this->make_string_select($this->sendQuery($query5));
         return ($query_results);
+    }
+
+    public function getFilterData($params){
+        $filed = $params['field_name'];
+        $query = "Select `".$params['field_name']."` From `".$params['table_name']."` Group By `".$params['field_name']."`";
+
+        $result = mysqli_query(GetMyConnection(),$query);
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[$row[$filed]] = $row[$filed];
+        }
+        mysqli_free_result($result);
+
+        return $rows;
     }
 
     public function addEmployee($params){
@@ -790,7 +782,7 @@ class Iom
 
     public function signIom($params){
         $type='Error';
-        if ($params['type']=='Confirm'){
+        if ($params['type']=='Confirm' or $params['type']=='Send to C.H' ){
             $type='Approved';
         }else{
             $type='Canceled';
@@ -811,7 +803,13 @@ class Iom
 
             $next_id = intval($row['id'])+1;
 
-            $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved' and status!='N/A'";
+            $query ='';
+
+            if ($params['type'] == 'Send to C.H'){
+                $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved'";
+            }else{
+                $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved' and status!='N/A'";
+            }
 
             $res2 = mysqli_query(GetMyConnection(), $query);
 

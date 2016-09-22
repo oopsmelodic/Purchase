@@ -1,6 +1,25 @@
 /**
  * Created by melodic on 26.02.2016.
  */
+
+function getFilters(name,table){
+    $.ajax({
+        url: '/php/core.php?method=getFilterData',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        method: 'POST',
+        async:false,
+        data: { "field_name" : name,"table_name": table}
+    }).success(function (data) {
+
+        window['filter'+name+table] = data;
+
+        console.log(window['filter'+name+table]);
+    });
+
+    return 'var:filter'+name+table;
+}
+
 //
 //;(function($) {
 //    $.fn.fixMe = function() {
@@ -135,10 +154,15 @@ window.operateEvents = {
                 },{
                     field: 'name',
                     title: 'Name:',
+                    filterData: getFilters('budget_type','budget'),
+                    filterStrictSearch:true
                 },{
                     field: 'budget_type',
                     title: 'Budget Type:',
-                    filterControl:'select'
+                    filterControl:'select',
+                    filterData: getFilters('budget_type','budget'),
+                    filterStrictSearch:true
+
                 },{
                     field: 'cur_sum',
                     title: 'Current Sum:',
@@ -164,7 +188,13 @@ window.operateEvents = {
                     align: 'center',
                     events: operateEvents,
                     formatter: function(id,data){
-                        var controls='<input budget_id="'+data['id']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" budget_type="'+data['budget_type']+'" value="0" type="number" min="0" max="'+data['cur_sum']+'">';
+                        var maxsum = 0;
+                        if (data['cur_sum']!=null) {
+                            maxsum = data['cur_sum'];
+                        }else{
+                            maxsum =data['planed_cost'];
+                        }
+                        var controls='<input required budget_id="'+data['id']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" budget_type="'+data['budget_type']+'" value="0" type="number" min="0" max="'+maxsum+'">';
                         return controls;
                     }
                 }],
@@ -178,6 +208,7 @@ window.operateEvents = {
             }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
                 $('#budget_input_'+row['id']).prop('disabled','disabled').val(0);
             }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){
+
                 $.ajax({
                     url: '/php/core.php?method=getIomBudgets',
                     type: 'POST',
@@ -202,7 +233,6 @@ window.operateEvents = {
                 console.log(row);
                 $('#purchase_text').val(row['name']);
                 $('#user_id').text(row['fullname']+' from '+row['department_name']+' department.');
-                $('#summernote').code('');
                 $("#summernote").summernote("editor.pasteHTML", row['substantation']);
                 $.ajax({
                     url: '/php/core.php?method=getIomSigners',
@@ -321,6 +351,9 @@ $(document).ready(function () {
                 }
                 if($('.img-user').attr('user_id')==data.employee_id) {
                     controls += '<button class="btn btn-warning control btn-sm">Restart</button>';
+                }
+                if($('.img-user').attr('user_id')==120 && data.sign_status==1) {
+                    controls += '<button class="btn btn-success control btn-sm">Send to C.H</button>';
                 }
                 controls += '<a href="/show/'+data.id+'" target="_blank" class="btn btn-primary btn-sm">View</a>';
                 return controls;

@@ -177,20 +177,6 @@
 <!--                    <select id="budget_select" data-live-search="true" data-minlength="1" data-selector="true" class="selectpicker form-control" data-width="100%" multiple data-selected-text-format="count" required>-->
 <!--                        --><?php //echo $data['budgets'];?>
 <!--                    </select>-->
-                    <div id="toolbar_purchase_budget_table" class="btn-group">
-                        <button type="button" class="btn btn-default">
-                            OPEX
-                        </button>
-                        <button type="button" class="btn btn-default">
-                            CAPEX
-                        </button>
-<!--                        <button type="button" class="btn btn-default">-->
-<!--                            <i class="glyphicon glyphicon-heart"></i>-->
-<!--                        </button>-->
-<!--                        <button type="button" class="btn btn-default">-->
-<!--                            <i class="glyphicon glyphicon-trash"></i>-->
-<!--                        </button>-->
-                    </div>
                     <table id="purchase_budget_table"></table>
                 </div>
                 <div class="col-lg-12" id="budget_inputs">

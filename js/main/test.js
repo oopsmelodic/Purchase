@@ -1,14 +1,40 @@
 /**
  * Created by melodic on 17.08.2016.
  */
+var filterData;
 
 function format_money(n) {
     var fixed = parseInt(n);
     return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
 }
 
+function toObject(arr) {
+    var rv = {};
+    for (var i = 0; i < arr.length; ++i)
+        rv[i] = arr[i];
+    return rv;
+}
+
+function getFilters(name,table){
+    $.ajax({
+        url: '/php/core.php?method=getFilterData',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        method: 'POST',
+        async:false,
+        data: { "field_name" : name,"table_name": table}
+    }).success(function (data) {
+
+        window['filter'+name+table] = data;
+
+        console.log(window['filter'+name+table]);
+    });
+
+    return 'var:filter'+name+table;
+}
 
 $(document).ready(function () {
+
 
     $('#budgets_table').bootstrapTable({
         url: '/php/core.php?method=getAllBudgets',
@@ -16,26 +42,28 @@ $(document).ready(function () {
         showFooter:true,
         pagination: true,
         showExport:true,
+        strictSearch:true,
+        pageList: [10,25,50,100,500,1000,1500],
+        //stickyHeader:true,
         columns: [{
             title:'Fin Year:',
             sortable:true,
             width:'5%',
             formatter: function(id,data){
-
-                var d = new Date.parse(data['budget_date'])
-
+                var d = new Date.parse(data['budget_date']);
                 return 'FY 16-17';
             }
         },{
             field:'name',
             title: 'Name:',
             sortable:true,
-            filterControl:'select'
+            filterControl:'select',
+            filterData: getFilters('name','budget'),
+            filterStrictSearch:true
         },{
             field:'budget_date',
             title: 'Budget Date:',
             sortable:true,
-            filterControl:'select',
             formatter: function(id,data){
 
                 var d = new Date.parse(data['budget_date'])
@@ -46,27 +74,34 @@ $(document).ready(function () {
             field:'brand_name',
             title: 'Brand:',
             sortable:true,
-            filterControl:'select'
+            filterControl:'select',
+            filterData: getFilters('name','budget_brand'),
+            filterStrictSearch:true
         },{
             field:'mapping_name',
             title: 'Mapping:',
             sortable:true,
-            filterControl:'select'
+            filterControl:'select',
+            filterData: getFilters('name','budget_mapping'),
+            filterStrictSearch:true
         },{
             field:'department_name',
             title: 'Department:',
             sortable:false,
-            filterControl:'select'
+            filterControl:'select',
+            filterData: getFilters('name','departments'),
+            filterStrictSearch:true
         },{
             field:'budget_type',
             title: 'Budget Type:',
             sortable:true,
-            filterControl:'select'
+            filterControl:'select',
+            filterData: getFilters('budget_type','budget'),
+            filterStrictSearch:true
         },{
             field:'planed_cost',
             title: 'OB Value:',
             sortable:true,
-            filterControl:'select',
             formatter: function(id,data){
                 return format_money(data['planed_cost'])
             },
@@ -102,7 +137,7 @@ $(document).ready(function () {
                     if (obj['cur_sum']!=null) {
                         sum += parseInt(obj['cur_sum']);
                     }else{
-                        sum +=0;
+                        sum += parseInt(obj['planed_cost']);
                     }
                 }
                 return format_money(sum);
@@ -122,8 +157,8 @@ $(document).ready(function () {
                 '<table class="box-shadow table-bordered table-condensed" id="iom_'+index+'"></table>');
             return div.html();
         }
-    }).on('load-success.bs.table',function (data){
-        //console.log(data);
+    }).on('column-search.bs.table',function (e,field,id){
+        console.log(id);
     }).off('expand-row.bs.table').on('expand-row.bs.table',function (event,index,row){
         //$('#summer_'+index).summernote({
         //    shortcuts: false
@@ -187,8 +222,15 @@ $(document).ready(function () {
         pagination: true,
         showExport:true,
         columns: [{
+            field: 'id',
+            title: 'IOM ID:',
+            sortable:true,
+            formatter: function(id,data,index){
+                return '201609-'+index;
+            }			
+        },{
             field: 'name',
-            title: 'Name:',
+            title: 'Description:',
             sortable:true
         },{
             field: 'department_name',
@@ -196,17 +238,12 @@ $(document).ready(function () {
             sortable:true
         },{
             field: 'time_stamp',
-            title: 'Created on:',
-            sortable:true
-        },{
-            field: 'status',
-            title: 'IOM Status:',
-            sortable:true
-        },{
-            field: 'latest_action',
-            title: 'Last Event:',
-            sortable:true
-            //filterControl:'select'
+            title: 'Budget Date:',
+            sortable:true,
+            formatter: function(id,data){
+                var d = new Date.parse(data['time_stamp'])
+                return d.toString('MMMM, yy');
+            }
         },{
             field: 'iom_sum',
             title: 'Iom Cost:',
@@ -240,13 +277,27 @@ $(document).ready(function () {
                 for (var i= 0,len = data.length;i<len;i++){
                     //sum += data[i]['planed_cost'];
                     var obj  = data[i];
+                    console.log(obj['iom_invoice']);
                     if (obj['iom_invoice']!=null) {
                         sum += parseInt(obj['iom_invoice']);
                     }else{
-                        sum +=0;
+                        sum += 0;
                     }
                 }
                 return format_money(sum);
+            }
+            //filterControl:'select'
+        },{
+            //field: 'calc_balance',
+            title: 'Balance:',
+            sortable:true,
+            formatter: function(id,data){
+                if (data['iom_invoice']!=null) {
+                    var sum= data['iom_sum']-data['iom_invoice'];
+                    return format_money(sum);
+                }else{
+                    return format_money(data['iom_sum']);
+                }
             }
             //filterControl:'select'
         }],
@@ -266,8 +317,6 @@ $(document).ready(function () {
                 '<div id="invoice_toolbar_'+index+'"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Pay</button></div>'+
                 '</div>');
             div.append('<div class=col-lg-6>' +
-                '<br><legend>Events: </legend>' +
-                '<table class="table-bordered" id="events_'+index+'"></table>' +
                 '<legend>Budgets: </legend>' +
                 '<table class="box-shadow table-bordered" id="budget_'+index+'"></table>' +
                 '</div>');
