@@ -851,19 +851,15 @@ class Iom
 
     public function getLatestActions($params){
 
-        $query = "Select sc.iom_id, concat(' by ',em.fullname,'|',sc.time_stamp ) as latest_action".
-                " From sign_chain as sc".
-                " Left Join employee as em on em.id=sc.employee_id".
-                " Where sc.iom_id in (Select iom_id From sign_chain Where employee_id=65)".
-                " ORDER BY sc.time_stamp DESC".
-                " LIMIT 5";
+        $query = "Select ih.event_name,im.name,ih.date_time,em.fullname From iom_history as ih".
+            " Left Join employee as em on em.id=ih.employee_id".
+            " Left Join iom as im on im.id=ih.iom_id LIMIT 5";
 
         $results = $this->sendQuery($query);
 //        $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
 
         for ($i = 0;$i<5;$i++){
-            $time_array = explode('|',$results[$i]['latest_action']);
-            $results[$i]['latest_action'] = '<h5>Application #'.$results[$i]['iom_id'].' Edited'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
+            $results[$i]['latest_action'] = '<h5>IOM "'.$results[$i]['name'].'" '.$results[$i]['event_name'].' <small>'.$this->time_elapsed_string($results[$i]['date_time']).'</small></h5>';
         }
 
         return $results;

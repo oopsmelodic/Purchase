@@ -70,6 +70,7 @@
 <!--    <script src="/bower_components/bootstrap-table-master/extensions/filter-control/bootstrap-table-filter-control.js" type="text/javascript"></script>-->
     <script src="/bower_components/bootstrap-table-master/locale/bootstrap-table-en-US.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/group-by/bootstrap-table-group-by.js" type="text/javascript"></script>
+    <script src="/bower_components/bootstrap-table-master/extensions/filter-control/bootstrap-table-filter-control.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/export/bootstrap-table-export.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-table-master/extensions/sticky-header/bootstrap-table-sticky-header.min.js" type="text/javascript"></script>
     <script src="/bower_components/bootbox-4.4.0/bootbox.js" type="text/javascript"></script>

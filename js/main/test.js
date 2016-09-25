@@ -163,6 +163,7 @@ $(document).ready(function () {
         //$('#summer_'+index).summernote({
         //    shortcuts: false
         //});
+        console.log($(this));
         console.log(row);
 
         $('#iom_'+index).bootstrapTable({
