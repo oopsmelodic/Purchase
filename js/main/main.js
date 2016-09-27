@@ -1,6 +1,11 @@
 
 
 
+function format_money(n) {
+    var fixed = parseInt(n);
+    return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
+}
+
 $(function (){
 
     //LatestActions
@@ -9,7 +14,6 @@ $(function (){
         'click .control': function (e, value, row, index) {
             //alert(row['id']);
             var button = $(this).html();
-
             if (button!='Restart') {
                 swal({
                     title: "Are you sure?",
@@ -47,7 +51,7 @@ $(function (){
                             }).success(function (data) {
                                 if (data != null) {
                                     if (data['type'] == 'success') {
-                                        $('#testtable').bootstrapTable('refresh');
+                                        $('#latest_iom').bootstrapTable('refresh');
                                         if (button == 'Cancel') {
                                             swal("Canceled!", "Application '" + row['name'] + "' has been canceled.", "error");
                                         } else {
@@ -82,7 +86,7 @@ $(function (){
     });
 
     $("#latest_iom").bootstrapTable({
-        url: '/php/core.php?method=getAllIoms',
+        url: '/php/core.php?method=getApprovedIoms',
         columns: [{
             field: 'id',
             title: 'IOM ID:',
@@ -94,10 +98,6 @@ $(function (){
             field: 'name',
             title: 'Name:',
             sortable:true
-        }, {
-            field: 'department_name',
-            title: 'Department:',
-            sortable:true
         },{
             field: 'time_stamp',
             title: 'Created on:',
@@ -106,6 +106,13 @@ $(function (){
             field: 'status',
             title: 'IOM Status:',
             sortable:true
+        },{
+            field: 'iom_sum',
+            title: 'IOM Sum:',
+            sortable:true,
+            formatter: function(id,data){
+                return format_money(data['iom_sum'])
+            }
         },{
             title:'Actions:',
             align: 'center',

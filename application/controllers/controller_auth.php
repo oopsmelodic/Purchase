@@ -28,7 +28,7 @@ class Controller_Auth extends Controller
                    $_SESSION['id'] = $user['id'];
                    $_SESSION['user'] = $user;
                    $_SESSION['login_status'] = $data["login_status"];
-                   header('Location:/purchase');
+                   header('Location:/main');
                     //$this->view->generate('main_view.php', 'template_view.php', $data);
                 }
                 else
@@ -40,7 +40,7 @@ class Controller_Auth extends Controller
         {
                 session_start();
                 if (isset($_SESSION["login_status"])){
-                    header('Location:/purchase');
+                    header('Location:/main');
                 }else{
                     session_destroy();
                 }

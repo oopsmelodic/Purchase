@@ -81,6 +81,41 @@ class Iom
         return $query_results;
     }
 
+    public function getApprovedIoms($params){
+
+        $user_id = $params['user_session_id'];
+        $query = "Select im.name,im.id,im.time_stamp,im.status," .
+            "(Select sum(ib.cost) From iom_budgets as ib Where ib.iom_id = im.id ) as iom_sum," .
+            "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status," .
+            "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id Limit 1) as user_last_status" .
+            " From iom as im" .
+            " Left Join employee as em on em.id=im.employee_id" .
+            " Where (".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id.") and (Select sc.status From sign_chain as sc Where iom_id=im.id Limit 1)='in progress' Order by im.time_stamp DESC Limit 5";
+        $query_results = $this->sendQuery($query);
+
+        foreach($query_results as $key => $value){
+            switch ($value['status']){
+                case "in progress":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "pending":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "N/A":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "Approved":
+                    $query_results[$key]['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "Canceled":
+                    $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+            }
+        }
+
+        return $query_results;
+    }
+
     public function getTotalIoms($params){
         $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
             " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )" .
@@ -853,13 +888,13 @@ class Iom
 
         $query = "Select ih.event_name,im.name,ih.date_time,em.fullname From iom_history as ih".
             " Left Join employee as em on em.id=ih.employee_id".
-            " Left Join iom as im on im.id=ih.iom_id LIMIT 5";
+            " Left Join iom as im on im.id=ih.iom_id Order By ih.date_time DESC LIMIT 5";
 
         $results = $this->sendQuery($query);
 //        $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
 
         for ($i = 0;$i<5;$i++){
-            $results[$i]['latest_action'] = '<h5>IOM "'.$results[$i]['name'].'" '.$results[$i]['event_name'].' <small>'.$this->time_elapsed_string($results[$i]['date_time']).'</small></h5>';
+            $results[$i]['latest_action'] = '<h5>IOM "'.$results[$i]['name'].'" '.$results[$i]['event_name'].' by '.$results[$i]['fullname'].' <small>'.$this->time_elapsed_string($results[$i]['date_time']).'</small></h5>';
         }
 
         return $results;

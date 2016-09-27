@@ -148,13 +148,13 @@ window.operateEvents = {
                 },{
                     field: 'brand_name',
                     title: 'Brand:',
-                    filterControl:'select'
+                    filterControl:'select',
+                    filterData: getFilters('name','budget_brand')
                     //sortable:true
                     //filterControl:'select'
                 },{
                     field: 'name',
                     title: 'Name:',
-                    filterData: getFilters('budget_type','budget'),
                     filterStrictSearch:true
                 },{
                     field: 'budget_type',
