@@ -90,7 +90,7 @@ class Iom
             "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id Limit 1) as user_last_status" .
             " From iom as im" .
             " Left Join employee as em on em.id=im.employee_id" .
-            " Where (".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id.") and (Select sc.status From sign_chain as sc Where iom_id=im.id Limit 1)='in progress' Order by im.time_stamp DESC Limit 5";
+            " Where (Select sc.status From sign_chain as sc Where iom_id=im.id and employee_id=".$user_id." Limit 1)='in progress' Order by im.time_stamp DESC Limit 5";
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){

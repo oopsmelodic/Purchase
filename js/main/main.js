@@ -76,6 +76,34 @@ $(function (){
 
     $('#latest_actions').bootstrapTable({
         url: '/php/core.php?method=getLatestActions',
+        rowStyle: function(value,row,index){
+            switch (value['event_name']){
+                case "Approved":
+                    return{
+                        //classes: 'test',
+                        css: {"color" : "#5cb85c"}
+                    }
+                    break;
+                case "Created":
+                    return{
+                        //classes: 'test',
+                        css: {"color" : "#337ab7"}
+                    }
+                    break;
+                case "Canceled":
+                    return{
+                        //classes: 'test',
+                        css: {"color" : "#d9534f"}
+                    }
+                    break;
+                case "Restarted":
+                    return{
+                        //classes: 'test',+
+                        css: {"color" : "#ed9c28"}
+                    }
+                    break;
+            }
+        },
         columns: [{
             field: 'latest_action',
             title: '',

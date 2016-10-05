@@ -50,7 +50,7 @@ $(document).ready(function () {
         events: operateEvents,
         formatter: operateFormatter
     });
-    groupfield = ["department"];
+    //groupfield = ["department"];
     method = "getUsers";
 
     $('#datatable').bootstrapTable({
@@ -96,7 +96,7 @@ $(document).ready(function () {
                         title: 'Role',
                         sortable:true
                     });
-                    groupfield = ["department"];
+                    //groupfield = ["department"];
                     method = "getUsers";
 
                 break;
@@ -159,7 +159,7 @@ $(document).ready(function () {
                             }
                         }
                     });
-                    groupfield = ["department_name"];
+                    //groupfield = ["department_name"];
                     method = "getAllBudgets";
 
                 break;
@@ -211,8 +211,8 @@ $(document).ready(function () {
             strictSearch: true,
             showRefresh: true,
             detailView: false,
-            groupBy: true,
-            groupByField: groupfield,
+            //groupBy: true,
+            //groupByField: groupfield,
             method: 'POST',
             contentType: 'application/x-www-form-urlencoded',
             queryParams: function (p){

@@ -126,6 +126,7 @@ window.operateEvents = {
             resetForm();
             var iom_id = row['id'];
             //$('.selectpicker').selectpicker('destroy');
+            $('#summernote').code('');
             $('.selectpicker').selectpicker('deselectAll');
             $('#purchase_budget_table').bootstrapTable('destroy');
             $('#purchase_budget_table').bootstrapTable({
@@ -400,7 +401,7 @@ $(document).ready(function () {
         console.log(row);
 
         var iom_id = row['id']
-        $('#summer_'+index).code(row['substantation']);
+        //$('#summer_'+index).code(row['substantation']);
         $('#signers_'+index).bootstrapTable({
             url: '/php/core.php?method=getIomSigners',
             contentType: 'application/x-www-form-urlencoded',
@@ -666,31 +667,23 @@ $(document).ready(function () {
                 }
             },
             rowStyle: function(value,row,index){
+                var color = '';
                 switch (value['event_name']){
                     case "Approved":
-                        return{
-                            //classes: 'test',
-                            css: {"color" : "#5cb85c"}
-                        }
+                        color = "#5cb85c";
                         break;
                     case "Created":
-                        return{
-                            //classes: 'test',
-                            css: {"color" : "#337ab7"}
-                        }
+                        color = "#337ab7";
                         break;
                     case "Canceled":
-                        return{
-                            //classes: 'test',
-                            css: {"color" : "#d9534f"}
-                        }
+                        color = "#d9534f";
                         break;
                     case "Restarted":
-                        return{
-                            //classes: 'test',+
-                            css: {"color" : "#ed9c28"}
-                        }
+                        color = "#ed9c28";
                         break;
+                }
+                return{
+                    css: {"color" : color,"font-size": "11px"}
                 }
             },
             columns: [{
@@ -840,6 +833,7 @@ function resetForm(){
     $('#myWizard a:first').tab('show');
     $('#purchase_text').val('');
     $('.selectpicker').selectpicker('deselectAll');
+    $('#summernote').summernote('code', '');
     //$('.selectpicker').selectpicker('destroy');
     $('#budget_inputs').html('');
     $('#input-1').fileinput('clear');
