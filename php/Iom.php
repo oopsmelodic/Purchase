@@ -13,7 +13,7 @@ class Iom
 
     var $FISH = 'JHENEK';
 
-//MAIL_SETTINGS
+//MAIL_SETTINGS+++++
 
     var $mail_host = '10.6.5.121';
     var $mail_username = 'docflow.russia@sunpharma.com';
@@ -357,8 +357,9 @@ class Iom
     }
 
     public function getBudgets(){
-        $query="Select b.id, b.date_time, b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+        $query="Select b.id,br.cost as relocation_cost, b.date_time, b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
                 " Left Join budget_brand as bb on b.brand_id=bb.id" .
+                " Left Join budget_relocations as br on br.budget_id=b.id" .
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
                 " Left Join iom_budgets as ib on b.id = ib.budget_id Where b.deleted=0 and b.department_id=".$_SESSION['user']['department_id']." GROUP BY b.id";
 
@@ -366,9 +367,19 @@ class Iom
         return $query_results;
     }
 
+    public function getRelocations(){
+
+        $query = "Select b.name as name_relocation, b.budget_date as budget_date_relocation, br.cost,br.id From budget_relocations as br" .
+            " Left Join budget as b on b.id=br.budget_id";
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
     public function getAllBudgets(){
-        $query="Select b.id, b.date_time,b.budget_date,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+        $query="Select b.id, b.date_time,b.budget_date,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, br.id as budget_relocations, br.cost as relocation_cost, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
             " Left Join budget_brand as bb on b.brand_id=bb.id" .
+            " Left Join budget_relocations as br on br.budget_id=b.id" .
             " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
             " Left Join departments as dep on b.department_id=dep.id" .
             " Left Join iom_budgets as ib on b.id = ib.budget_id Where b.deleted=0 GROUP BY b.id";
@@ -414,11 +425,13 @@ class Iom
 //        $query3 = "Select id,name From budget_type";
         $query4 = "Select id,name From budget_brand";
         $query5 = "Select id,name From budget_mapping";
+        $query6 = "Select b.id,concat(b.name,' ',bb.name,' - ',dep.name) as name From budget as b Left Join budget_brand as bb on b.brand_id=bb.id Left Join departments as dep on dep.id=b.department_id";
         $query_results['roles'] = $this->make_string_select($this->sendQuery($query));
         $query_results['departments'] = $this->make_string_select($this->sendQuery($query2));
 //        $query_results['budget_type'] = $this->make_string_select($this->sendQuery($query3));
         $query_results['brand_name'] = $this->make_string_select($this->sendQuery($query4));
         $query_results['mapping_name'] = $this->make_string_select($this->sendQuery($query5));
+        $query_results['budgets'] = $this->make_string_select($this->sendQuery($query6));
         return ($query_results);
     }
 
@@ -439,8 +452,8 @@ class Iom
     public function addEmployee($params){
 
 
-        $query = "INSERT INTO employee(fullname, role_id, department_id, username, email,password)"
-            . " VALUES ('" . $params["fullname"] . "',"
+        $query = "INSERT INTO employee(position,fullname, role_id, department_id, username, email,password)"
+            . " VALUES (0,'" . $params["fullname"] . "',"
             . $params["role"] . ","
             . $params["department"]  . ",'"
             . $params["username"] . "','"
@@ -462,6 +475,22 @@ class Iom
         }
         else {
             return Array('type'=>'success','user_id'=>$last_id);
+        }
+    }
+
+    public function addBudget_relocations($params){
+
+
+        $query = "Insert Into budget_relocations (cost,budget_id) Values(" . $params["cost"] . "," . $params["name_relocation"] .")";
+
+        $query_results = $this->sendQuery($query);
+        $last_id = mysqli_insert_id(GetMyConnection());
+//        echo $query;
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else {
+            return Array('type'=>'success','relocation_id'=>$last_id);
         }
     }
 
@@ -515,7 +544,6 @@ class Iom
     public function addBudget($insert_arr){
         $query = "Insert Into budget (name,brand_id,mapping_id,budget_type,department_id,planed_cost) Values('".$insert_arr['name']."',".$insert_arr['brand_name'].",".$insert_arr['mapping_name'].",'".$insert_arr['budget_type']."',".$insert_arr['department_name'].",".$insert_arr['planed_cost'].")";
 
-        echo $query;
         $query_results = $this->sendQuery($query);
         $last_id = mysqli_insert_id(GetMyConnection());
         if (!$query_results){

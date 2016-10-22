@@ -48,7 +48,7 @@
     <script type="text/javascript" src="/js/jquery.treegrid.js"></script>
     <script src="/js/bootstrap-select.js" type="text/javascript"></script>
     <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
-    <script src="/js/summernote.min.js" type="text/javascript"></script>
+    <script src="/bower_components/tinymce/tinymce.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
 <!--    Angular Part-->
     <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>

@@ -126,7 +126,7 @@ window.operateEvents = {
             resetForm();
             var iom_id = row['id'];
             //$('.selectpicker').selectpicker('destroy');
-            $('#summernote').code('');
+
             $('.selectpicker').selectpicker('deselectAll');
             $('#purchase_budget_table').bootstrapTable('destroy');
             $('#purchase_budget_table').bootstrapTable({
@@ -168,10 +168,16 @@ window.operateEvents = {
                     field: 'cur_sum',
                     title: 'Current Sum:',
                     formatter: function(id,data){
-                        if (data['cur_sum']!=null) {
-                            return format_money(data['cur_sum']);
+                        var relocation_sum = 0;
+                        if (data['relocation_cost']!=null){
+                            relocation_sum = parseInt(data['relocation_cost']);
                         }else{
-                            return format_money(data['planed_cost']);
+                            relocation_sum = parseInt(0);
+                        }
+                        if (data['cur_sum']!=null) {
+                            return format_money(parseInt(data['cur_sum'])+relocation_sum);
+                        }else{
+                            return format_money(parseInt(data['planed_cost'])+relocation_sum);
                         }
                     }
                     //sortable:true
@@ -180,7 +186,7 @@ window.operateEvents = {
                     field: 'planed_cost',
                     title: 'Planed Cost:',
                     formatter: function(id,data){
-                        return format_money(data['planed_cost'])
+                        return format_money(parseInt(data['planed_cost']));
                     }
                     //sortable:true
                     //filterControl:'select'
@@ -231,10 +237,10 @@ window.operateEvents = {
             if ($('#myWizard').hasClass('left')){
                 $('#legend_iom').attr('iom_id',iom_id).text('Edit Application #'+iom_id);
                 $('#myWizard').removeClass('animated left').addClass('animated right');
-                console.log(row);
                 $('#purchase_text').val(row['name']);
                 $('#user_id').text(row['fullname']+' from '+row['department_name']+' department.');
-                $("#summernote").summernote("editor.pasteHTML", row['substantation']);
+                tinymce.get('summernote').setContent(row['substantation']);
+                //$("#summernote").summernote("editor.pasteHTML", row['substantation']);
                 $.ajax({
                     url: '/php/core.php?method=getIomSigners',
                     contentType: 'application/x-www-form-urlencoded',
@@ -292,7 +298,6 @@ $(document).ready(function () {
     });
     //getUsersJSON();
     //$('#chain_list').validator();
-    $('#summernote').summernote({height: 150});
     //$('.personOK').click(function (event) {
     //    event.preventDefault();
     //    if (event.target.nodeName == "BUTTON")
@@ -833,7 +838,7 @@ function resetForm(){
     $('#myWizard a:first').tab('show');
     $('#purchase_text').val('');
     $('.selectpicker').selectpicker('deselectAll');
-    $('#summernote').summernote('code', '');
+    //$('#summernote').summernote('code', '');
     //$('.selectpicker').selectpicker('destroy');
     $('#budget_inputs').html('');
     $('#input-1').fileinput('clear');

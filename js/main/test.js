@@ -46,7 +46,7 @@ $(document).ready(function () {
         pageList: [10,25,50,100,500,1000,1500],
         //stickyHeader:true,
         columns: [{
-            title:'Fin Year:',
+            title:'FYear:',
             sortable:true,
             width:'5%',
             formatter: function(id,data){
@@ -62,7 +62,7 @@ $(document).ready(function () {
             filterStrictSearch:true
         },{
             field:'budget_date',
-            title: 'Budget Date:',
+            title: 'Date:',
             sortable:true,
             formatter: function(id,data){
 
@@ -86,14 +86,14 @@ $(document).ready(function () {
             filterStrictSearch:true
         },{
             field:'department_name',
-            title: 'Department:',
+            title: 'Depart.:',
             sortable:false,
             filterControl:'select',
             filterData: getFilters('name','departments'),
             filterStrictSearch:true
         },{
             field:'budget_type',
-            title: 'Budget Type:',
+            title: 'Type:',
             sortable:true,
             filterControl:'select',
             filterData: getFilters('budget_type','budget'),
@@ -103,7 +103,7 @@ $(document).ready(function () {
             title: 'OB Value:',
             sortable:true,
             formatter: function(id,data){
-                return format_money(data['planed_cost'])
+                return format_money(parseInt(data['planed_cost']));
             },
             footerFormatter:function(data){
                 var sum = 0;
@@ -119,25 +119,50 @@ $(document).ready(function () {
                 return format_money(sum);
             }
         },{
+            field:'relocation_cost',
+            title: 'Relocation:',
+            sortable:true,
+            formatter: function(id,data){
+                if (data['relocation_cost']!=null) {
+                    return format_money(data['relocation_cost']);
+                }else{
+                    return format_money(0);
+                }
+            }
+        },{
             field:'cur_sum',
             title: 'Balance:',
             sortable:true,
             formatter: function(id,data){
-                if (data['cur_sum']!=null) {
-                    return format_money(data['cur_sum']);
+                var relocation_sum = 0;
+                if (data['relocation_cost']!=null){
+                    relocation_sum = parseInt(data['relocation_cost']);
                 }else{
-                    return format_money(data['planed_cost']);
+                    relocation_sum = parseInt(0);
+                }
+                if (data['cur_sum']!=null) {
+                    return format_money(parseInt(data['cur_sum'])+relocation_sum);
+                }else{
+                    return format_money(parseInt(data['planed_cost'])+relocation_sum);
                 }
             },
             footerFormatter:function(data){
+                var relocation_sum = 0;
+                if (data['relocation_cost']!=null){
+                    relocation_sum = parseInt(data['relocation_cost']);
+                }else{
+                    relocation_sum = parseInt(0);
+                }
                 var sum = 0;
                 for (var i= 0,len = data.length;i<len;i++){
                     //sum += data[i]['planed_cost'];
                     var obj  = data[i];
                     if (obj['cur_sum']!=null) {
                         sum += parseInt(obj['cur_sum']);
+                        sum += relocation_sum;
                     }else{
                         sum += parseInt(obj['planed_cost']);
+                        sum += relocation_sum;
                     }
                 }
                 return format_money(sum);

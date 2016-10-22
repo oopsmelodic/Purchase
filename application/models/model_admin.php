@@ -51,5 +51,4 @@ class Model_Admin extends Model {
             //Any auth
         }
     }
-
 }

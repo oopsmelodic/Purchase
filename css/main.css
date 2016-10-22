@@ -55,6 +55,9 @@
     width:20%;
     display: inline;
 }
+.note-editor p, .box-shadow p{
+    margin: 0 0 0.0001pt;
+}
 .inner-wrapper {
     padding-left: 40px;
     padding-top: 20px;
@@ -88,16 +91,16 @@
     }
 }
 .blur {
-    background-image: url(../../../admin_panel/images/background.jpg);
-    z-index: 99; /* изображение размыто */
-    width:100%;
-    height:100%;
-    background-size: cover;
-    backgroun-repeat: no-repeat;
-    -webkit-filter: blur(5px);
-    -moz-filter: blur(5px);
-    filter: blur(5px);
-    filter: url('../../../admin_panel/images/blur.svg#blur'); /* путь к svg */
+    /*background-image: url(../../../admin_panel/images/background.jpg);*/
+    /*z-index: 99; !* изображение размыто *!*/
+    /*width:100%;*/
+    /*height:100%;*/
+    /*background-size: cover;*/
+    /*backgroun-repeat: no-repeat;*/
+    /*-webkit-filter: blur(5px);*/
+    /*-moz-filter: blur(5px);*/
+    /*filter: blur(5px);*/
+    /*filter: url('../../../admin_panel/images/blur.svg#blur'); !* путь к svg *!*/
 }
 .list-group-item {
     height: 100px;

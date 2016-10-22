@@ -7,6 +7,7 @@
             <ul class="nav nav-pills" style="margin-bottom: 15px;">
                 <li class="active"><a data-toggle="pill" href="#home" table="employee">Employees</a></li>
                 <li class=""><a data-toggle="pill" href="#home" table="budget">Budgets</a></li>
+                <li class=""><a data-toggle="pill" href="#home" table="budget_relocations">Budgets Relocations</a></li>
                 <li class=""><a data-toggle="pill" href="#home" table="budget_mapping">Budgets Mapping</a></li>
                 <li class=""><a data-toggle="pill" href="#home" table="budget_brand">Budgets Brand</a></li>
             </ul>

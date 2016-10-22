@@ -145,22 +145,70 @@ $(document).ready(function () {
                         title: 'OB Value:',
                         sortable:true,
                         formatter: function(id,data){
-                            return format_money(data['planed_cost'])
+                            return format_money(parseInt(data['planed_cost']));
+                        }
+                    },{
+                        field:'relocation_cost',
+                        title: 'Relocation:',
+                        sortable:true,
+                        formatter: function(id,data){
+                            if (data['relocation_cost']!=null) {
+                                return format_money(data['relocation_cost']);
+                            }else{
+                                return format_money(0);
+                            }
                         }
                     },{
                         field:'cur_sum',
                         title: 'Balance:',
                         sortable:true,
                         formatter: function(id,data){
-                            if (data['cur_sum']!=null) {
-                                return format_money(data['cur_sum']);
+                            var relocation_sum = 0;
+                            if (data['relocation_cost']!=null){
+                                relocation_sum = parseInt(data['relocation_cost']);
                             }else{
-                                return format_money(data['planed_cost']);
+                                relocation_sum = parseInt(0);
+                            }
+                            if (data['cur_sum']!=null) {
+                                return format_money(parseInt(data['cur_sum'])+relocation_sum);
+                            }else{
+                                return format_money(parseInt(data['planed_cost'])+relocation_sum);
                             }
                         }
                     });
                     //groupfield = ["department_name"];
                     method = "getAllBudgets";
+
+                break;
+            case 'budget_relocations':
+                columns.push({
+                    field:'name_relocation',
+                    title: 'Budget Name:',
+                    sortable:true
+                },{
+                    field:'budget_date_relocation',
+                    title: 'Budget Date:',
+                    sortable:true,
+                    formatter: function(id,data){
+
+                        var d = new Date.parse(data['budget_date_relocation'])
+
+                        return d.toString('MMMM');
+                    }
+                },{
+                    field:'cost',
+                    title: 'Balance:',
+                    sortable:true,
+                    formatter: function(id,data){
+                        if (data['cost']!=null) {
+                            return format_money(data['cost']);
+                        }else{
+                            return format_money(0);
+                        }
+                    }
+                });
+                //groupfield = ["department_name"];
+                method = "getRelocations";
 
                 break;
 
@@ -241,7 +289,7 @@ $(document).ready(function () {
         }
 
         bootbox.dialog({
-            title: "Register user",
+            title: "Add new:",
             message: bootboxMessage(null,columns),
             buttons: {
                 success: {
@@ -451,6 +499,14 @@ function bootboxMessage(row,columns){
                     '</div> ' +
                     '</div> ';
                 break;
+            case 'name_relocation':
+                str+='<div class="form-group"> ' +
+                    '<label class="col-md-4 control-label" for="name">Relocation Budget:</label> ' +
+                    '<div class="col-md-8"> ' +
+                    '<select class="selectpicker" id="name_relocation" data-width="100%" data-live-search="true" style="display:inline;">' + deproles["budgets"] + ':</select>' +
+                    '</div> ' +
+                    '</div> ';
+                break;
             case 'budget_type':
                 str+='<div class="form-group"> ' +
                         '<label class="col-md-4 control-label" for="name">Budget Type</label> ' +
@@ -460,7 +516,7 @@ function bootboxMessage(row,columns){
                     '</div> ';
                 break;
             default:
-                if (columns[i]!='id' && columns[i]!='budget_type' && columns[i]!='cur_sum' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='mapping_name' && columns[i]!='department_name' && columns[i]!='brand_name' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
+                if (columns[i]!='id' && columns[i]!='budget_relocations' && columns[i]!='budget_date_relocation' && columns[i]!='relocation_cost' && columns[i]!='budget_type' && columns[i]!='cur_sum' && columns[i]!='roleid' && columns[i]!='depid' && columns[i]!='position' && columns[i]!='mapping_name' && columns[i]!='department_name' && columns[i]!='brand_name' && columns[i]!='undefined' && columns[i]!='date_time' && columns[i]!='type_name') {
                     str += '<div class="form-group' + danger + '">' +
                                 '<label class="col-md-4 control-label" for="name">' + columns[i].replace(/_/g," ").capitalizeFirstLetter() + ':</label>' +
                                 '<div class="col-md-4">' +

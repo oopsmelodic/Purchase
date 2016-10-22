@@ -24,6 +24,8 @@ String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+tinymce.init({ selector:'#summernote' });
+
 function format_money(n) {
     var fixed = parseInt(n);
     return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
@@ -39,7 +41,7 @@ $(function(){
                 $('#myWizard').removeClass('animated right').addClass('animated left');
             }else{
                 $('#myWizard').removeClass('animated left').addClass('animated right');
-                $('#summernote').code('');
+                //$('#summernote').code('');
                 $('#purchase_budget_table').bootstrapTable({
                     url: '/php/core.php?method=getBudgets',
                     contentType: 'application/x-www-form-urlencoded',
@@ -73,10 +75,16 @@ $(function(){
                         field: 'cur_sum',
                         title: 'Current Sum:',
                         formatter: function(id,data){
-                            if (data['cur_sum']!=null) {
-                                return format_money(data['cur_sum']);
+                            var relocation_sum = 0;
+                            if (data['relocation_cost']!=null){
+                                relocation_sum = parseInt(data['relocation_cost']);
                             }else{
-                                return format_money(data['planed_cost']);
+                                relocation_sum = parseInt(0);
+                            }
+                            if (data['cur_sum']!=null) {
+                                return format_money(parseInt(data['cur_sum'])+relocation_sum);
+                            }else{
+                                return format_money(parseInt(data['planed_cost'])+relocation_sum);
                             }
                         }
                         //sortable:true
@@ -85,7 +93,7 @@ $(function(){
                         field: 'planed_cost',
                         title: 'Planed Cost:',
                         formatter: function(id,data){
-                            return format_money(data['planed_cost'])
+                            return format_money(parseInt(data['planed_cost']));
                         }
                         //sortable:true
                         //filterControl:'select'
@@ -142,9 +150,6 @@ $(function(){
         $(e.target).selectpicker('toggle');
     });
 
-    $('#summernote').summernote({
-        height: 150
-    });
 
     $('.tab-pane').validator().on('submit', function (e) {
         if (e.isDefaultPrevented()) {
@@ -206,7 +211,7 @@ $(function(){
     function resetForm(){
         $('#myWizard a:first').tab('show');
         $('#purchase_text').val('');
-        $('#summernote').summernote('code', '');
+        //$('#summernote').summernote('code', '');
         $('.selectpicker').selectpicker('deselectAll');
         $('.selectpicker').selectpicker('refresh');
         $('#budget_inputs').html('');
@@ -265,7 +270,7 @@ $(function(){
                         department_id: $('.img-user').attr('department_id'),
                         purchase_text: $('#purchase_text').val() || 'Empty',
                         expense_size: 0,
-                        substantiation_text: $("#summernote").code(),
+                        substantiation_text: tinymce.get('summernote').getContent(),
                         budgets: JSON.stringify(budgets_chain),
                         sign_chain: JSON.stringify(sign_chain),
                         iom_id : iom_id
@@ -358,7 +363,7 @@ $(function(){
                         department_id: $('.img-user').attr('department_id'),
                         purchase_text: $('#purchase_text').val() || 'Empty',
                         expense_size: 0,
-                        substantiation_text: $("#summernote").code(),
+                        substantiation_text: tinymce.get('#summernote').getContent(),
                         budgets: JSON.stringify(budgets_chain),
                         sign_chain: JSON.stringify(sign_chain)
                     }
