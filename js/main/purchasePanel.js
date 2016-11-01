@@ -126,7 +126,7 @@ window.operateEvents = {
             resetForm();
             var iom_id = row['id'];
             //$('.selectpicker').selectpicker('destroy');
-
+            tinymce.get('summernote').setContent('');
             $('.selectpicker').selectpicker('deselectAll');
             $('#purchase_budget_table').bootstrapTable('destroy');
             $('#purchase_budget_table').bootstrapTable({
@@ -151,6 +151,13 @@ window.operateEvents = {
                     title: 'Brand:',
                     filterControl:'select',
                     filterData: getFilters('name','budget_brand')
+                    //sortable:true
+                    //filterControl:'select'
+                },{
+                    field: 'mapping_name',
+                    title: 'Mapping:',
+                    filterControl:'select',
+                    filterData: getFilters('name','budget_mapping')
                     //sortable:true
                     //filterControl:'select'
                 },{
@@ -316,7 +323,10 @@ $(document).ready(function () {
             title: 'IOM ID:',
             sortable:true,
             formatter: function(id,data,index){
-                return '201609-'+index;
+
+                var d = new Date.parse(data['time_stamp'])
+
+                return data['department_name']+d.toString('yyyyMM')+index;
             }			
         }, {
             field: 'name',
@@ -838,6 +848,7 @@ function resetForm(){
     $('#myWizard a:first').tab('show');
     $('#purchase_text').val('');
     $('.selectpicker').selectpicker('deselectAll');
+    tinymce.get('summernote').setContent('');
     //$('#summernote').summernote('code', '');
     //$('.selectpicker').selectpicker('destroy');
     $('#budget_inputs').html('');

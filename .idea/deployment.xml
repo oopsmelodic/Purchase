@@ -86,6 +86,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="symfony">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="unity.oopsmelodic.ru">
         <serverdata>
           <mappings>

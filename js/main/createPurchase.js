@@ -62,6 +62,13 @@ $(function(){
                         //sortable:true
                         //filterControl:'select'
                     },{
+                        field: 'mapping_name',
+                        title: 'Mapping:',
+                        filterControl:'select',
+                        filterData: getFilters('name','budget_mapping')
+                        //sortable:true
+                        //filterControl:'select'
+                    },{
                         field: 'name',
                         title: 'Name:',
                         filterStrictSearch:true
@@ -212,6 +219,7 @@ $(function(){
         $('#myWizard a:first').tab('show');
         $('#purchase_text').val('');
         //$('#summernote').summernote('code', '');
+        tinymce.get('summernote').setContent('');
         $('.selectpicker').selectpicker('deselectAll');
         $('.selectpicker').selectpicker('refresh');
         $('#budget_inputs').html('');
