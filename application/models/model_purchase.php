@@ -61,6 +61,25 @@ class Model_Purchase extends Model{
         }
     }
 
+    public function get_saved_chain(){
+
+        include_once './php/conn.php';
+        $query=mysqli_query(GetMyConnection(),"Select sc.employee_id,sc.name,scd.chain_id,scd.employee_id as chain_employee_id From saved_chain as sc Left Join saved_chain_details as scd on sc.id=scd.chain_id");
+        if ($query){
+            if (mysqli_num_rows($query)){
+                while ($row = mysqli_fetch_assoc($query)) {
+                    $rows[] = $row;
+                }
+                return $rows;
+            }else{
+                return null;
+            }
+        }else{
+            print_r(mysqli_error(GetMyConnection()));
+        }
+    }
+
+
     public function get_brand(){
 
         include_once './php/conn.php';

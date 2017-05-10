@@ -36,10 +36,6 @@ $(document).ready(function () {
         title: 'Username:',
         sortable:true
     },{
-        field:'department',
-        title: 'Department:',
-        sortable:true
-    },{
         field:'fullname',
         title: 'Fullname',
         sortable:true
@@ -48,13 +44,17 @@ $(document).ready(function () {
         title: 'Role',
         sortable:true
     },{
+        field:'department',
+        title: 'Department:',
+        sortable:true
+    },{
         field: 'operate',
         title: 'Item Operate',
         align: 'center',
         events: operateEvents,
         formatter: operateFormatter
     });
-    //groupfield = ["department"];
+    //groupfield = ["department"];+
     method = "getUsers";
 
     $('#datatable').bootstrapTable({
@@ -99,6 +99,10 @@ $(document).ready(function () {
                         field:'role',
                         title: 'Role',
                         sortable:true
+                    },{
+                        field:'department',
+                        title: 'Department:',
+                        sortable:true
                     });
                     //groupfield = ["department"];
                     method = "getUsers";
@@ -106,14 +110,19 @@ $(document).ready(function () {
                 break;
             case 'budget':
                     columns.push({
-                        title:'ID',
+                        title:'FYear:',
+                        field:'fy',
                         sortable:true,
-                        formatter: function(id,data){
-
-                            var d = new Date.parse(data['budget_date'])
-
-                            return 'FY 16-17';
-                        }
+                        width:'8%',
+                        filterControl:'select',
+                        filterStrictSearch:true
+                        //formatter: function(id,data){
+                        //    var d = new Date.parse(data['budget_date']);
+                        //    //console.log(d.getYear());
+                        //    var startYear = d.getYear();
+                        //    var endYear = d.getYear()+1;
+                        //    return 'FY '+(startYear-100)+'-'+(endYear-100);
+                        //}
                     },{
                         field:'name',
                         title: 'Name:',
@@ -375,6 +384,10 @@ window.operateEvents = {
                 columns.push(key);
             }
         }
+        console.log("username" in columns);
+        if (columns.indexOf('username')!= -1){
+            columns.push('password');
+        }
         bootbox.dialog({
             title: "Editing row: " + row['id'] + "",
             message: bootboxMessage(row,columns),
@@ -387,6 +400,7 @@ window.operateEvents = {
                         for (var i=0; i<columns.length;i++){
                             data[columns[i]]=$('#'+columns[i]).val();
                         }
+                        console.log(data);
                         data['id']=row['id'];
                         $.ajax({
                             url: "/php/core.php?method=update"+table.capitalizeFirstLetter(),

@@ -47,12 +47,23 @@ $(document).ready(function () {
         //stickyHeader:true,
         columns: [{
             title:'FYear:',
+            field:'fy',
             sortable:true,
-            width:'5%',
-            formatter: function(id,data){
-                var d = new Date.parse(data['budget_date']);
-                return 'FY 16-17';
-            }
+            width:'8%',
+            filterControl:'select',
+            filterStrictSearch:true
+            //formatter: function(id,data){
+            //    var d = new Date.parse(data['budget_date']);
+            //    //console.log(d.getYear());
+            //    var startYear = d.getYear();
+            //    var endYear = d.getYear()+1;
+            //    return 'FY '+(startYear-100)+'-'+(endYear-100);
+            //}
+        },{
+            field:'id',
+            title: 'ID:',
+            width:'3%',
+            sortable:true
         },{
             field:'name',
             title: 'Name:',
@@ -63,6 +74,7 @@ $(document).ready(function () {
         },{
             field:'budget_date',
             title: 'Date:',
+            width:'5%',
             sortable:true,
             formatter: function(id,data){
 
@@ -230,6 +242,9 @@ $(document).ready(function () {
                 formatter: function(id,data){
                     return format_money(data['iom_cost'])
                 }
+            },{
+                field: 'status',
+                title: 'Status:'
             },{
                 title:'URL:',
                 formatter: function(id,data){

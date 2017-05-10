@@ -154,13 +154,6 @@ window.operateEvents = {
                     //sortable:true
                     //filterControl:'select'
                 },{
-                    field: 'mapping_name',
-                    title: 'Mapping:',
-                    filterControl:'select',
-                    filterData: getFilters('name','budget_mapping')
-                    //sortable:true
-                    //filterControl:'select'
-                },{
                     field: 'name',
                     title: 'Name:',
                     filterStrictSearch:true
@@ -171,6 +164,14 @@ window.operateEvents = {
                     filterData: getFilters('budget_type','budget'),
                     filterStrictSearch:true
 
+                },{
+                    field: 'planed_cost',
+                    title: 'OB Value:',
+                    formatter: function(id,data){
+                        return format_money(parseInt(data['planed_cost']));
+                    }
+                    //sortable:true
+                    //filterControl:'select'
                 },{
                     field: 'cur_sum',
                     title: 'Current Sum:',
@@ -186,14 +187,6 @@ window.operateEvents = {
                         }else{
                             return format_money(parseInt(data['planed_cost'])+relocation_sum);
                         }
-                    }
-                    //sortable:true
-                    //filterControl:'select'
-                },{
-                    field: 'planed_cost',
-                    title: 'Planed Cost:',
-                    formatter: function(id,data){
-                        return format_money(parseInt(data['planed_cost']));
                     }
                     //sortable:true
                     //filterControl:'select'
@@ -323,10 +316,8 @@ $(document).ready(function () {
             title: 'IOM ID:',
             sortable:true,
             formatter: function(id,data,index){
-
-                var d = new Date.parse(data['time_stamp'])
-
-                return data['department_name']+d.toString('yyyyMM')+index;
+                var d1= Date.parse(data['time_stamp']);
+                return data['department_name']+d1.toString('yyyyMM')+data['id'];
             }			
         }, {
             field: 'name',
@@ -348,7 +339,7 @@ $(document).ready(function () {
             field: 'latest_action',
             title: 'Last Event:',
             sortable:true
-            //filterControl:'select'
+            //filterControl:'select'++++++
         },{
             title:'Actions:',
             align: 'center',
@@ -379,6 +370,7 @@ $(document).ready(function () {
         pagination: true,
         strictSearch: true,
         detailView : true,
+        pageList: [25,50,75,100,200],
         showRefresh:true,
         stickyHeader:false,
         toolbar: '#toolbar',
@@ -521,9 +513,12 @@ $(document).ready(function () {
                 title: 'Name:'
                 //sortable:true
             },{
-                        field: 'budget_type',
-                        title: 'Type:',
-                    },{
+                field: 'brand_name',
+                title: 'Brand:',
+            },{
+                field: 'mapping_name',
+                title: 'Mapping:',
+            },{
                 field: 'budget_date',
                 title: 'Date:',
 						formatter: function(id,data){

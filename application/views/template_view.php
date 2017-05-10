@@ -16,7 +16,7 @@
     <!-- Custom CSS -->
     <link href="/css/sb-admin.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/jquery.treegrid.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/main.css?v1332">
     <link href="/css/spinner.css" rel="stylesheet" type="text/css"/>
     <link href="/css/fileinput.min.css" rel="stylesheet" type="text/css"/>
     <link href="/css/summernote.css" rel="stylesheet" type="text/css"/>
@@ -191,6 +191,9 @@
 
         </form>
         <form class="tab-pane fade step" id="step3">
+            <select class="selectpicker" data-width="20%" data-selected-text-format="count">
+                <?php echo implode('', $data['chain']);?>
+            </select>
             <div class="step-body">
                 <ul class="list-group" id="chain_list">
                     <li class="list-group-item">

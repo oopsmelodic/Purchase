@@ -43,4 +43,4 @@
 <!-- /.container-fluid -->
 
 <!-- jQuery -->
-<script src="/js/main/adminPanel.js" type="text/javascript"></script>
+<script src="/js/main/adminPanel.js?v12234" type="text/javascript"></script>

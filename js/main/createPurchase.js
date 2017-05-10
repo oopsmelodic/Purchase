@@ -31,6 +31,19 @@ function format_money(n) {
     return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
 }
 
+function writeSum(input){
+    var cur_sum =  $(input).val();
+    console.log($(input).attr('id'));
+    var id = $(input).attr('budget_id');
+    //var test_chain = $('#purchase_budget_table').bootstrapTable('getAllSelections');
+    //console.log(test_chain);
+    //console.log($(this).attr('budget_id'));
+    var row =  $('#purchase_budget_table').bootstrapTable('getRowByUniqueId', parseInt(id));
+    console.log(row['select_sum']);
+    row['select_sum'] = cur_sum;
+    $('#purchase_budget_table').bootstrapTable('updateByUniqueId', {id: id,row: row});
+}
+
 $(function(){
     //$('#purchase_text').focus();
 
@@ -46,15 +59,12 @@ $(function(){
                     url: '/php/core.php?method=getBudgets',
                     contentType: 'application/x-www-form-urlencoded',
                     method: 'POST',
+                    uniqueId: 'id',
                     clickToSelect:false,
                     toolbar:'#toolbar_purchase_budget_table',
                     filterControl:true,
                     pagination: true,
                     columns: [{checkbox:true},{
-                        field: 'id',
-                        title: '#:'
-                        //sortable:true
-                    },{
                         field: 'brand_name',
                         title: 'Brand:',
                         filterControl:'select',
@@ -62,22 +72,34 @@ $(function(){
                         //sortable:true
                         //filterControl:'select'
                     },{
-                        field: 'mapping_name',
-                        title: 'Mapping:',
-                        filterControl:'select',
-                        filterData: getFilters('name','budget_mapping')
-                        //sortable:true
-                        //filterControl:'select'
-                    },{
                         field: 'name',
                         title: 'Name:',
                         filterStrictSearch:true
                     },{
-                        field: 'budget_type',
-                        title: 'Budget Type:',
+                        field: 'mapping_name',
+                        title: 'Mapping:',
                         filterControl:'select',
-                        filterData: getFilters('budget_type','budget'),
+                        filterData: getFilters('name','budget_mapping'),
                         filterStrictSearch:true
+                    },{
+                        field:'budget_date',
+                        title: 'Date:',
+                        width:'5%',
+                        sortable:true,
+                        formatter: function(id,data){
+
+                            var d = new Date.parse(data['budget_date'])
+
+                            return d.toString('MMMM');
+                        }
+                    },{
+                        field: 'planed_cost',
+                        title: 'OB Value:',
+                        formatter: function(id,data){
+                            return format_money(parseInt(data['planed_cost']));
+                        }
+                        //sortable:true
+                        //filterControl:'select'
                     },{
                         field: 'cur_sum',
                         title: 'Current Sum:',
@@ -97,14 +119,6 @@ $(function(){
                         //sortable:true
                         //filterControl:'select'
                     },{
-                        field: 'planed_cost',
-                        title: 'Planed Cost:',
-                        formatter: function(id,data){
-                            return format_money(parseInt(data['planed_cost']));
-                        }
-                        //sortable:true
-                        //filterControl:'select'
-                    },{
                         title:'Select Sum:',
                         align: 'center',
                         events: operateEvents,
@@ -115,13 +129,15 @@ $(function(){
                             }else{
                                  maxsum =data['planed_cost'];
                             }
-                            var controls='<input budget_id="'+data['id']+'" budget_type="'+data['budget_type']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="0" type="number" min="0" max="'+maxsum+'">';
+                            var controls='<input budget_id="'+data['id']+'" budget_type="'+data['budget_type']+'" onchange="writeSum(this)" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="'+data['select_sum']+'" type="number" min="0" max="'+maxsum+'">';
                             return controls;
                         }
                     }],
                 }).off('check.bs.table').on('check.bs.table', function (event,row,el){
                     //console.log(row);
+                    console.log('Check: '+row['id']);
                     $('#budget_input_'+row['id']).prop('disabled','');
+                    $('#budget_input_'+row['id']).val(row['select_sum'])
                 }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
                     //console.log(row);
                     $('#purchase_budget_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
@@ -129,7 +145,22 @@ $(function(){
                     console.log(row);
                     console.log(index);
                 }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
-                    $('#budget_input_'+row['id']).prop('disabled','disabled').val(0);
+                    console.log('Uncheck: '+row['id']);
+                    $('#budget_input_'+row['id']).prop('disabled','disabled');
+                    $('#budget_input_'+row['id']).val(0);
+                    row['select_sum'] = 0;
+                    $('#purchase_budget_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
+
+                }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
+                    var selections = $('#purchase_budget_table').bootstrapTable('getSelections');
+                    console.log(selections);
+                    selections.forEach(function (item,i,arr){
+                        console.log('Item:');
+                        console.log('budget_input_'+item['id']);
+                        $('#budget_input_'+item['id']).prop('disabled','').val(item['select_sum']);
+                    });
+                }).off('post-body.bs.table').on('page-change.bs.table', function (event,row,el){
+
                 }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){
 
                     $('.purchase_budget_inputs').off('input').on('input',function (){
@@ -142,6 +173,7 @@ $(function(){
                         //    $(this).val(min);
                         //}
                     });
+
 
                     $('#toolbar_purchase_budget_table button').on('click',function (e){
                         var str = $(this).text();
@@ -233,6 +265,7 @@ $(function(){
     }
 
     $('#create_app').click(function (){
+		console.log('create app');
         var type = '';
         var iom_id = 0;
         if ($('#legend_iom').attr('iom_id')!=''){
@@ -256,19 +289,22 @@ $(function(){
             if (isConfirm) {
                 var sign_chain = [];
                 var budgets_chain = [];
-                //var test_chain = $('#purchase_budget_table').bootstrapTable('getSelections');
-                //console.log(test_chain);
+                var test_chain = $('#purchase_budget_table').bootstrapTable('getSelections');
+                console.log(test_chain);
                 //Make Chain
-                $('.purchase_budget_inputs').each(function (index, item) {
-                    if ($(item).val()!=0) {
-                        budgets_chain.push({'id': $(item).attr('budget_id'), 'value': $(item).val(),'budget_type':$(item).attr('budget_type')});
+                test_chain.forEach(function (item, i,arr) {
+                    if (item['select_sum']!=0) {
+                        budgets_chain.push({'id': item['id'], 'value': item['select_sum'],'budget_type':item['budget_type']});
                     }
                 });
                 //console.log(JSON.stringify(budgets_chain));
                 $('#chain_list select').each(function (index, item) {
                     sign_chain.push($(item).selectpicker('val'));
                 });
-				console.log(sign_chain);
+				
+				
+				console.log('create test');
+				console.log(tinymce.get('summernote').getContent());
                 $.ajax({
                     url: '/php/core.php?method='+type+'IomReq',
                     type: 'POST',
@@ -276,9 +312,9 @@ $(function(){
                     data: {
                         employee_id: $('.img-user').attr('user_id'),
                         department_id: $('.img-user').attr('department_id'),
-                        purchase_text: $('#purchase_text').val() || 'Empty',
+                        purchase_text: JSON.stringify($('#purchase_text').val()) || 'Empty',
                         expense_size: 0,
-                        substantiation_text: tinymce.get('summernote').getContent(),
+                        substantiation_text: JSON.stringify(tinymce.get('summernote').getContent({format : 'raw'})),
                         budgets: JSON.stringify(budgets_chain),
                         sign_chain: JSON.stringify(sign_chain),
                         iom_id : iom_id
@@ -362,16 +398,18 @@ $(function(){
                 //
                 //    }
                 //}
+				console.log('create test');
+				console.log(tinymce.get('summernote').getContent());
                 $.ajax({
                     url: '/php/core.php?method='+requestType+'IomReq',
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        employee_id: $('.img-user').attr('user_id'),
-                        department_id: $('.img-user').attr('department_id'),
-                        purchase_text: $('#purchase_text').val() || 'Empty',
+                        employee_id: JSON.stringify($('.img-user').attr('user_id')),
+                        department_id: JSON.stringify($('.img-user').attr('department_id')),
+                        purchase_text: JSON.stringify($('#purchase_text').val()) || 'Empty',
                         expense_size: 0,
-                        substantiation_text: tinymce.get('#summernote').getContent(),
+                        substantiation_text: JSON.stringify(tinymce.get('#summernote').getContent()),
                         budgets: JSON.stringify(budgets_chain),
                         sign_chain: JSON.stringify(sign_chain)
                     }

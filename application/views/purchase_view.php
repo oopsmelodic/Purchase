@@ -84,4 +84,4 @@
 </div>
 <!-- /.container-fluid -->
 
-<script src="/js/main/purchasePanel.js" type="text/javascript"></script>
+<script src="/js/main/purchasePanel.js?v1235" type="text/javascript"></script>

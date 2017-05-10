@@ -1,12 +1,7 @@
 var filetypes = {"txt": "text-o", "docx": "word-o", "doc": "word-o", "ptt": "powerpoint-o", "pttx": "powerpoint-o", "zip": "archive-o", "rar": "archive-o", "pdf": "pdf-o", "jpg": "image-o", "png": "image-o", "ttif": "image-o", "xls": "excel-o", "xlsx": "excel-o"};
 $(document).ready(function () {
     var iom_id = $('#iom_id').attr('iom_id');
-    $('#summernote').summernote({
-        shortcuts: false,
-        height: 150
 
-    });
-    $('#summernote').summernote('disable');
 
     $('#budgets').bootstrapTable({
         url: '/php/core.php?method=getIomBudgets',
