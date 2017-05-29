@@ -286,6 +286,10 @@ $(document).ready(function () {
                 return d.toString('MMMM, yy');
             }
         },{
+            field: 'status',
+            title: 'Status:',
+            sortable:true
+        },{
             field: 'iom_sum',
             title: 'Iom Cost:',
             sortable:true,

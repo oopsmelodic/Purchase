@@ -473,7 +473,7 @@ class Iom
         return $results;
     }
 
-    public function getDepRoles(){+
+    public function getDepRoles(){
         $query = "Select id,name,power From roles";
         $query2 = "Select id,name,sub From departments";
 //        $query3 = "Select id,name From budget_type";
@@ -722,7 +722,7 @@ class Iom
         $budgets = json_decode($params['budgets'],true);
         $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
             . "VALUES (" . $params["employee_id"] . ",'"
-            . addslashes($params["purchase_text"]). "',0," . $params["expense_size"] . ",0,'".addslashes($params["substantiation_text"])."')";
+            . mysqli_escape_string(GetMyConnection(),$params["purchase_text"]). "',0," . $params["expense_size"] . ",0,'".mysqli_escape_string(GetMyConnection(),$params["substantiation_text"])."')";
         $result = $this->sendQuery($query);
 
 
@@ -1071,6 +1071,45 @@ class Iom
             }
         }
 
+    }
+
+
+    function newChain($params){
+        $chain_name = $params['name'];
+        $user_id = $params['user_id'];
+        $chain_id = 0;
+        $chain = json_decode($params['sign_chain']);
+
+        $query = "INSERT INTO saved_chain(employee_id,`name`) Values (".$user_id.",'".$chain_name."')";
+
+        $query_results = $this->sendQuery($query);
+        $last_id = mysqli_insert_id(GetMyConnection());
+
+        $query = "INSERT INTO saved_chain_details(chain_id,employee_id) Values ";
+
+        foreach ($chain as $key => $value) {
+            if (!is_null($value)) {
+                foreach ($value as $v) {
+                    $query .= "(" .$last_id . "," . $v . "),";
+                }
+            }
+        }
+        $result = $this->sendQuery(trim($query, ','));
+
+        if ($result) {
+            return Array('type' => 'success', 'id' => $last_id, 'query' => $query,'result' => $result);
+        } else {
+            return Array('type' => 'error', 'error_msg' => mysqli_error(GetMyConnection()),'result' => $result);
+        }
+    }
+
+    function getChain($params){
+        $chain_id = $params['id'];
+        $query = "Select employee_id From saved_chain_details Where chain_id=".$chain_id;
+
+        $results = $this->sendQuery($query);
+
+        return $results;
     }
 
     function updateIomStatus($status,$iom_id){

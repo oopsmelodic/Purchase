@@ -135,6 +135,7 @@ window.operateEvents = {
                 method: 'POST',
                 clickToSelect:false,
                 filterControl:true,
+                uniqueId: 'id',
                 pagination: true,
                 toolbar:'#toolbar_purchase_budget_table',
                 queryParams: function (p){
@@ -143,10 +144,6 @@ window.operateEvents = {
                     }
                 },
                 columns: [{checkbox:true},{
-                    field: 'id',
-                    title: '#:'
-                    //sortable:true
-                },{
                     field: 'brand_name',
                     title: 'Brand:',
                     filterControl:'select',
@@ -158,12 +155,22 @@ window.operateEvents = {
                     title: 'Name:',
                     filterStrictSearch:true
                 },{
-                    field: 'budget_type',
-                    title: 'Budget Type:',
+                    field: 'mapping_name',
+                    title: 'Mapping:',
                     filterControl:'select',
-                    filterData: getFilters('budget_type','budget'),
+                    filterData: getFilters('name','budget_mapping'),
                     filterStrictSearch:true
+                },{
+                    field:'budget_date',
+                    title: 'Date:',
+                    width:'5%',
+                    sortable:true,
+                    formatter: function(id,data){
 
+                        var d = new Date.parse(data['budget_date'])
+
+                        return d.toString('MMMM');
+                    }
                 },{
                     field: 'planed_cost',
                     title: 'OB Value:',
@@ -201,19 +208,31 @@ window.operateEvents = {
                         }else{
                             maxsum =data['planed_cost'];
                         }
-                        var controls='<input required budget_id="'+data['id']+'" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" budget_type="'+data['budget_type']+'" value="0" type="number" min="0" max="'+maxsum+'">';
+                        var controls='<input budget_id="'+data['id']+'" budget_type="'+data['budget_type']+'" onchange="writeSum(this)" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="'+data['select_sum']+'" type="number" min="0" max="'+maxsum+'">';
                         return controls;
                     }
                 }],
             }).off('check.bs.table').on('check.bs.table', function (event,row,el){
                 //console.log(row);
                 $('#budget_input_'+row['id']).prop('disabled','');
+                $('#budget_input_'+row['id']).val(row['select_sum'])
             }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,el){
                 //console.log(row);
                 //$('#purchase_budget_table').bootstrapTable('check',);
                 console.log(row);
             }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
-                $('#budget_input_'+row['id']).prop('disabled','disabled').val(0);
+                $('#budget_input_'+row['id']).prop('disabled','disabled');
+                $('#budget_input_'+row['id']).val(0);
+                row['select_sum'] = 0;
+                $('#purchase_budget_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
+            }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
+                var selections = $('#purchase_budget_table').bootstrapTable('getSelections');
+                console.log(selections);
+                selections.forEach(function (item,i,arr){
+                    console.log('Item:');
+                    console.log('budget_input_'+item['id']);
+                    $('#budget_input_'+item['id']).prop('disabled','').val(item['select_sum']);
+                });
             }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){
 
                 $.ajax({

@@ -88,7 +88,7 @@ $(function(){
                         sortable:true,
                         formatter: function(id,data){
 
-                            var d = new Date.parse(data['budget_date'])
+                            var d = new Date.parse(data['budget_date']);
 
                             return d.toString('MMMM');
                         }
@@ -351,6 +351,62 @@ $(function(){
         });
     });
 
+    $('#save_chain').click(function(){
+        var sign_chain = [];
+        $('#chain_list select').each(function (index, item) {
+            sign_chain.push($(item).selectpicker('val'));
+        });
+        swal({
+            title: "Chain Name?",
+            text: "Write your chain name here:",
+            type: "input",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            closeOnCancel: true,
+            animation: "slide-from-top",
+            inputPlaceholder: "Write something",
+            showLoaderOnConfirm: true,
+            showLoaderOnCancel: true
+        }, function(inputValue){
+            var chainName = inputValue;
+            $.ajax({
+                url: '/php/core.php?method=newChain',
+                type: 'POST',
+                dataType: 'json',
+                async: true,
+                data: { name: chainName, user_id: $('.img-user').attr('user_id'),sign_chain: JSON.stringify(sign_chain)}
+            }).success(function (data) {
+                if (data != null) {
+                    swal("Confirmed!", "New chain has been created!", "success");
+                } else {
+                    swal("Request Error!", data['error_msg'], "error");
+                }
+            });
+        });
+    });
+
+    $('#load_chain').click(function(){
+        var chain_id =$('#saved_chain').selectpicker('val');
+        $.ajax({
+            url: '/php/core.php?method=getChain',
+            type: 'POST',
+            dataType: 'json',
+            async: true,
+            data: { id: chain_id}
+        }).success(function (data) {
+            console.log(data);
+            if (data != null) {
+                var i=0;
+                $('#chain_list select').each(function (index, item) {
+                    $(item).selectpicker('val',data[i]['employee_id']);
+                    i++;
+                });
+                swal("Confirmed!", "Chain has been loaded!", "success");
+            } else {
+                swal("Request Error!", data['error_msg'], "error");
+            }
+        });
+    });
 
     function createApplication(purchase_id){
         var requestType = '';
@@ -362,7 +418,7 @@ $(function(){
         }
         swal({
             title: "Are you sure?",
-            text: requestType.capitalizeFirstLetter()+' application "' + $('#purchase_text').val() + '" ?',
+            text: requestType.capital+izeFirstLetter()+' application "' + $('#purchase_text').val() + '" ?',
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#DD6B55",

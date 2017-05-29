@@ -25,10 +25,13 @@ class Controller_Purchase extends Controller
                 $flip_roles[$value['role_name']][] = '<option  data-content="<h5>'.$value['fullname'].'<small>'.$value['department'].'</small></h5>"  emp_id="'.$value['id'].'" role_power="'.$value['role_power'].'">'.$value['id'].' </option>';
             }
             $data['roles'] = $flip_roles;
-//            foreach($chain as $key=>$value) {
-//                $data['chain'] .= '<optgroup label="' . $key . '"' . 'data-max-options="">' . implode('', $value) . '</optgroup>';
-//            }
 
+            //SAVED_CHAIN TEST
+            if ($chain!=null) {
+                foreach ($chain as  $value) {
+                    $data['chain'].= '<option data-content="' . $value['name'] . '"' . 'data-max-options="">' . $value['id'] . '</option>';
+                }
+            }
 //            $data['chain'] = $chain;
             $this->view->generate('purchase_view.php', 'template_view.php', $data);
         }

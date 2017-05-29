@@ -127,6 +127,7 @@
 
     <div id="page-wrapper" style="background-color: #E0E0E0;">
         <?php include 'application/views/'.$content_view; ?>
+<!--        --><?php //print_r($data)?>
     </div>
 
 </div>
@@ -191,10 +192,12 @@
 
         </form>
         <form class="tab-pane fade step" id="step3">
-            <select class="selectpicker" data-width="20%" data-selected-text-format="count">
-                <?php echo implode('', $data['chain']);?>
-            </select>
-            <div class="step-body">
+            <div class="form-group col-lg-12 step-body">
+                <select id="saved_chain" class="selectpicker" data-width="20%" data-selected-text-format="count">
+                    <?php echo $data['chain'];?>
+                </select>
+                <button id="load_chain" class="btn btn-success"><i class="glyphicon glyphicon-collapse-up"></i></button>
+                <button id="save_chain" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i></button>
                 <ul class="list-group" id="chain_list">
                     <li class="list-group-item">
                         <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department Leader</h5>
@@ -203,7 +206,6 @@
                                 <?php echo implode('', $data['roles']['Department leader']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            
                         </div>
                     </li>
                     <li class="list-group-item">

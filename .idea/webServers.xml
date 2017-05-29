@@ -9,6 +9,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="d39fabe5-d15a-4585-94ad-97c07aaea57d" name="sk-decors" url="http://ftp.sk-decors.nichost.ru">
+        <fileTransfer host="ftp.sk-decors.nichost.ru" port="21" username="sk-decors_ftp">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>
