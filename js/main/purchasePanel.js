@@ -306,6 +306,24 @@ window.operateEvents = {
     }
 };
 
+function getFilters(name,table){
+    $.ajax({
+        url: '/php/core.php?method=getFilterData',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        method: 'POST',
+        async:false,
+        data: { "field_name" : name,"table_name": table}
+    }).success(function (data) {
+
+        window['filter'+name+table] = data;
+
+        console.log(window['filter'+name+table]);
+    });
+
+    return 'var:filter'+name+table;
+};
+
 
 $(document).ready(function () {
 
@@ -328,8 +346,13 @@ $(document).ready(function () {
 
     //test table
 
+    //var array_filter = JSON.stringify(['in progress','Canceled','Approved']);
+    //console.log(array_filter);
+
     $('#testtable').bootstrapTable({
         url: '/php/core.php?method=getAllIoms',
+        filterControl:true,
+        filterShowClear:true,
         columns: [{
             field: 'id',
             title: 'IOM ID:',
@@ -345,20 +368,30 @@ $(document).ready(function () {
         }, {
             field: 'department_name',
             title: 'Department:',
-            sortable:true
+            sortable:true,
+            filterControl:'select',
+            filterStrictSearch:false,
+            filterData:getFilters('name','departments'),
         },{
             field: 'time_stamp',
             title: 'Created on:',
             sortable:true
         },{
-            field: 'status',
+            field: 'status_filter',
             title: 'IOM Status:',
-            sortable:true
+            sortable:true,
+            filterControl:'select',
+            searchFormatter:false,
+            filterStrictSearch:false,
+            filterData:getFilters('status','iom'),
+            formatter:function(id,data){
+                return data['status'];
+            }
         },{
             field: 'latest_action',
             title: 'Last Event:',
             sortable:true
-            //filterControl:'select'++++++
+            //filterControl:'select'
         },{
             title:'Actions:',
             align: 'center',

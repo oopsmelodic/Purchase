@@ -29,23 +29,24 @@ class Iom
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
-        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+        $query= "SELECT im.id,sc.status as user_last_status,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
             " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )".
             " From iom_history as ih".
-            " Left Join employee as em on em.id=ih.employee_id".
+                " Left Join employee as em on em.id=ih.employee_id".
             " Where ih.iom_id=im.id".
             " ORDER BY ih.date_time DESC".
             " LIMIT 1) as latest_action,".
             "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status,".
-            "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id) as user_last_status," .
             " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum".
             " FROM iom as im".
-            " Left Join employee as em on im.employee_id=em.id" .
-            " Left Join departments as dep on em.department_id=dep.id".
-            " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id." ORDER BY im.id DESC";
+                " Left Join employee as em on im.employee_id=em.id" .
+                " Left Join departments as dep on em.department_id=dep.id" .
+                " Left Join sign_chain as sc on sc.employee_id=".$user_id." and sc.iom_id=im.id".
+            " Where (".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id.") and sc.status!='N/A' ORDER BY im.id DESC";
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
+            $query_results[$key]['status_filter']=$value['status'];
             switch ($value['status']){
                 case "in progress":
                     $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
@@ -64,7 +65,6 @@ class Iom
                     break;
             }
             $query_results[$key]['status'].= '<p><span class="label label-primary">&nbsp;'.number_format(floatval($value['iom_sum'])).' ₽</span></p>';
-
             switch ($value['user_last_status']){
                 case "in progress":
                     $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
@@ -171,7 +171,6 @@ class Iom
 			" Left Join departments as dep on em.department_id=dep.id".
 			" Left Join roles as rol on em.role_id=rol.id".
             " Where sc.iom_id=".$params['iom_id'];
-
 
         $query_results = $this->sendQuery($query);
 
@@ -310,7 +309,7 @@ class Iom
             foreach ($res as $value){
                 if ($value['status']!='N/A') {
                     $this->sendMessage('IOM "' . $value['name'] . '" has been ' . $type . ' by user ' . $user_name, 'Event Notification', $value['employee_id'], 8000);
-                    $this->sendMail($value['email'], 'IOM "' . $value['name'] . '" has been Created. For you review please.',
+                    $this->sendMail($value['email'], 'IOM "' . $value['name'] . '" has been Created. For your review please.',
                         '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $value['em_name'] . ',
                      </p><p>Please be informed that IOM "' . $value['name'] . '" has been created by Initiator on ' . $value['time_stamp'] . '. Last ' . $type . ' by ' . $user_name . '. </p><p>To Approve/Cancel this IOM please go via <a href="' . $_SERVER['HTTP_HOST'] . '/show/' . $iom_id . '"> link. </a></p><p><img src="img/logo.png"></p>');
                 }
@@ -909,8 +908,6 @@ class Iom
         }else{
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
-
-
     }
 
     public function signIom($params){
@@ -1047,8 +1044,20 @@ class Iom
             foreach ($results as $value) {
                 if (intval($value['cancel_count']) > 0) {
                     $this->updateIomStatus("Canceled", $iom_id);
+                    $send_query = "Select im.employee_id as emp_id,em.email as email,em.fullname as em_name, im.name as iom_name From iom as im Left Join employee as em on im.employee_id=em.id Where im.id=".$iom_id." LIMIT 1";
+                    $emp_res = $this->sendQuery($send_query);
+                    $this->sendMessage('Your IOM #'.$emp_res[0]['iom_name'].'has been Canceled','Event Notification', $emp_res[0]['emp_id'], 8000);
+                    $this->sendMail($emp_res[0]['emp_id'],
+                        'IOM "' . $emp_res[0]['iom_name'] . '" has been Canceled. For you review please.',
+                        '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $emp_res[0]['em_name'] . ',</p><p>Your IOM "' .$emp_res[0]['iom_name']. '" has been Canceled on</p><p><img src="img/logo.png"></p>');
                 } else if (intval($value['app_count']) == intval($value['need_count'])) {
                     $this->updateIomStatus("Approved", $iom_id);
+                    $send_query = "Select im.employee_id as emp_id,em.email as email,em.fullname as em_name, im.name as iom_name From iom as im Left Join employee as em on im.employee_id=em.id Where im.id=".$iom_id." LIMIT 1";
+                    $emp_res = $this->sendQuery($send_query);
+                    $this->sendMessage('Your IOM #'.$emp_res[0]['iom_name'].'has been Approved','Event Notification', $emp_res[0]['emp_id'], 8000);
+                    $this->sendMail($emp_res[0]['emp_id'],
+                        'IOM "' . $emp_res[0]['iom_name'] . '" has been Approved. For you review please.',
+                        '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $emp_res[0]['em_name'] . ',</p><p>Your IOM "' .$emp_res[0]['iom_name']. '" has been Approved on</p><p><img src="img/logo.png"></p>');
                 }
             }
         }
