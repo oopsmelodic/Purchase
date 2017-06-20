@@ -1,0 +1,7 @@
+<div class="container-fluid"  ng-app="mainApp" ng-controller="myNotify" >
+    <div class="col-lg-12 shadow">
+        <h2 class="page-header">Reports</h2>
+
+    </div>
+</div>
+<!--<script src="/js/main/test.js" type="text/javascript"></script>-->

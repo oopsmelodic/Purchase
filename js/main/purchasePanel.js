@@ -393,9 +393,15 @@ $(document).ready(function () {
             sortable:true
             //filterControl:'select'
         },{
+            field:'user_last_status_filter',
             title:'Actions:',
             align: 'center',
             events: operateEvents,
+            sortable:true,
+            searchFormatter:false,
+            filterStrictSearch:false,
+            filterControl:'select',
+            filterData:getFilters('status','sign_chain'),
             formatter: function(id,data){
                 console.log(data.sign_status);
                 var controls='';
@@ -426,6 +432,9 @@ $(document).ready(function () {
         showRefresh:true,
         stickyHeader:false,
         toolbar: '#toolbar',
+        customSort: function (sortName, sortOrder){
+            console.log(this.data);
+        },
         //groupBy:true,
         //groupByField:['status'],
         detailFormatter: function (index, row){

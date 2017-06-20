@@ -19,17 +19,16 @@ class Iom
     var $FISH = 'JHENEK';
 
 //MAIL_SETTINGS
-
+//
     var $mail_host = '10.6.5.121';
     var $mail_username = 'docflow.russia@sunpharma.com';
     var $mail_pwd = 'india@123';
 
 
-
     public function getAllIoms($params){
 
         $user_id = $params['user_session_id'];
-        $query= "SELECT im.id,sc.status as user_last_status,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
             " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )".
             " From iom_history as ih".
                 " Left Join employee as em on em.id=ih.employee_id".
@@ -37,16 +36,17 @@ class Iom
             " ORDER BY ih.date_time DESC".
             " LIMIT 1) as latest_action,".
             "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status,".
+            "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id LIMIT 1) as user_last_status," .
             " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum".
             " FROM iom as im".
                 " Left Join employee as em on im.employee_id=em.id" .
-                " Left Join departments as dep on em.department_id=dep.id" .
-                " Left Join sign_chain as sc on sc.employee_id=".$user_id." and sc.iom_id=im.id".
-            " Where (".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id.") and sc.status!='N/A' ORDER BY im.id DESC";
+                " Left Join departments as dep on em.department_id=dep.id".
+            " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id." ORDER BY im.id DESC";
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
             $query_results[$key]['status_filter']=$value['status'];
+            $query_results[$key]['user_last_status_filter']=$value['user_last_status'];
             switch ($value['status']){
                 case "in progress":
                     $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
@@ -297,14 +297,14 @@ class Iom
     function sendToSigners($iom_id,$type,$user_name,$signer_id){
 
 
-        $query = "Select em.fullname,im.name,sc.employee_id,em.fullname as em_name,im.status,im.time_stamp,em.email From sign_chain as sc" .
+        $query = "Select em.fullname,im.name,sc.employee_id,em.fullname as em_name,sc.status,im.time_stamp,em.email From sign_chain as sc" .
             " Left Join iom as im on im.id=".$iom_id.
             " Left Join employee as em on sc.employee_id=em.id" .
             " Where sc.iom_id=".$iom_id .
-            " and sc.id=".$signer_id;
+            " and sc.id=".$signer_id." and sc.status!='N/A'";
 
         $res = $this->sendQuery($query);
-
+//print_r($res);
         if ($res){
             foreach ($res as $value){
                 if ($value['status']!='N/A') {
@@ -724,7 +724,6 @@ class Iom
             . mysqli_escape_string(GetMyConnection(),$params["purchase_text"]). "',0," . $params["expense_size"] . ",0,'".mysqli_escape_string(GetMyConnection(),$params["substantiation_text"])."')";
         $result = $this->sendQuery($query);
 
-
         $iom_num = mysqli_insert_id(GetMyConnection());
 
         if ($iom_num!=0) {
@@ -917,20 +916,24 @@ class Iom
         }else{
             $type='Canceled';
         }
-
+//OLD CHECK
         if ($this->checkSignIom($params['id'],$params['user_session_id'])) {
             $query = "Update sign_chain Set status='" . $type . "' Where iom_id=" . $params['id'] . " and employee_id=" . $params['user_session_id'];
             $res = mysqli_query(GetMyConnection(), $query);
-            $query = "Select sc.id,sc.employee_id,sc.status From sign_chain as sc  Where sc.iom_id=" . $params['id'] . " and sc.employee_id=" . $params['user_session_id'];
+            $query = "Select sc.id,sc.employee_id,sc.status From sign_chain as sc  Where sc.iom_id=" . $params['id'] . " and sc.employee_id=" . $params['user_session_id']." ORDER BY sc.id DESC LIMIT 1";
             $last = mysqli_query(GetMyConnection(), $query);
             $row = mysqli_fetch_array($last, MYSQLI_ASSOC);
             $next_id = intval($row['id'])+1;
             $next_status = $row['status'];
             $query ='';
             if ($params['type'] == 'Send to C.H'){
-                $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved'";
+                $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id) . " and status!='Approved'";
             }else{
-                $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id)." and status!='Approved' and status!='N/A'";
+                if ($params['type'] == 'Confirm') {
+                    $query = "Update sign_chain Set status='in progress' Where id=" . strval($next_id) . " and status!='Approved' and status!='N/A'";
+                }else{
+                    $query = "Update sign_chain Set status='pending' Where id=" . strval($next_id) . " and status!='Approved' and status!='N/A'";
+                }
             }
             $res2 = mysqli_query(GetMyConnection(), $query);
             if ($res) {
@@ -1047,17 +1050,17 @@ class Iom
                     $send_query = "Select im.employee_id as emp_id,em.email as email,em.fullname as em_name, im.name as iom_name From iom as im Left Join employee as em on im.employee_id=em.id Where im.id=".$iom_id." LIMIT 1";
                     $emp_res = $this->sendQuery($send_query);
                     $this->sendMessage('Your IOM #'.$emp_res[0]['iom_name'].'has been Canceled','Event Notification', $emp_res[0]['emp_id'], 8000);
-                    $this->sendMail($emp_res[0]['emp_id'],
-                        'IOM "' . $emp_res[0]['iom_name'] . '" has been Canceled. For you review please.',
-                        '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $emp_res[0]['em_name'] . ',</p><p>Your IOM "' .$emp_res[0]['iom_name']. '" has been Canceled on</p><p><img src="img/logo.png"></p>');
+                    $this->sendMail($emp_res[0]['email'],
+                        'IOM "' . $emp_res[0]['iom_name'] . '" has been Canceled. For your review please.',
+                        '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $emp_res[0]['em_name'] . ',</p><p>Your IOM "' .$emp_res[0]['iom_name']. '" has been Canceled.</p><p><img src="img/logo.png"></p>');
                 } else if (intval($value['app_count']) == intval($value['need_count'])) {
                     $this->updateIomStatus("Approved", $iom_id);
                     $send_query = "Select im.employee_id as emp_id,em.email as email,em.fullname as em_name, im.name as iom_name From iom as im Left Join employee as em on im.employee_id=em.id Where im.id=".$iom_id." LIMIT 1";
                     $emp_res = $this->sendQuery($send_query);
                     $this->sendMessage('Your IOM #'.$emp_res[0]['iom_name'].'has been Approved','Event Notification', $emp_res[0]['emp_id'], 8000);
-                    $this->sendMail($emp_res[0]['emp_id'],
-                        'IOM "' . $emp_res[0]['iom_name'] . '" has been Approved. For you review please.',
-                        '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $emp_res[0]['em_name'] . ',</p><p>Your IOM "' .$emp_res[0]['iom_name']. '" has been Approved on</p><p><img src="img/logo.png"></p>');
+                    $this->sendMail($emp_res[0]['email'],
+                        'IOM "' . $emp_res[0]['iom_name'] . '" has been Approved. For your review please.',
+                        '<p style="border-bottom: 3px solid #ef9c00;color:#ef9c00;"><h1>IOM Tracking System</h1></p><p> Dear ' . $emp_res[0]['em_name'] . ',</p><p>Your IOM "' .$emp_res[0]['iom_name']. '" has been Approved.</p><p><img src="img/logo.png"></p>');
                 }
             }
         }
@@ -1075,7 +1078,7 @@ class Iom
                 }else if($results[$i+1]['status']=='Approved'){
                     return true;
                 }else{
-                    return false;
+                    return true;
                 }
             }
         }
@@ -1115,6 +1118,19 @@ class Iom
     function getChain($params){
         $chain_id = $params['id'];
         $query = "Select employee_id From saved_chain_details Where chain_id=".$chain_id;
+
+        $results = $this->sendQuery($query);
+
+        return $results;
+    }
+
+    function deleteChain($params){
+        $chain_id = $params['id'];
+        $query = "Delete From saved_chain_details Where chain_id=".$chain_id;
+
+        $results = $this->sendQuery($query);
+
+        $query = "Delete From saved_chain Where id=".$chain_id;
 
         $results = $this->sendQuery($query);
 

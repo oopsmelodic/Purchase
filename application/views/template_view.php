@@ -196,11 +196,12 @@
                 <select id="saved_chain" class="selectpicker" data-width="20%" data-selected-text-format="count">
                     <?php echo $data['chain'];?>
                 </select>
-                <button id="load_chain" class="btn btn-success"><i class="glyphicon glyphicon-collapse-up"></i>Fill</button>
-                <button id="save_chain" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i>Save</button>
+                <button id="load_chain" class="btn btn-success"><i class="glyphicon glyphicon-collapse-up"></i>&nbsp; Fill</button>
+                <button id="save_chain" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Save</button>
+                <button id="delete_chain" class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i>&nbsp;Delete</button>
                 <ul class="list-group" id="chain_list">
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department Leader</h5>
+                        <h5 class="list-group-item-heading">1. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department Leader #1</h5>
                         <div class="col-lg-9 form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" >
                                 <?php echo implode('', $data['roles']['Department leader']);?>
@@ -209,10 +210,10 @@
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Finance Assistant</h5>
+                        <h5 class="list-group-item-heading">2. <i class="glyphicon glyphicon-user" aria-hidden="true"></i> Department Leader #2</h5>
                         <div class="col-lg-9  form-group">
                             <select class="selectpicker chain_unit" data-width="100%" multiple data-live-search="true" data-selected-text-format="count" >
-                                <?php echo implode('', $data['roles']['Finance Assistant']);?>
+                                <?php echo implode('', $data['roles']['Department leader']);?>
                             </select>
                             <!--                                                            <span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
                             

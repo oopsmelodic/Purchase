@@ -137,7 +137,7 @@ $(function(){
                     //console.log(row);
                     console.log('Check: '+row['id']);
                     $('#budget_input_'+row['id']).prop('disabled','');
-                    $('#budget_input_'+row['id']).val(row['select_sum'])
+                    $('#budget_input_'+row['id']).val(row['select_sum']);
                 }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
                     //console.log(row);
                     $('#purchase_budget_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
@@ -402,6 +402,29 @@ $(function(){
                     i++;
                 });
                 swal("Confirmed!", "Chain has been loaded!", "success");
+            } else {
+                swal("Request Error!", data['error_msg'], "error");
+            }
+        });
+    });
+
+    $('#delete_chain').click(function(){
+        var chain_id =$('#saved_chain').selectpicker('val');
+        $.ajax({
+            url: '/php/core.php?method=deleteChain',
+            type: 'POST',
+            dataType: 'json',
+            async: true,
+            data: { id: chain_id}
+        }).success(function (data) {
+            console.log(data);
+            if (data) {
+                var i=0;
+                $('#chain_list select').each(function (index, item) {
+                    $(item).selectpicker('val',data[i]['employee_id']);
+                    i++;
+                });
+                swal("Confirmed!", "Chain has been deleted!", "success");
             } else {
                 swal("Request Error!", data['error_msg'], "error");
             }
