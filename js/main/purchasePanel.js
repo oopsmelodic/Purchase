@@ -219,6 +219,7 @@ window.operateEvents = {
             }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,el){
                 //console.log(row);
                 //$('#purchase_budget_table').bootstrapTable('check',);
+                $('#purchase_budget_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
                 console.log(row);
             }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
                 $('#budget_input_'+row['id']).prop('disabled','disabled');
@@ -247,6 +248,7 @@ window.operateEvents = {
                             if (row[i]['id']==data[j]['budget_id']) {
                                 $('#purchase_budget_table').bootstrapTable('check', i);
                                 $('#budget_input_'+data[j]['budget_id']).val(data[j]['cur_cost']);
+                                row[i]['select_sum']=data[j]['cur_cost'];
                             }else{
                             }
                         }
@@ -631,7 +633,14 @@ $(document).ready(function () {
                 title: 'C/F Balance:',
                 formatter: function(id,data,index){
                     var sum = data['planed_cost']-data['current_balance'];
-					sum = sum - data['cur_cost'];
+                    var relocation_sum = 0;
+                    if (data['relocation_cost']!=null){
+                        relocation_sum = parseInt(data['relocation_cost']);
+                    }else{
+                        relocation_sum = parseInt(0);
+                    }
+                    sum+=relocation_sum;
+                    sum = sum - data['cur_cost'];
                     return format_money(sum);
                 }
             }],

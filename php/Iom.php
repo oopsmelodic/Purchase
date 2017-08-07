@@ -125,6 +125,7 @@ class Iom
     }
 
     public function getTotalIoms($params){
+
         $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
             " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )" .
             " From iom_history as ih".
@@ -199,8 +200,6 @@ class Iom
         return $query_results;
     }
 
-
-
     public function getInvoiceSum($params){
         $query = "Select ii.date_time,ii.invoice_comment,ii.invoice_date,ii.invoice_num,ii.cost From iom_invoice as ii Where ii.iom_id=".$params['iom_id'];
 
@@ -229,10 +228,11 @@ class Iom
     }
 
     public function getIomBudgets($params){
-        $query= "Select  b.name, bb.name as brand_name, bm.name as mapping_name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
+        $query= "Select  b.name,(Select sum(cost) From budget_relocations Where budget_id=ib.budget_id) as relocation_cost, bb.name as brand_name, bm.name as mapping_name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
 		" (Select sum(cost) From iom_budgets as ibs Left Join iom as im on im.id=ibs.iom_id Where ibs.budget_id=b.id and ibs.iom_id<".$params['iom_id']." and ibs.iom_id!=".$params['iom_id']." and (im.status!='Canceled' or im.status is null)) as current_balance".
 		" From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
+                " Left Join budget_relocations as br on br.budget_id=ib.budget_id".
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id".
                 " Left Join budget_brand as bb on b.brand_id=bb.id".
                 " Where ib.iom_id=".$params['iom_id'];
@@ -369,7 +369,7 @@ class Iom
     }
 
     public function getBudgets(){
-        $query="Select b.id,br.cost as relocation_cost, b.date_time, b.planed_cost,b.budget_date ,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+        $query="Select b.id,(Select sum(cost) From budget_relocations Where budget_id=b.id) as relocation_cost, b.date_time, b.planed_cost,b.budget_date ,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
                 " Left Join budget_brand as bb on b.brand_id=bb.id" .
                 " Left Join budget_relocations as br on br.budget_id=b.id" .
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
@@ -383,6 +383,43 @@ class Iom
         return $query_results;
     }
 
+    public function getBudgetRelocations($params){
+
+        $query = "Select b.name as name_relocation, b.budget_date as budget_date_relocation, br.cost,br.id From budget_relocations as br" .
+            " Left Join budget as b on b.id=br.budget_id Where br.budget_id=".$params['budget_id'];
+
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
+    public function sendRel($params){
+//        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
+
+        $query = "Insert Into budget_relocations (cost,budget_id) Values(".$params['cost'].",".$params['budget_id'].")";
+
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()),'query'=>$query);
+        }
+        else {
+            return Array('type'=>'success','query'=>$query);
+        }
+    }
+
+    public function delRel($params){
+//        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
+
+        $query = "Delete From budget_relocations Where id=".$params['id'];
+
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()),'query'=>$query);
+        }
+        else {
+            return Array('type'=>'success','query'=>$query);
+        }
+    }
+
     public function getRelocations(){
 
         $query = "Select b.name as name_relocation, b.budget_date as budget_date_relocation, br.cost,br.id From budget_relocations as br" .
@@ -393,7 +430,7 @@ class Iom
     }
 
     public function getAllBudgets(){
-        $query="Select b.id, b.date_time,b.budget_date,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, br.id as budget_relocations, br.cost as relocation_cost, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
+        $query="Select b.id, b.date_time,b.budget_date,b.department_id as budget_department, b.date_time, dep.name as department_name , b.planed_cost,b.budget_type, bb.name as brand_name, b.brand_id as budget_brand,b.mapping_id as budget_mapping, br.id as budget_relocations, (Select sum(cost) From budget_relocations Where budget_id=b.id) as relocation_cost, b.name, bm.name as mapping_name,(b.planed_cost-sum(ib.cost)) as cur_sum From budget as b".
             " Left Join budget_brand as bb on b.brand_id=bb.id" .
             " Left Join budget_relocations as br on br.budget_id=b.id" .
             " Left Join budget_mapping as bm on b.mapping_id=bm.id" .
@@ -403,7 +440,7 @@ class Iom
             " Where b.deleted=0 GROUP BY b.id";
 
         $query_results = $this->sendQuery($query);
-
+//echo $query;
         foreach($query_results as $key => $value){
             $new_date = date_parse($value['budget_date']);
             if ($new_date['month']>=4){
@@ -478,14 +515,14 @@ class Iom
 //        $query3 = "Select id,name From budget_type";
         $query4 = "Select id,name From budget_brand";
         $query5 = "Select id,name From budget_mapping";
-        $query6 = "Select b.id,concat(b.name,' ',bb.name,' - ',dep.name) as name From budget as b Left Join budget_brand as bb on b.brand_id=bb.id Left Join departments as dep on dep.id=b.department_id";
+        $query6 = "Select b.id,concat(b.id,'/',b.name,'/',bb.name,'/',DATE_FORMAT(b.budget_date,'%M'),' - ',dep.name) as name From budget as b Left Join budget_brand as bb on b.brand_id=bb.id Left Join departments as dep on dep.id=b.department_id";
         $query_results['roles'] = $this->make_string_select($this->sendQuery($query));
         $query_results['departments'] = $this->make_string_select($this->sendQuery($query2));
 //        $query_results['budget_type'] = $this->make_string_select($this->sendQuery($query3));
         $query_results['brand_name'] = $this->make_string_select($this->sendQuery($query4));
         $query_results['mapping_name'] = $this->make_string_select($this->sendQuery($query5));
         $query_results['budgets'] = $this->make_string_select($this->sendQuery($query6));
-        return ($query_results);
+        return $query_results;
     }
 
     public function getFilterData($params){
@@ -503,7 +540,6 @@ class Iom
     }
 
     public function addEmployee($params){
-
 
         $query = "INSERT INTO employee(position,fullname, role_id, department_id, username, email,password)"
             . " VALUES (0,'" . $params["fullname"] . "',"
@@ -529,10 +565,10 @@ class Iom
         else {
             return Array('type'=>'success','user_id'=>$last_id);
         }
+
     }
 
     public function addBudget_relocations($params){
-
 
         $query = "Insert Into budget_relocations (cost,budget_id) Values(" . $params["cost"] . "," . $params["name_relocation"] .")";
 
@@ -815,7 +851,8 @@ class Iom
     public function updateIomReq($params){
         $chain = json_decode($params['sign_chain']);
         $budgets = json_decode($params['budgets'],true);
-        $query = "Update iom Set name='".$params["purchase_text"]."', substantation='".$params['substantiation_text']."',status='in progress'".
+
+        $query = "Update iom Set name='". mysqli_escape_string(GetMyConnection(),$params["purchase_text"])."', substantation='".mysqli_escape_string(GetMyConnection(),$params["substantiation_text"])."',status='in progress'".
             " Where id=".$params['iom_id'];
         $result = $this->sendQuery($query);
 
@@ -985,27 +1022,91 @@ class Iom
 
     }
 
-    public function getBudgetsGraph(){
-        $query = "Select ib.cost,i.time_stamp, b.name From iom_budgets as ib".
-                    " Left Join budget as b on b.id=ib.budget_id".
-                    " Left Join budget_type as bt on bt.id=b.type_id".
-                    " Left Join iom as i on i.id=ib.iom_id";
+    public function getBudgetsGraph($params){
+        $query = "Select concat(b.name,'/',bm.name,'/',bb.name) as budget_name,b.id,dep.name as department_name From budget as b Left Join departments as dep on dep.id=b.department_id Left Join budget_brand as bb on b.brand_id=bb.id Left Join budget_mapping as bm on b.mapping_id=bm.id Where b.department_id=".$params['department_id'];
 
-        $results = $this->sendQuery($query);
+        $budgets= $this->sendQuery($query);
 
-        $result_array['categories'] = null;
-        $result_array['series'] = null;
-        $mass= Array();
-        foreach ($results as $value){
-            $result_array['categories'][] = $value['time_stamp'];
-            $mass[$value['name']][] = intval($value['cost']);
+        $result_series=null;
+
+        foreach($budgets as $value){
+            $q = "Select ib.cost,im.name,im.time_stamp,ib.iom_id From iom_budgets as ib Left Join iom as im on ib.iom_id=im.id Where im.status!='Canceled' and im.time_stamp!=0 and ib.budget_id=".$value['id'].' ORDER BY im.time_stamp';
+            $drill= $this->sendQuery($q);
+            $sort=null;
+            if($drill!=null) {
+                foreach ($drill as $val) {
+                    $sort[] = Array(strtotime($val['time_stamp']) * 1000,intval($val['cost']));
+                }
+                $result_series[] = Array('type'=>'line','visible'=>false,'budget_id'=>$value['id'],'marker'=>Array('enabled'=>true,'radius'=>3),'name' => $value['budget_name'], 'data' => $sort);
+            }
         }
 
-        foreach ($mass as $key=>$value){
-            $result_array['series'][] = Array('name'=>$key,'data'=>$value);
+        return $result_series;
+    }
+
+    public function getIomsGraph($params){
+        $query = "Select im.id,im.time_stamp From iom as im Left Join employee as em on im.employee_id=em.id";
+
+        $budgets= $this->sendQuery($query);
+
+        $result_series=null;
+
+        foreach($budgets as $value){
+            $q = "Select sum(ib.cost) From iom_budgets as ib Where ib.iom_id=".$value['id'];
+            $drill= $this->sendQuery($q);
+            $sort=null;
+            if($drill!=null) {
+                foreach ($drill as $val) {
+                    $sort[] = Array(strtotime($value['time_stamp']) * 1000,intval($val['cost']));
+                }
+            }
+            $result_series[] = Array('type'=>'line','iom_id'=>$value['id'],'marker'=>Array('enabled'=>true,'radius'=>3),'name' => $value['id'], 'data' => $sort);
         }
 
-        return $result_array;
+        return $result_series;
+    }
+
+    public function getIomsByBudget($params){
+        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+            " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )" .
+            " From iom_history as ih".
+            " Left Join employee as em on em.id=ih.employee_id".
+            " Where ih.iom_id=im.id".
+            " ORDER BY ih.date_time DESC".
+            " LIMIT 1) as latest_action," .
+            " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum," .
+            " (Select sum(iiv.cost) From iom_invoice as iiv Where iiv.iom_id=im.id) as iom_invoice" .
+            " FROM iom as im".
+            " Left Join employee as em on im.employee_id=em.id" .
+            " Left Join departments as dep on em.department_id=dep.id" .
+            " Left Join iom_budgets as ib on ib.iom_id=im.id" .
+            " Where ib.budget_id=".$params['budget_id'];
+
+        $query_results = $this->sendQuery($query);
+
+        foreach($query_results as $key => $value){
+            switch ($value['status']){
+                case "in progress":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "pending":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "N/A":
+                    $query_results[$key]['status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "Approved":
+                    $query_results[$key]['status']='<span class="label label-success"><i class="fa fa-check"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+                case "Canceled":
+                    $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
+                    break;
+            }
+            $time_array = explode('|',$value['latest_action']);
+            $query_results[$key]['latest_action']='<h5>'.$time_array[0].' <small>'.$this->time_elapsed_string($time_array[1]).'</small></h5>';
+        }
+
+        return $query_results;
     }
 
     public function getDashboardData($params){
@@ -1155,7 +1256,8 @@ class Iom
         $mail->Debugoutput = 'html';
         $mail->Host = $this->mail_host;
         $mail->Port = 25;
-        //$mail->SMTPSecure = 'tls';
+//        $mail->Port = 587;
+//        $mail->SMTPSecure = 'tls';
         //$mail->SMTPAuth = true;
         $mail->Username = $this->mail_username;
         $mail->Password = $this->mail_pwd;

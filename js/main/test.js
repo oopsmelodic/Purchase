@@ -34,7 +34,8 @@ function getFilters(name,table){
 }
 
 $(document).ready(function () {
-
+    var scrollTo = null;
+    var scrollIndex = null;
 
     $('#budgets_table').bootstrapTable({
         url: '/php/core.php?method=getAllBudgets',
@@ -191,11 +192,15 @@ $(document).ready(function () {
         detailFormatter: function (index, row){
             var div = $('<div class="col-lg-12"></div>');
             div.append('' +
-                '<table class="box-shadow table-bordered table-condensed" id="iom_'+index+'"></table>');
+                '<table class="box-shadow table-bordered table-condensed" id="iom_'+index+'"></table>'+
+                '<div class="col-lg-3"><label>Relocations:</label><table class="box-shadow table-bordered table-condensed " id="relocation_'+index+'"></table>'+
+                '<button class="btn btn-success" id="addrel_'+index+'">Add</button><button class="btn btn-danger" id="delrel_'+index+'">Delete</button></div>');
             return div.html();
         }
-    }).on('column-search.bs.table',function (e,field,id){
-        console.log(id);
+    }).off('load-success.bs.table').on('load-success.bs.table',function (event,index,row){
+        //asd
+        $('#budgets_table').bootstrapTable('expandRow',scrollIndex);
+        $('#budgets_table').bootstrapTable('scrollTo',scrollTo);
     }).off('expand-row.bs.table').on('expand-row.bs.table',function (event,index,row){
         //$('#summer_'+index).summernote({
         //    shortcuts: false
@@ -251,7 +256,112 @@ $(document).ready(function () {
                     var host = window.location.hostname;
                     return '<a target="_blank" href="http://'+host+'/show/'+data['id']+'" class="btn btn-primary btn-sm">View</a>'
                 }
-            }],
+            }]
+        });
+
+        $('#relocation_'+index).bootstrapTable({
+            url: '/php/core.php?method=getBudgetRelocations',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            pagination: true,
+            singleSelect:true,
+            clickToSelect:true,
+            queryParams: function (p){
+                return {
+                    "budget_id":row['id']
+                }
+            },
+            columns: [{checkbox:true},{
+                field:'cost',
+                title: 'Rel Cost:',
+                sortable:true,
+                formatter: function(id,data){
+                    console.log(data);
+                    if (data['cost']!=null) {
+                        return format_money(data['cost']);
+                    }else{
+                        return format_money(0);
+                    }
+                }
+            }]
+        });
+
+        $('#addrel_'+index).off('click').on('click',function (){
+            bootbox.dialog({
+                title: "Apply Relocation",
+                message:      '<div class="row"> ' +
+                '<div class="col-md-12"> ' +
+                '<form id="form_rel_"'+index+' class="form-horizontal"> ' +
+                '<div class="form-group"> ' +
+                '<label class="col-md-4 control-label" for="name">Cost</label> ' +
+                '<div class="col-md-4"> ' +
+                '<input id="relCost_'+index+'" name="relCost" type="number" class="form-control input-md">'  +
+                '</div> ' +
+                '</div>'+
+                '</form></div>',
+                buttons: {
+                    success: {
+                        label: "Apply",
+                        className: "btn-success modalbtn",
+                        callback: function () {
+                            $.ajax({
+                                url: '/php/core.php?method=sendRel',
+                                contentType: 'application/x-www-form-urlencoded',
+                                dataType: 'json',
+                                method: 'POST',
+                                data: { "budget_id" : row['id'],"cost": $('#relCost_'+index).val()}
+                            }).success(function (data) {
+                                if (data['type']=='success'){
+                                    $('#budgets_table').bootstrapTable('refresh',{silent: true});
+                                    scrollTo = $('#budgets_table').bootstrapTable('getScrollPosition');
+                                    scrollIndex = index;
+                                    $('#relocation_'+index).bootstrapTable('refresh',{silent: true});
+                                    swal("Success!", "Success add relocation.", "success");
+                                }else{
+                                    swal("Canceled!", "Unknown error.", "success");
+                                }
+                            });
+                        }
+                    }
+                }
+            }).off('load-success.bs.table').on('load-success.bs.table',function (event,index,row){
+
+            });
+        });
+
+        $('#delrel_'+index).off('click').on('click',function (){
+            var selections = $('#relocation_'+index).bootstrapTable('getSelections');
+            var rel_id = selections[0]['id'];
+            swal({
+                title: "Delete Relocation?",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                animation: "slide-from-top",
+                showLoaderOnConfirm: true
+            }, function(){
+                $.ajax({
+                    url: '/php/core.php?method=delRel',
+                    type: 'POST',
+                    dataType: 'json',
+                    async: true,
+                    data: {id: rel_id}
+                }).success(function (data) {
+                    if (data != null) {
+                        if (data['type'] == 'success') {
+                            $('#budgets_table').bootstrapTable('refresh',{silent: true});
+                            scrollTo = $('#budgets_table').bootstrapTable('getScrollPosition');
+                            scrollIndex = index;
+                            $('#relocation_'+index).bootstrapTable('refresh',{silent: true});
+                            swal("Success!", "Success delete relocation.", "success");
+                        } else {
+                            swal("Request Error!", data['error_msg'], "error");
+                        }
+                    } else {
+                        swal("Request Error!", data['error_msg'], "error");
+                    }
+                });
+            });
         });
 
     });

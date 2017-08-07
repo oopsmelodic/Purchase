@@ -18,4 +18,4 @@
             </div>
     </div>
 </div>
-<script src="/js/main/test.js" type="text/javascript"></script>
+<script src="/js/main/test.js?v1124" type="text/javascript"></script>
