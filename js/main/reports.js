@@ -105,10 +105,6 @@ $(function (){
             title: 'Description:',
             sortable:true
         },{
-            field: 'department_name',
-            title: 'Department:',
-            sortable:true
-        },{
             field: 'time_stamp',
             title: 'Budget Date:',
             sortable:true,
