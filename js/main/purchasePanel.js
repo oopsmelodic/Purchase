@@ -455,9 +455,6 @@ $(document).ready(function () {
                         '<table class="table-bordered" id="signers_'+index+'"></table>' +
                         '<br><legend>IOM Events: </legend>' +
                         '<table class="table-bordered" id="events_'+index+'"></table>' +
-                        '<br><legend>Invoice Sum: </legend>'+
-                        '<table class="table-bordered" id="invoice_'+index+'"></table><br>' +
-                        '<div id="invoice_toolbar_'+index+'"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Pay</button></div>'+
                     '</div>');
 
             return div.html();
@@ -511,44 +508,44 @@ $(document).ready(function () {
                 //filterControl:'select'
             }]
         });
-        $('#invoice_'+index).bootstrapTable({
-            url: '/php/core.php?method=getInvoiceSum',
-            contentType: 'application/x-www-form-urlencoded',
-            method: 'POST',
-            toolbar:'#invoice_toolbar_'+index,
-            queryParams: function (p){
-                return {
-                    "iom_id":row['id']
-                }
-            },
-            columns: [{
-                field: 'id',
-                title: '#',
-                formatter: function(id,data,index){
-                    return index+1;
-                }
-            },{
-                field: 'invoice_num',
-                title: 'Num:',
-                //sortable:true
-            },{
-                field: 'invoice_date',
-                title: 'Date:',
-                //sortable:true
-            },{
-                field: 'cost',
-                title: 'Cost:',
-                formatter: function(id,data){
-                    return format_money(data['cost'])
-                }
-                //sortable:true
-                //filterControl:'select'
-            },{
-                field: 'invoice_comment',
-                title: 'Comment:',
-                //sortable:true
-            }],
-        });
+        //$('#invoice_'+index).bootstrapTable({
+        //    url: '/php/core.php?method=getInvoiceSum',
+        //    contentType: 'application/x-www-form-urlencoded',
+        //    method: 'POST',
+        //    toolbar:'#invoice_toolbar_'+index,
+        //    queryParams: function (p){
+        //        return {
+        //            "iom_id":row['id']
+        //        }
+        //    },
+        //    columns: [{
+        //        field: 'id',
+        //        title: '#',
+        //        formatter: function(id,data,index){
+        //            return index+1;
+        //        }
+        //    },{
+        //        field: 'invoice_num',
+        //        title: 'Num:',
+        //        //sortable:true
+        //    },{
+        //        field: 'invoice_date',
+        //        title: 'Date:',
+        //        //sortable:true
+        //    },{
+        //        field: 'cost',
+        //        title: 'Cost:',
+        //        formatter: function(id,data){
+        //            return format_money(data['cost'])
+        //        }
+        //        //sortable:true
+        //        //filterControl:'select'
+        //    },{
+        //        field: 'invoice_comment',
+        //        title: 'Comment:',
+        //        //sortable:true
+        //    }],
+        //});
         $('#budget_'+index).bootstrapTable({
             url: '/php/core.php?method=getIomBudgets',
             contentType: 'application/x-www-form-urlencoded',

@@ -228,13 +228,14 @@ class Iom
     }
 
     public function getIomBudgets($params){
-        $query= "Select  b.name,(Select sum(cost) From budget_relocations Where budget_id=ib.budget_id) as relocation_cost, bb.name as brand_name, bm.name as mapping_name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
+        $query= "Select  b.name,(Select sum(cost) From budget_relocations Where budget_id=ib.budget_id) as relocation_cost,sum(ii.cost) as ionvoice_cost, bb.name as brand_name, bm.name as mapping_name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
 		" (Select sum(cost) From iom_budgets as ibs Left Join iom as im on im.id=ibs.iom_id Where ibs.budget_id=b.id and ibs.iom_id<".$params['iom_id']." and ibs.iom_id!=".$params['iom_id']." and (im.status!='Canceled' or im.status is null)) as current_balance".
 		" From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
                 " Left Join budget_relocations as br on br.budget_id=ib.budget_id".
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id".
                 " Left Join budget_brand as bb on b.brand_id=bb.id".
+                " Left Join iom_invoice as ii on ii.iom_id=".$params["iom_id"].
                 " Where ib.iom_id=".$params['iom_id'];
 
 //        echo $query;
@@ -295,7 +296,6 @@ class Iom
     }
 
     function sendToSigners($iom_id,$type,$user_name,$signer_id){
-
 
         $query = "Select em.fullname,im.name,sc.employee_id,em.fullname as em_name,sc.status,im.time_stamp,em.email From sign_chain as sc" .
             " Left Join iom as im on im.id=".$iom_id.
@@ -1067,16 +1067,16 @@ class Iom
     }
 
     public function getIomsByBudget($params){
-        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation,".
+        $query= "SELECT im.id,dep.name as department_name,dep.id as department_id, im.employee_id,im.substantation, im.time_stamp,im.name,em.fullname, im.status,im.actualcost,im.substantation," .
             " (Select concat(' ',ih.event_name,' by ',em.fullname,'|',ih.date_time )" .
-            " From iom_history as ih".
-            " Left Join employee as em on em.id=ih.employee_id".
-            " Where ih.iom_id=im.id".
-            " ORDER BY ih.date_time DESC".
+            " From iom_history as ih" .
+            " Left Join employee as em on em.id=ih.employee_id" .
+            " Where ih.iom_id=im.id" .
+            " ORDER BY ih.date_time DESC" .
             " LIMIT 1) as latest_action," .
             " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum," .
             " (Select sum(iiv.cost) From iom_invoice as iiv Where iiv.iom_id=im.id) as iom_invoice" .
-            " FROM iom as im".
+            " FROM iom as im" .
             " Left Join employee as em on im.employee_id=em.id" .
             " Left Join departments as dep on em.department_id=dep.id" .
             " Left Join iom_budgets as ib on ib.iom_id=im.id" .
