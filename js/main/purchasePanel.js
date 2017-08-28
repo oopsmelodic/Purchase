@@ -129,6 +129,9 @@ window.operateEvents = {
             tinymce.get('summernote').setContent('');
             $('.selectpicker').selectpicker('deselectAll');
             $('#purchase_budget_table').bootstrapTable('destroy');
+
+            $('#purchase_iomsource_table').bootstrapTable('destroy');
+
             $('#purchase_budget_table').bootstrapTable({
                 url: '/php/core.php?method=getBudgets',
                 contentType: 'application/x-www-form-urlencoded',
@@ -255,6 +258,107 @@ window.operateEvents = {
                     }
                 });
             });
+
+            $('#purchase_iomsource_table').bootstrapTable({
+                url: '/php/core.php?method=getIomsSource',
+                contentType: 'application/x-www-form-urlencoded',
+                method: 'POST',
+                uniqueId: 'id',
+                clickToSelect:false,
+                toolbar:'#toolbar_purchase_budget_table',
+                filterControl:true,
+                pagination: true,
+                columns: [{checkbox:true},{
+                    field: 'id',
+                    title: 'ID:'
+                },{
+                    field: 'name',
+                    title: 'Name:'
+                },{
+                    field: 'invoice_cost',
+                    title: 'Invoice:',
+                    formatter: function(id,data){
+                        return format_money(parseInt(data['invoice_cost']));
+                    }
+                },{
+                    field:'budget_cost',
+                    title: 'Budget:',
+                    formatter: function(id,data){
+                        return format_money(parseInt(data['budget_cost']));
+                    }
+                },{
+                    title: 'Current Sum:',
+                    formatter: function(id,data){
+                        var budget_cost = 0;
+                        var invoice_cost = 0;
+                        if (data['budget_cost']!=null) {
+                            budget_cost = parseInt(data['budget_cost']);
+                        }else{
+                            return format_money(0);
+                        }
+                        if (data['invoice_cost']!=null) {
+                            invoice_cost = parseInt(data['invoice_cost']);
+                        }else{
+                            return format_money(0);
+                        }
+                        var sum = budget_cost-invoice_cost;
+                        sum = sum - parseInt(data['source_cost']);
+                        if (sum>0){
+                            return format_money(sum);
+                        }else{
+                            return format_money(0);
+                        }
+                    }
+                    //sortable:true
+                    //filterControl:'select'
+                },{
+                    title:'Select Sum:',
+                    align: 'center',
+                    events: operateEvents,
+                    formatter: function(id,data){
+                        var maxsum = 0;
+                        var budget_cost = 0;
+                        var invoice_cost = 0;
+                        if (data['budget_cost']!=null) {
+                            budget_cost = parseInt(data['budget_cost']);
+                        }else{
+                            maxsum = 0;
+                        }
+                        if (data['invoice_cost']!=null) {
+                            invoice_cost = parseInt(data['invoice_cost']);
+                        }else{
+                            maxsum = 0;
+                        }
+                        var sum = budget_cost-invoice_cost;
+                        sum = sum - parseInt(data['source_cost']);
+                        if (sum>0){
+                            maxsum = sum;
+                        }else{
+                            maxsum = 0;
+                        }
+                        var controls='<input iom_source="'+data['id']+'" onchange="writeSum(this)" class="purchase_iomcource_inputs" disabled="disabled" name="iomsource_input_'+data['id']+'" id="iomsource_input_'+data['id']+'" value="'+data['select_sum']+'" type="number" min="0" max="'+maxsum+'">';
+                        return controls;
+                    }
+                }],
+            }).off('check.bs.table').on('check.bs.table', function (event,row,el){
+                $('#iomsource_input_'+row['id']).prop('disabled','');
+                $('#iomsource_input_'+row['id']).val(row['select_sum']);
+            }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
+                $('#purchase_iomsource_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
+            }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
+                $('#iomsource_input_'+row['id']).prop('disabled','disabled');
+                $('#iomsource_input_'+row['id']).val(0);
+                row['select_sum'] = 0;
+                $('#purchase_iomsource_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
+            }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
+                var selections = $('#purchase_iomsource_table').bootstrapTable('getSelections');
+                selections.forEach(function (item,i,arr){
+                    console.log('Item:');
+                    console.log('iomsource_input_'+item['id']);
+                    $('#iomsource_input_'+item['id']).prop('disabled','').val(item['select_sum']);
+                });
+            });
+
             if ($('#myWizard').hasClass('left')){
                 $('#legend_iom').attr('iom_id',iom_id).text('Edit Application #'+iom_id);
                 $('#myWizard').removeClass('animated left').addClass('animated right');
@@ -444,6 +548,8 @@ $(document).ready(function () {
             div.append('<div class="col-lg-6">' +
                         '<legend>Budgets: </legend>' +
                         '<table class="box-shadow table-bordered" id="budget_'+index+'"></table>' +
+                        '<legend>Iom: </legend>' +
+                        '<table class="box-shadow table-bordered" id="source_'+index+'"></table>' +
                         '<br><legend>Description: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
                         '<br><legend>Comments: </legend>' +
                         '<div class="box-shadow comments-table" id="comments_'+index+'"></div>' +
@@ -508,44 +614,6 @@ $(document).ready(function () {
                 //filterControl:'select'
             }]
         });
-        //$('#invoice_'+index).bootstrapTable({
-        //    url: '/php/core.php?method=getInvoiceSum',
-        //    contentType: 'application/x-www-form-urlencoded',
-        //    method: 'POST',
-        //    toolbar:'#invoice_toolbar_'+index,
-        //    queryParams: function (p){
-        //        return {
-        //            "iom_id":row['id']
-        //        }
-        //    },
-        //    columns: [{
-        //        field: 'id',
-        //        title: '#',
-        //        formatter: function(id,data,index){
-        //            return index+1;
-        //        }
-        //    },{
-        //        field: 'invoice_num',
-        //        title: 'Num:',
-        //        //sortable:true
-        //    },{
-        //        field: 'invoice_date',
-        //        title: 'Date:',
-        //        //sortable:true
-        //    },{
-        //        field: 'cost',
-        //        title: 'Cost:',
-        //        formatter: function(id,data){
-        //            return format_money(data['cost'])
-        //        }
-        //        //sortable:true
-        //        //filterControl:'select'
-        //    },{
-        //        field: 'invoice_comment',
-        //        title: 'Comment:',
-        //        //sortable:true
-        //    }],
-        //});
         $('#budget_'+index).bootstrapTable({
             url: '/php/core.php?method=getIomBudgets',
             contentType: 'application/x-www-form-urlencoded',
@@ -640,6 +708,63 @@ $(document).ready(function () {
                     sum = sum - data['cur_cost'];
                     return format_money(sum);
                 }
+            }],
+        });
+
+        $('#source_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomSource',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            showFooter:true,
+            rowStyle: function (row,index){
+                return {
+                    classes: '',
+                    css: {"font-size": "12px"}
+                };
+            },
+            footerStyle: function (value,row,index){
+                return {
+                    classes:'',
+                    css: { "font-weight": "bold" }
+                };
+            },
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            columns: [{
+                field: 'id',
+                title: 'ID:'
+                //sortable:true
+            },{
+                field: 'name',
+                title: 'Name:',
+            },{
+                field: 'iom_cost',
+                title: 'IOM Cost:',
+                formatter: function(id,data){
+                    if (data['iom_cost']!=null) {
+                        return format_money(data['iom_cost']);
+                    }else{
+                        return format_money(0);
+                    }
+                },
+                footerFormatter:function(data){
+                    var sum = 0;
+                    for (var i= 0,len = data.length;i<len;i++){
+                        //sum += data[i]['planed_cost'];
+                        var obj  = data[i];
+                        if (obj['iom_cost']!=null) {
+                            sum += parseInt(obj['iom_cost']);
+                        }else{
+                            sum +=0;
+                        }
+                    }
+                    return format_money(sum);
+                }
+                //sortable:true
+                //filterControl:'select'
             }],
         });
 
@@ -774,22 +899,6 @@ $(document).ready(function () {
                 //filterControl:'select'
             }],
         });
-        //$('#files_'+index).bootstrapTable({
-        //    url: '/php/core.php?method=getIomFiles',
-        //    contentType: 'application/x-www-form-urlencoded',
-        //    method: 'POST',
-        //    cardView: true,
-        //    queryParams: function (p){
-        //        return {
-        //            "iom_id":row['id']
-        //        }
-        //    },
-        //    columns: [{
-        //        field: 'filename',
-        //        title: 'Name:'
-        //        //sortable:true
-        //    }],
-        //});
         $.ajax({
             url: '/php/core.php?method=getIomFiles',
             contentType: 'application/x-www-form-urlencoded',
@@ -808,65 +917,6 @@ $(document).ready(function () {
             $('#files_'+index).html(divHTML);
             console.log(divHTML);
         });
-
-        $('#applysum_'+index).off('click').on('click',function (){
-
-            bootbox.dialog({
-                title: "Apply Invoice Payment",
-                message:      '<div class="row"> ' +
-                '<div class="col-md-12"> ' +
-                '<form id="form_invoice_"'+index+' class="form-horizontal"> ' +
-                    '<div class="form-group"> ' +
-                        '<label class="col-md-4 control-label" for="name">Num</label> ' +
-                        '<div class="col-md-4"> ' +
-                            '<input id="invoiceNum_'+index+'" name="invoiceN++++um" type="number" class="form-control input-md">'  +
-                        '</div> ' +
-                    '</div>' +
-                    '<div class="form-group"> ' +
-                        '<label class="col-md-4 control-label" for="name">Date</label> ' +
-                        '<div class="col-md-4"> ' +
-                            '<input id="invoiceDate_'+index+'" name="invoiceDate" type="date" class="form-control input-md">'  +
-                        '</div> ' +
-                    '</div>'+
-                    '<div class="form-group"> ' +
-                        '<label class="col-md-4 control-label" for="name">Cost</label> ' +
-                        '<div class="col-md-4"> ' +
-                            '<input id="invoiceCost_'+index+'" name="invoiceCost" type="number" class="form-control input-md">'  +
-                        '</div> ' +
-                    '</div>'+
-                    '<div class="form-group"> ' +
-                        '<label class="col-md-4 control-label" for="name">Comment</label> ' +
-                        '<div class="col-md-4"> ' +
-                            '<textarea id="invoiceComment_'+index+'" name="invoiceComment" type="text" class="form-control input-md"></textarea>'  +
-                        '</div> ' +
-                    '</div>' +
-                    '</form></div>',
-                buttons: {
-                    success: {
-                        label: "Apply",
-                        className: "btn-success modalbtn",
-                        callback: function () {
-                            $.ajax({
-                                url: '/php/core.php?method=sendInvoiceSum',
-                                contentType: 'application/x-www-form-urlencoded',
-                                dataType: 'json',
-                                method: 'POST',
-                                data: { "iom_id" : row['id'],"cost": $('#invoiceCost_'+index).val(),"date":$('#invoiceDate_'+index).val(),'num': $('#invoiceNum_'+index).val(),'comment':$('#invoiceComment_'+index).val()}
-                            }).success(function (data) {
-                                if (data['type']=='success'){
-                                    $('#invoice_'+index).bootstrapTable('refresh');
-                                    swal("Success!", "Success update invoice sum.", "success");
-                                }else{
-                                    swal("Canceled!", "Unknown error.", "success");
-                                }
-                            });
-                        }
-                    }
-                }
-            }).on('shown.bs.modal', function () {
-            });
-        });
-
     });
 
     //$(".table").fixMe();

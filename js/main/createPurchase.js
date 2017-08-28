@@ -33,15 +33,24 @@ function format_money(n) {
 
 function writeSum(input){
     var cur_sum =  $(input).val();
-    console.log($(input).attr('id'));
-    var id = $(input).attr('budget_id');
+    console.log($(input).attr('class'));
+    var type = '';
+    var table = '';
+    if ($(input).attr('class')=="purchase_iomcource_inputs"){
+        type = 'iom_source';
+        table = '#purchase_iomsource_table';
+    }else{
+        type = 'budget_id';
+        table = '#purchase_budget_table';
+    }
+    var id = $(input).attr(type);
     //var test_chain = $('#purchase_budget_table').bootstrapTable('getAllSelections');
     //console.log(test_chain);
     //console.log($(this).attr('budget_id'));
-    var row =  $('#purchase_budget_table').bootstrapTable('getRowByUniqueId', parseInt(id));
+    var row =  $(table).bootstrapTable('getRowByUniqueId', parseInt(id));
     console.log(row['select_sum']);
     row['select_sum'] = cur_sum;
-    $('#purchase_budget_table').bootstrapTable('updateByUniqueId', {id: id,row: row});
+    $(table).bootstrapTable('updateByUniqueId', {id: id,row: row});
 }
 
 $(function(){
@@ -134,51 +143,121 @@ $(function(){
                         }
                     }],
                 }).off('check.bs.table').on('check.bs.table', function (event,row,el){
-                    //console.log(row);
-                    console.log('Check: '+row['id']);
                     $('#budget_input_'+row['id']).prop('disabled','');
                     $('#budget_input_'+row['id']).val(row['select_sum']);
                 }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
-                    //console.log(row);
                     $('#purchase_budget_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
-                    console.log(event);
-                    console.log(row);
-                    console.log(index);
                 }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
-                    console.log('Uncheck: '+row['id']);
                     $('#budget_input_'+row['id']).prop('disabled','disabled');
                     $('#budget_input_'+row['id']).val(0);
                     row['select_sum'] = 0;
                     $('#purchase_budget_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
-
                 }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
                     var selections = $('#purchase_budget_table').bootstrapTable('getSelections');
-                    console.log(selections);
                     selections.forEach(function (item,i,arr){
                         console.log('Item:');
                         console.log('budget_input_'+item['id']);
                         $('#budget_input_'+item['id']).prop('disabled','').val(item['select_sum']);
                     });
-                }).off('post-body.bs.table').on('page-change.bs.table', function (event,row,el){
+                });
 
-                }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){
-
-                    $('.purchase_budget_inputs').off('input').on('input',function (){
-                        //var max = parseInt($(this).attr('max'));
-                        //var min = parseInt($(this).attr('min'));
-                        //if ($(this).val() > max){
-                        //    $(this).val(max);
-                        //}
-                        //else if ($(this).val() < min){
-                        //    $(this).val(min);
-                        //}
-                    });
-
-
-                    $('#toolbar_purchase_budget_table button').on('click',function (e){
-                        var str = $(this).text();
-                        console.log(str.trim());
-                        //$('#purchase_budget_table').bootstrapTable('filterBy',{'id':'6'});
+                $('#purchase_iomsource_table').bootstrapTable({
+                    url: '/php/core.php?method=getIomsSource',
+                    contentType: 'application/x-www-form-urlencoded',
+                    method: 'POST',
+                    uniqueId: 'id',
+                    clickToSelect:false,
+                    toolbar:'#toolbar_purchase_budget_table',
+                    filterControl:true,
+                    pagination: true,
+                    columns: [{checkbox:true},{
+                        field: 'id',
+                        title: 'ID:',
+                    },{
+                        field: 'name',
+                        title: 'Name:'
+                    },{
+                        field: 'invoice_cost',
+                        title: 'Invoice:',
+                        formatter: function(id,data){
+                            return format_money(parseInt(data['invoice_cost']));
+                        }
+                    },{
+                        field:'budget_cost',
+                        title: 'Budget:',
+                        formatter: function(id,data){
+                            return format_money(parseInt(data['budget_cost']));
+                        }
+                    },{
+                        title: 'Current Sum:',
+                        formatter: function(id,data){
+                            var budget_cost = 0;
+                            var invoice_cost = 0;
+                            if (data['budget_cost']!=null) {
+                                budget_cost = parseInt(data['budget_cost']);
+                            }else{
+                                return format_money(0);
+                            }
+                            if (data['invoice_cost']!=null) {
+                                invoice_cost = parseInt(data['invoice_cost']);
+                            }else{
+                                return format_money(0);
+                            }
+                            var sum = budget_cost-invoice_cost;
+                            sum = sum - parseInt(data['source_cost']);
+                            if (sum>0){
+                                return format_money(sum);
+                            }else{
+                                return format_money(0);
+                            }
+                        }
+                        //sortable:true
+                        //filterControl:'select'
+                    },{
+                        title:'Select Sum:',
+                        align: 'center',
+                        events: operateEvents,
+                        formatter: function(id,data){
+                            var maxsum = 0;
+                            var budget_cost = 0;
+                            var invoice_cost = 0;
+                            if (data['budget_cost']!=null) {
+                                budget_cost = parseInt(data['budget_cost']);
+                            }else{
+                                maxsum = 0;
+                            }
+                            if (data['invoice_cost']!=null) {
+                                invoice_cost = parseInt(data['invoice_cost']);
+                            }else{
+                                maxsum = 0;
+                            }
+                            var sum = budget_cost-invoice_cost;
+                            sum = sum - parseInt(data['source_cost']);
+                            if (sum>0){
+                                maxsum = sum;
+                            }else{
+                                maxsum = 0;
+                            }
+                            var controls='<input iom_source="'+data['id']+'" onchange="writeSum(this)" class="purchase_iomcource_inputs" disabled="disabled" name="iomsource_input_'+data['id']+'" id="iomsource_input_'+data['id']+'" value="'+data['select_sum']+'" type="number" min="0" max="'+maxsum+'">';
+                            return controls;
+                        }
+                    }],
+                }).off('check.bs.table').on('check.bs.table', function (event,row,el){
+                    $('#iomsource_input_'+row['id']).prop('disabled','');
+                    $('#iomsource_input_'+row['id']).val(row['select_sum']);
+                }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
+                    $('#purchase_iomsource_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
+                }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
+                    $('#iomsource_input_'+row['id']).prop('disabled','disabled');
+                    $('#iomsource_input_'+row['id']).val(0);
+                    row['select_sum'] = 0;
+                    $('#purchase_iomsource_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
+                }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
+                    var selections = $('#purchase_iomsource_table').bootstrapTable('getSelections');
+                    selections.forEach(function (item,i,arr){
+                        console.log('Item:');
+                        console.log('iomsource_input_'+item['id']);
+                        $('#iomsource_input_'+item['id']).prop('disabled','').val(item['select_sum']);
                     });
                 });
             }
@@ -289,12 +368,19 @@ $(function(){
             if (isConfirm) {
                 var sign_chain = [];
                 var budgets_chain = [];
+                var iomsource_chain = [];
                 var test_chain = $('#purchase_budget_table').bootstrapTable('getSelections');
+                var iom_source_chain = $('#purchase_iomsource_table').bootstrapTable('getSelections');
                 console.log(test_chain);
                 //Make Chain
                 test_chain.forEach(function (item, i,arr) {
                     if (item['select_sum']!=0) {
                         budgets_chain.push({'id': item['id'], 'value': item['select_sum'],'budget_type':item['budget_type']});
+                    }
+                });
+                iom_source_chain.forEach(function (item, i,arr) {
+                    if (item['select_sum']!=0) {
+                        iomsource_chain.push({'id': item['id'], 'value': item['select_sum'],'budget_type':item['budget_type']});
                     }
                 });
                 //console.log(JSON.stringify(budgets_chain));
@@ -316,6 +402,7 @@ $(function(){
                         expense_size: 0,
                         substantiation_text: JSON.stringify(tinymce.get('summernote').getContent({format : 'raw'})),
                         budgets: JSON.stringify(budgets_chain),
+                        iom_source: JSON.stringify(iomsource_chain),
                         sign_chain: JSON.stringify(sign_chain),
                         iom_id : iom_id
                     }

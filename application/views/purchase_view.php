@@ -133,7 +133,9 @@
                     <!--                    </select>-->
                     <table id="purchase_budget_table"></table>
                 </div>
-                <div class="col-lg-12" id="budget_inputs">
+                <div class="col-lg-12">
+                    <label>Ioms: </label>
+                    <table id="purchase_iomsource_table"></table>
                 </div>
             </div>
             <div class="step-footer form-group">

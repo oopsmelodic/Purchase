@@ -37,11 +37,14 @@ class Iom
             " LIMIT 1) as latest_action,".
             "( ".$user_id." in (Select employee_id From sign_chain Where status='in progress' and iom_id=im.id)) as sign_status,".
             "( Select sc.status From sign_chain as sc Where sc.employee_id=".$user_id." and iom_id=im.id LIMIT 1) as user_last_status," .
-            " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum".
+            " (Select sum(cost) From iom_budgets as ib Where ib.iom_id=im.id) as iom_sum_budget,".
+            " (Select sum(cost) From iom_source as iis Where iis.iom_id_to=im.id) as iom_sum_source".
             " FROM iom as im".
                 " Left Join employee as em on im.employee_id=em.id" .
                 " Left Join departments as dep on em.department_id=dep.id".
             " Where ".$user_id." in (Select employee_id From sign_chain Where iom_id=im.id) or im.employee_id=".$user_id." ORDER BY im.id DESC";
+
+//        echo $query;
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
@@ -64,7 +67,7 @@ class Iom
                     $query_results[$key]['status']='<span class="label label-danger"><i class="fa fa-close"></i>&nbsp;'.$value['status'].'</span>';
                     break;
             }
-            $query_results[$key]['status'].= '<p><span class="label label-primary">&nbsp;'.number_format(floatval($value['iom_sum'])).' ₽</span></p>';
+            $query_results[$key]['status'].= '<p><span class="label label-primary">&nbsp;'.number_format(floatval($value['iom_sum_budget'])+floatval($value['iom_sum_source'])).' ₽</span></p>';
             switch ($value['user_last_status']){
                 case "in progress":
                     $query_results[$key]['user_last_status']='<span class="label label-warning"><i class="fa fa-clock-o"></i>&nbsp;'.$value['user_last_status'].'</span>';
@@ -243,6 +246,14 @@ class Iom
         return $query_results;
     }
 
+    public function getIomSource($params){
+        $query= "Select sum(cost) as iom_cost,im.name,im.id From iom_source as iis Left Join iom as im on iis.iom_id_from=im.id Where iis.iom_id_to=".$params['iom_id'];
+
+//        echo $query;
+        $query_results = $this->sendQuery($query);
+        return $query_results;
+    }
+
     public function getIomEvents($params){
         $query= " Select concat( e.event_name,' by ',em.fullname) as event, e.date_time,e.id,e.cancel,e.event_name,em.id as employee_id  From iom_history as e".
                 " Left Join employee as em on e.employee_id=em.id".
@@ -383,6 +394,16 @@ class Iom
         return $query_results;
     }
 
+    public function getIomsSource(){
+        $query="Select im.name,im.id,em.department_id,(Select sum(cost) From iom_invoice Where iom_id=im.id) as invoice_cost, (Select sum(cost) From iom_budgets Where iom_id=im.id) as budget_cost,(Select sum(cost) From iom_source Where iom_id_from=im.id) as source_cost, im.status From iom as im Left Join employee as em on im.employee_id=em.id Where im.status='Approved' and em.department_id=".$_SESSION['user']['department_id']." ";
+
+        $query_results = $this->sendQuery($query);
+
+        foreach($query_results as $key => $value){
+            $query_results[$key]['select_sum']=  0;
+        }
+        return $query_results;
+    }
     public function getBudgetRelocations($params){
 
         $query = "Select b.name as name_relocation, b.budget_date as budget_date_relocation, br.cost,br.id From budget_relocations as br" .
@@ -755,6 +776,7 @@ class Iom
     public function createIomReq($params){
         $chain = json_decode($params['sign_chain']);
         $budgets = json_decode($params['budgets'],true);
+        $iom_source = json_decode($params['iom_source'],true);
         $query = "INSERT INTO iom(employee_id,name,power,costsize,actualcost,substantation) "
             . "VALUES (" . $params["employee_id"] . ",'"
             . mysqli_escape_string(GetMyConnection(),$params["purchase_text"]). "',0," . $params["expense_size"] . ",0,'".mysqli_escape_string(GetMyConnection(),$params["substantiation_text"])."')";
@@ -777,6 +799,17 @@ class Iom
                     $query .= "(" . $iom_num . "," . $value['id'] . "," . $value['value'] . "),";
                     $iom_cost += intval($value['value']);
                     $budget_type = $value['budget_type'];
+                    $budgets_value = $value['id'];
+                }
+
+                $res = $this->sendQuery(trim($query, ','));
+            }
+
+            if (count($iom_source) != 0) {
+                $query = "INSERT INTO iom_source(iom_id_from,iom_id_to,cost) Values ";
+                foreach ($iom_source as $key => $value) {
+                    $query .= "(" . $value['id'] . "," . $iom_num . "," . $value['value'] . "),";
+                    $iom_cost += intval($value['value']);
                     $budgets_value = $value['id'];
                 }
 
