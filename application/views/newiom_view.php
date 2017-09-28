@@ -231,7 +231,7 @@
 <!-- /.container-fluid -->
 
 
-<script src="/js/main/newPurchase.js" type="text/javascript"></script>
+<script src="/js/main/newPurchase.js?<?php echo $data['script_version']?>" type="text/javascript"></script>
 <script>
     var footerTemplate = '<div class="file-thumbnail-footer">\n' +
         '   <div style="margin:5px 0">\n' +

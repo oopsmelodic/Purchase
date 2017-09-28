@@ -10,4 +10,4 @@
         </table>
     </div>
 </div>
-<script src="/js/main/reports.js" type="text/javascript"></script>
+<script src="/js/main/reports.js?<?php echo $data['script_version']?>" type="text/javascript"></script>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="mainApp">
 
 <head>
     <meta charset="utf-8">
@@ -50,6 +50,8 @@
     <script src="/js/fileupload/fileinput.js" type="text/javascript"></script>
     <script src="/bower_components/tinymce/tinymce.min.js" type="text/javascript"></script>
     <script src="/js/sortable.min.js" type="text/javascript"></script>
+    <script src="/js/FileSaver.js" type="text/javascript"></script>
+    <script src="/js/Blob.js" type="text/javascript"></script>
 <!--    Angular Part-->
     <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
     <script src="/bower_components/angular-resource/angular-resource.min.js" type="text/javascript"></script>
@@ -79,10 +81,10 @@
 </head>
 
 <body lang="en">
-<div id="wrapper" ng-app="mainApp" ng-controller="myNotify">
+<div id="wrapper">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-fixed-top" role="navigation" ng-controller="myNotify">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -133,7 +135,7 @@
 
 </div>
 
-<script src="/js/main/createPurchase.js" type="text/javascript"></script>
+<script src="/js/main/createPurchase.js?<?php echo $data['script_version']?>" type="text/javascript"></script>
 
 <script>
     var footerTemplate = '<div class="file-thumbnail-footer">\n' +

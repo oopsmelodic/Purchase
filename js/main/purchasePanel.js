@@ -302,7 +302,9 @@ window.operateEvents = {
                             return format_money(0);
                         }
                         var sum = budget_cost-invoice_cost;
-                        sum = sum - parseInt(data['source_cost']);
+                        if (data['source_cost']!=null){
+                            sum = sum - parseInt(data['source_cost']);
+                        }
                         if (sum>0){
                             return format_money(sum);
                         }else{
@@ -330,7 +332,9 @@ window.operateEvents = {
                             maxsum = 0;
                         }
                         var sum = budget_cost-invoice_cost;
-                        sum = sum - parseInt(data['source_cost']);
+                        if (data['source_cost']!=null){
+                            sum = sum - parseInt(data['source_cost']);
+                        }
                         if (sum>0){
                             maxsum = sum;
                         }else{
@@ -532,7 +536,7 @@ $(document).ready(function () {
         }],
         search: true,
         pagination: true,
-        strictSearch: true,
+        strictSearch: false,
         detailView : true,
         pageList: [25,50,75,100,200],
         showRefresh:true,

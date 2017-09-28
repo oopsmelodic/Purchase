@@ -129,7 +129,6 @@
                 <div class="col-lg-12">
                     <label>Budgets: </label>
                     <!--                    <select id="budget_select" data-live-search="true" data-minlength="1" data-selector="true" class="selectpicker form-control" data-width="100%" multiple data-selected-text-format="count" required>-->
-                    <!--                        --><?php //echo $data['budgets'];?>
                     <!--                    </select>-->
                     <table id="purchase_budget_table"></table>
                 </div>
@@ -237,4 +236,4 @@
     </div>
 </div>
 
-<script src="/js/main/purchasePanel.js?v1124" type="text/javascript"></script>
+<script src="/js/main/purchasePanel.js?<?php echo $data['script_version']?>" type="text/javascript"></script>

@@ -228,7 +228,7 @@
             if (!column.filterControl) {
                 html.push('<div style="height: 34px;"></div>');
             } else {
-                html.push('<div style="margin: 0 2px 2px 2px;" class="filterControl">');
+                html.push('<td data-tableexport-display="none"><div style="margin: 0 2px 2px 2px;" class="filterControl">');
 
                 var nameControl = column.filterControl.toLowerCase();
                 if (column.searchable && that.options.filterTemplate[nameControl]) {
@@ -410,7 +410,7 @@
                 return sprintf('<input type="text" class="form-control bootstrap-table-filter-control-%s" style="width: 100%; visibility: %s">', field, isVisible);
             },
             select: function (that, field, isVisible) {
-                return sprintf('<select class="form-control bootstrap-table-filter-control-%s" style="width: 100%; visibility: %s" dir="%s"></select>',
+                return sprintf('<select class="form-control bootstrap-table-filter-control-%s" data-tableexport-display="none" style="width: 100%; visibility: %s" dir="%s"></select>',
                     field, isVisible, getDirectionOfSelectOptions(that.options.alignmentSelectControlOptions));
             },
             datepicker: function (that, field, isVisible) {

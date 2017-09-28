@@ -7,6 +7,7 @@
  * Time: 16:07
  */
 include 'conn.php';
+include_once 'PHPExcel/IOFactory.php';
 
 class Iom
 {
@@ -230,15 +231,29 @@ class Iom
         }
     }
 
+    public function delInvoice($params){
+
+//        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
+
+        $query = "Delete From iom_invoice Where id=".$params['id'];
+
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()),'query'=>$query);
+        }
+        else {
+            return Array('type'=>'success','query'=>$query);
+        }
+    }
+
     public function getIomBudgets($params){
-        $query= "Select  b.name,(Select sum(cost) From budget_relocations Where budget_id=ib.budget_id) as relocation_cost,sum(ii.cost) as ionvoice_cost, bb.name as brand_name, bm.name as mapping_name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
+        $query= "Select  b.name,(Select sum(cost) From budget_relocations Where budget_id=ib.budget_id) as relocation_cost,(Select sum(cost) From iom_invoice Where iom_id=".$params['iom_id'].") as ionvoice_cost, bb.name as brand_name, bm.name as mapping_name,b.budget_type,ib.cost as cur_cost,b.budget_date, ib.budget_id,b.planed_cost,b.date_time,".
 		" (Select sum(cost) From iom_budgets as ibs Left Join iom as im on im.id=ibs.iom_id Where ibs.budget_id=b.id and ibs.iom_id<".$params['iom_id']." and ibs.iom_id!=".$params['iom_id']." and (im.status!='Canceled' or im.status is null)) as current_balance".
 		" From iom_budgets as ib".
                 " Left Join budget as b on ib.budget_id=b.id".
                 " Left Join budget_relocations as br on br.budget_id=ib.budget_id".
                 " Left Join budget_mapping as bm on b.mapping_id=bm.id".
                 " Left Join budget_brand as bb on b.brand_id=bb.id".
-                " Left Join iom_invoice as ii on ii.iom_id=".$params["iom_id"].
                 " Where ib.iom_id=".$params['iom_id'];
 
 //        echo $query;
@@ -247,7 +262,7 @@ class Iom
     }
 
     public function getIomSource($params){
-        $query= "Select sum(cost) as iom_cost,im.name,im.id From iom_source as iis Left Join iom as im on iis.iom_id_from=im.id Where iis.iom_id_to=".$params['iom_id'];
+        $query= "Select sum(cost) as iom_cost,im.name,im.id From iom_source as iis Left Join iom as im on iis.iom_id_from=im.id Where im.status!='Canceled' and iis.iom_id_to=".$params['iom_id'];
 
 //        echo $query;
         $query_results = $this->sendQuery($query);
@@ -389,18 +404,18 @@ class Iom
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
-            $query_results[$key]['select_sum']=  0;
+            $query_results[$key]['select_sum'] = 0;
         }
         return $query_results;
     }
 
     public function getIomsSource(){
-        $query="Select im.name,im.id,em.department_id,(Select sum(cost) From iom_invoice Where iom_id=im.id) as invoice_cost, (Select sum(cost) From iom_budgets Where iom_id=im.id) as budget_cost,(Select sum(cost) From iom_source Where iom_id_from=im.id) as source_cost, im.status From iom as im Left Join employee as em on im.employee_id=em.id Where im.status='Approved' and em.department_id=".$_SESSION['user']['department_id']." ";
+        $query="Select im.name,im.id,em.department_id,(Select sum(cost) From iom_invoice Where iom_id=im.id) as invoice_cost, (Select sum(cost) From iom_budgets Where iom_id=im.id) as budget_cost,(Select sum(iis.cost) From iom_source as iis Left Join iom as iim on iis.iom_id_to=iim.id Where iim.status!='Canceled' and iis.iom_id_from=im.id) as source_cost, im.status From iom as im Left Join employee as em on im.employee_id=em.id Where im.status!='Canceled' and em.department_id=".$_SESSION['user']['department_id']." ";
 
         $query_results = $this->sendQuery($query);
 
         foreach($query_results as $key => $value){
-            $query_results[$key]['select_sum']=  0;
+            $query_results[$key]['select_sum'] = 0;
         }
         return $query_results;
     }
@@ -1165,6 +1180,37 @@ class Iom
 
         return $return_array;
 
+    }
+
+    public function getReport($params){
+////        $all_budgets = $this->getAllBudgets();
+//
+////        print_r($all_budgets);
+//
+//        $report_data = json_decode($_GET['datareport']);
+//
+//        $objPHPExcel = new PHPExcel();
+//        $objPHPExcel->setActiveSheetIndex(0);
+//        $rowCount = 1;
+//        foreach($report_data as $value){
+//            $objPHPExcel->getActiveSheet()->SetCellValue('A'.$rowCount, $value['id']);
+//            $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, strval($value['department_name']));
+//            $rowCount++;
+//        }
+//
+//        //SAVE FILE XLSX
+//        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+//        header("Pragma: public");
+//        header("Expires: 0");
+//        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+//        header('Content-type: application/vnd.ms-excel');
+//        header('Content-Disposition: attachment; filename="file.xls"');
+//        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+//        header("Content-Type: application/force-download");
+//        header("Content-Type: application/octet-stream");
+//        header("Content-Type: application/download");
+//        header("Content-Transfer-Encoding: binary ");
+//        $objWriter->save('php://output');
     }
 
     function checkIom($iom_id){

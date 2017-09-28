@@ -204,7 +204,9 @@ $(function(){
                                 return format_money(0);
                             }
                             var sum = budget_cost-invoice_cost;
-                            sum = sum - parseInt(data['source_cost']);
+                            if (data['source_cost']!=null){
+                                sum = sum - parseInt(data['source_cost']);
+                            }
                             if (sum>0){
                                 return format_money(sum);
                             }else{
@@ -232,7 +234,9 @@ $(function(){
                                 maxsum = 0;
                             }
                             var sum = budget_cost-invoice_cost;
-                            sum = sum - parseInt(data['source_cost']);
+                            if (data['source_cost']!=null){
+                                sum = sum - parseInt(data['source_cost']);
+                            }
                             if (sum>0){
                                 maxsum = sum;
                             }else{

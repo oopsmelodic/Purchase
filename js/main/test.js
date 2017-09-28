@@ -37,14 +37,36 @@ $(document).ready(function () {
     var scrollTo = null;
     var scrollIndex = null;
 
+    var utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+    utc = utc.toString();
+
     $('#budgets_table').bootstrapTable({
         url: '/php/core.php?method=getAllBudgets',
         filterControl:true,
         showFooter:true,
         pagination: true,
         showExport:true,
-        strictSearch:true,
-        pageList: [10,25,50,100,500,1000,1500],
+        exportOptions:{
+            htmlContent: true,
+            fileName: 'Budgets '+utc,
+            excelFileFormat:'xls',
+            ignoreColumn: [0],
+            worksheetName:'Budgets',
+            onCellHtmlData: function ($cell, rowIndex, colIndex, htmlData){
+                //Check Html Included
+                if (htmlData.indexOf('<div class="fht-cell">')!=-1){
+                    htmlData = htmlData.slice(0,htmlData.indexOf('<div class="fht-cell">'));
+                }
+                if (htmlData.indexOf('₽')!=-1){
+                    htmlData = htmlData.slice(0,htmlData.indexOf('₽'));
+                }
+                return htmlData;
+            }
+        },
+        exportTypes:['excel'],
+        strictSearch:false,
+        pageSize:50,
+        pageList: [50,100,500,1000,1500],
         //stickyHeader:true,
         columns: [{
             title:'FYear:',
@@ -182,11 +204,9 @@ $(document).ready(function () {
             }
         }],
         search: true,
-        strictSearch: true,
         detailView : true,
         showRefresh:true,
         stickyHeader:false,
-        toolbar: '#toolbar',
         //groupBy:true,
         //groupByField:['status'],
         detailFormatter: function (index, row){
@@ -224,9 +244,9 @@ $(document).ready(function () {
                 formatter: function(id,data,index){
                     return index+1;
                 }
-            }, {
+            },{
                 field: 'name',
-                title: 'IOM Name:',
+                title: 'IOM Name:'
                 //sortable:true
             },{
                 field: 'time_stamp',
@@ -276,7 +296,6 @@ $(document).ready(function () {
                 title: 'Rel Cost:',
                 sortable:true,
                 formatter: function(id,data){
-                    console.log(data);
                     if (data['cost']!=null) {
                         return format_money(data['cost']);
                     }else{
@@ -346,7 +365,7 @@ $(document).ready(function () {
                     dataType: 'json',
                     async: true,
                     data: {id: rel_id}
-                }).success(function (data) {
+                }).success(function (data){
                     if (data != null) {
                         if (data['type'] == 'success') {
                             $('#budgets_table').bootstrapTable('refresh',{silent: true});
@@ -372,13 +391,32 @@ $(document).ready(function () {
         showFooter:true,
         pagination: true,
         showExport:true,
+        exportOptions:{
+            htmlContent: true,
+            fileName: 'Budgets '+utc,
+            excelFileFormat:'xls',
+            ignoreColumn: [0],
+            worksheetName:'Budgets',
+            onCellHtmlData: function ($cell, rowIndex, colIndex, htmlData){
+                //Check Html Included
+                if (htmlData.indexOf('<div class="fht-cell">')!=-1){
+                    htmlData = htmlData.slice(0,htmlData.indexOf('<div class="fht-cell">'));
+                }
+                if (htmlData.indexOf('₽')!=-1){
+                    htmlData = htmlData.slice(0,htmlData.indexOf('₽'));
+                }
+                return htmlData;
+            }
+        },
+        exportTypes:['excel'],
         columns: [{
             field: 'id',
             title: 'IOM ID:',
             sortable:true,
             formatter: function(id,data,index){
-                return '201609-'+index;
-            }			
+                var d1= Date.parse(data['time_stamp']);
+                return data['department_name']+d1.toString('yyyyMM')+data['id'];
+            }
         },{
             field: 'name',
             title: 'Description:',
@@ -421,7 +459,7 @@ $(document).ready(function () {
             title: 'Iom Invoice:',
             sortable:true,
             formatter: function(id,data){
-                if (data['iom_invoice']!=null) {
+                if (data['iom_invoice']!=null){
                     return format_money(data['iom_invoice']);
                 }else{
                     return format_money(0);
@@ -433,7 +471,7 @@ $(document).ready(function () {
                     //sum += data[i]['planed_cost'];
                     var obj  = data[i];
                     console.log(obj['iom_invoice']);
-                    if (obj['iom_invoice']!=null) {
+                    if (obj['iom_invoice']!=null){
                         sum += parseInt(obj['iom_invoice']);
                     }else{
                         sum += 0;
@@ -457,11 +495,12 @@ $(document).ready(function () {
             //filterControl:'select'
         }],
         search: true,
-        strictSearch: true,
+        strictSearch: false,
         detailView : true,
         showRefresh:true,
         stickyHeader:false,
-        toolbar: '#toolbar',
+        pageSize:50,
+        pageList: [50,100,500,1000,1500],
         //groupBy:true,
         //groupByField:['status'],
         detailFormatter: function (index, row){
@@ -469,7 +508,7 @@ $(document).ready(function () {
             div.append('<div class="col-lg-6">' +
                 '<br><legend>Invoice Sum: </legend>'+
                 '<table class="table-bordered" id="invoice_'+index+'"></table><br>' +
-                '<div id="invoice_toolbar_'+index+'"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Pay</button></div>'+
+                '<div id="invoice_toolbar_'+index+'"><button id="applysum_'+index+'" class="btn btn-primary">Apply Invoice Pay</button><button id="delsum_'+index+'" class="btn btn-danger">Delete Invoice Pay</button></div>'+
                 '</div>');
             div.append('<div class=col-lg-6>' +
                 '<legend>Budgets: </legend>' +
@@ -529,7 +568,7 @@ $(document).ready(function () {
                 title: 'DateTime:'
                 //sortable:true
                 //filterControl:'select'
-            }],
+            }]
         });
 
         $('#invoice_'+index).bootstrapTable({
@@ -537,12 +576,13 @@ $(document).ready(function () {
             contentType: 'application/x-www-form-urlencoded',
             method: 'POST',
             toolbar:'#invoice_toolbar_'+index,
+            singleSelect:true,
             queryParams: function (p){
                 return {
                     "iom_id":row['id']
                 }
             },
-            columns: [{
+            columns: [{checkbox:true},{
                 field: 'id',
                 title: '#',
                 formatter: function(id,data,index){
@@ -610,7 +650,7 @@ $(document).ready(function () {
                 field: 'cur_cost',
                 title: 'IOM Cost:',
                 formatter: function(id,data){
-                    if (data['cur_cost']!=null) {
+                    if (data['cur_cost']!=null){
                         return format_money(data['cur_cost']);
                     }else{
                         return format_money(data['planed_cost']);
@@ -627,6 +667,41 @@ $(document).ready(function () {
             }],
         });
 
+        $('#delsum_'+index).off('click').on('click',function (){
+            var selections = $('#delsum_'+index).bootstrapTable('getSelections');
+            var rel_id = selections[0]['id'];
+            swal({
+                title: "Delete Invoice?",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                animation: "slide-from-top",
+                showLoaderOnConfirm: true
+            }, function(){
+                $.ajax({
+                    url: '/php/core.php?method=delInvoice',
+                    type: 'POST',
+                    dataType: 'json',
+                    async: true,
+                    data: {id: rel_id}
+                }).success(function (data) {
+                    if (data != null) {
+                        if (data['type'] == 'success') {
+                            $('#iom_table').bootstrapTable('refresh',{silent: true});
+                            scrollTo = $('#iom_table').bootstrapTable('getScrollPosition');
+                            scrollIndex = index;
+                            $('#delsum_'+index).bootstrapTable('refresh',{silent: true});
+                            swal("Success!", "Success delete invoice.", "success");
+                        } else {
+                            swal("Request Error!", data['error_msg'], "error");
+                        }
+                    } else {
+                        swal("Request Error!", data['error_msg'], "error");
+                    }
+                });
+            });
+        });
+
         $('#applysum_'+index).off('click').on('click',function (){
 
             bootbox.dialog({
@@ -637,7 +712,7 @@ $(document).ready(function () {
                 '<div class="form-group"> ' +
                 '<label class="col-md-4 control-label" for="name">Num</label> ' +
                 '<div class="col-md-4"> ' +
-                '<input id="invoiceNum_'+index+'" name="invoiceN++++um" type="number" class="form-control input-md">'  +
+                '<input id="invoiceNum_'+index+'" name="invoiceNum" type="text" class="form-control input-md">'  +
                 '</div> ' +
                 '</div>' +
                 '<div class="form-group"> ' +
@@ -682,10 +757,44 @@ $(document).ready(function () {
                     }
                 }
             }).on('shown.bs.modal', function () {
+
             });
         });
 
 
     });
 
+    $('#getReportBudgets').click(function(){
+        var reportdata = $('#budgets_table').bootstrapTable('getData','useCurrentPage');
+        $.ajax({
+            url: '/php/report.php',
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            method: 'post',
+            data: { "data" : reportdata}
+        }).success(function (result, status, xhr) {
+
+        });
+    });
+
 });
+
+function saveAs(blob, fileName) {
+    var url = window.URL.createObjectURL(blob);
+
+    var anchorElem = document.createElement("a");
+    anchorElem.style = "display: none";
+    anchorElem.href = url;
+    anchorElem.download = fileName;
+
+    document.body.appendChild(anchorElem);
+    anchorElem.click();
+
+    document.body.removeChild(anchorElem);
+
+    // On Edge, revokeObjectURL should be called only after
+    // a.click() has completed, atleast on EdgeHTML 15.15048
+    setTimeout(function() {
+        window.URL.revokeObjectURL(url);
+    }, 1000);
+}

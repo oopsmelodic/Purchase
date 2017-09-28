@@ -10,6 +10,8 @@ class View
                     Array('status'=>'','title'=>'Financial','name'=>'financial','icon'=>'fa-lock','power'=>85,'href'=>'/financial'),
                     Array('status'=>'','title'=>'Reports','name'=>'report','icon'=>'fa-lock','power'=>60,'href'=>'/report'));
 
+    public $script_version = '1.0.1';
+
     function dropdown_active($active){
         $result_str = '';
         foreach ($this->dropdown as $item) {
@@ -36,6 +38,7 @@ class View
 
 
         $data['dropdown_active'] = $this->dropdown_active(array_shift(explode('_',$content_view)));
+        $data['script_version'] = $this->script_version;
 
         include 'application/views/'.$template_view;
     }

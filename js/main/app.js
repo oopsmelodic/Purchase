@@ -3,6 +3,7 @@
  */
 
 var app = angular.module('mainApp', ['notification','smart-table','ui.bootstrap']);
+
 app.controller('myNotify', function($scope, $http, $interval,$notification,$sce) {
     function getData(){
         $http({
@@ -30,7 +31,7 @@ app.controller('myNotify', function($scope, $http, $interval,$notification,$sce)
         });
     }
     getData();
-    $interval(getData,5000);
+    $interval(getData,60000);
 });
 
 
@@ -75,7 +76,7 @@ app.controller('CommentsCtrl', function ($scope,$http,$interval) {
         });
     }
     getComments();
-    $interval(getComments,5000);
+    $interval(getComments,60000);
 });
 
 

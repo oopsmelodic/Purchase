@@ -117,4 +117,4 @@
 <!-- /#page-wrapper -->
 </div>
 <!-- /#wrapper -->
-<script src="/js/main/profile.js" type="text/javascript"></script>
+<script src="/js/main/profile.js?<?php echo $data['script_version']?>" type="text/javascript"></script>

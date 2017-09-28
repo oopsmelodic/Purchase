@@ -23,4 +23,4 @@
     </div>
 
 </div>
-<script src="/js/main/main.js" type="text/javascript"></script>
+<script src="/js/main/main.js?<?php echo $data['script_version']?>" type="text/javascript"></script>
