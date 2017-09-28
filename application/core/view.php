@@ -10,7 +10,7 @@ class View
                     Array('status'=>'','title'=>'Financial','name'=>'financial','icon'=>'fa-lock','power'=>85,'href'=>'/financial'),
                     Array('status'=>'','title'=>'Reports','name'=>'report','icon'=>'fa-lock','power'=>60,'href'=>'/report'));
 
-    public $script_version = '1.0.1';
+    public $script_version = '1.0.2';
 
     function dropdown_active($active){
         $result_str = '';
