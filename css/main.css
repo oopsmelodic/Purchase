@@ -297,3 +297,10 @@ legend{
 .filter-option small{
     margin-left: 5px;
 }
+.delete_file{
+    z-index: 999;
+    font-size: 21px;
+}
+.delete_file .fa-times:hover{
+    color: #aa0000;
+}

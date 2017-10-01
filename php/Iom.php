@@ -205,7 +205,7 @@ class Iom
     }
 
     public function getInvoiceSum($params){
-        $query = "Select ii.date_time,ii.invoice_comment,ii.invoice_date,ii.invoice_num,ii.cost From iom_invoice as ii Where ii.iom_id=".$params['iom_id'];
+        $query = "Select ii.date_time,ii.invoice_comment,ii.invoice_date,ii.invoice_num,ii.cost,ii.id From iom_invoice as ii Where ii.iom_id=".$params['iom_id'];
 
         $query_results = $this->sendQuery($query);
 
@@ -220,7 +220,7 @@ class Iom
     public function sendInvoiceSum($params){
 //        $query = "Update iom Set actualcost=".$params['invoice']." Where id=".$params['iom_id'];
 
-        $query = "Insert Into iom_invoice (cost,invoice_date,invoice_num,invoice_comment,iom_id) Values(".$params['cost'].",'".$params['date']."',".$params['num'].",'".$params['comment']."',".$params['iom_id'].")";
+        $query = "Insert Into iom_invoice (cost,invoice_date,invoice_num,invoice_comment,iom_id) Values(".$params['cost'].",'".$params['date']."','".$params['num']."','".$params['comment']."',".$params['iom_id'].")";
 
         $query_results = $this->sendQuery($query);
         if (!$query_results){
@@ -280,13 +280,9 @@ class Iom
     }
 
     public function cancelEvent($params){
-
         $query = "Update iom_history Set cancel=1 Where id=".$params['id'];
-
         $this->sendQuery($query);
-
         $query = "Update sign_chain Set status='in progress' Where employee_id=".$params['employee_id']." and iom_id=".$params['iom_id'];
-
         $query_results = $this->sendQuery($query);
         if (!$query_results){
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
@@ -296,10 +292,20 @@ class Iom
         }
     }
 
-    public function getIomFiles($params){
-        $query= " Select fs.filename,fs.title,fs.type, fs.filepath  From files as fs".
-            " Where fs.iom_id=".$params['iom_id'];
+    public function deleteFile($params){
+        $query = "Delete From files Where id=".$params['id'];
+        $query_results = $this->sendQuery($query);
+        if (!$query_results){
+            return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
+        }
+        else{
+            return Array('type'=>'success','file_id'=>$params['id']);
+        }
+    }
 
+    public function getIomFiles($params){
+        $query= " Select fs.filename,fs.title,fs.type, fs.filepath,fs.id  From files as fs".
+            " Where fs.iom_id=".$params['iom_id'];
         $query_results = $this->sendQuery($query);
         return $query_results;
     }
@@ -308,7 +314,6 @@ class Iom
         $query="SELECT em.username, em.fullname as fullname,em.email, em.id as id, dp.name as department,rl.name as role, em.position, dp.id as depid, rl.id as roleid FROM employee as em".
             " Left Join departments as dp on em.department_id=dp.id".
             " Left Join roles as rl on em.role_id=rl.id Where em.deleted=0";
-
         $query_results = $this->sendQuery($query);
         return $query_results;
     }

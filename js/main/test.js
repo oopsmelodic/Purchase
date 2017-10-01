@@ -583,7 +583,6 @@ $(document).ready(function () {
                 }
             },
             columns: [{checkbox:true},{
-                field: 'id',
                 title: '#',
                 formatter: function(id,data,index){
                     return index+1;
@@ -668,7 +667,7 @@ $(document).ready(function () {
         });
 
         $('#delsum_'+index).off('click').on('click',function (){
-            var selections = $('#delsum_'+index).bootstrapTable('getSelections');
+            var selections = $('#invoice_'+index).bootstrapTable('getSelections');
             var rel_id = selections[0]['id'];
             swal({
                 title: "Delete Invoice?",

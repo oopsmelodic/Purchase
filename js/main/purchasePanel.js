@@ -397,12 +397,47 @@ window.operateEvents = {
                         var divHTML='<legend>Old Iom Files: </legend>';
                         for(var i=0;i<data.length;i++){
                             var filepath = data[i]['filepath'].split('/').slice(-2).join('/');
-                            divHTML+='<div class="col-lg-3" style="padding=5px; margin-bottom:10px;" align="center">'+
-                                '<div><a class="btn btn-default" href="../' + filepath + '" download="' + data[i]['title'] +'.'+ data[i]['type']+'"><div><i class="fa fa-file-' + filetypes[data[i]['type']] + ' fa-2x"></i></div></a></div>'+
-                                '<div style="font-size:12px; word-wrap:break-word;">'+data[i]['title']+'</div>'+
+                            divHTML+='<div class="col-lg-1" style="padding=5px; margin-bottom:10px;" align="center"><div file_id="'+data[i]['id']+'" class="delete_file"><i class="fa fa-times"></i></div>'+
+                                    '<div><a class="btn btn-default" href="../' + filepath + '" download="' + data[i]['title'] +'.'+ data[i]['type']+'"><div><i class="fa fa-file-' + filetypes[data[i]['type']] + ' fa-2x"></i></div></a></div>'+
+                                    '<div style="font-size:12px; word-wrap:break-word;">'+data[i]['title']+'</div>'+
                                 '</div>';
                         }
                         $('#reset_files').html(divHTML);
+                        $('.delete_file').click(function (){
+                            var file_body = $(this);
+                            var file_id = file_body.attr('file_id');
+                            swal({
+                                title: "Are you sure?",
+                                text: "Abort event ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes",
+                                cancelButtonText: "No",
+                                closeOnConfirm: true,
+                                showLoaderOnConfirm: true,
+                                closeOnCancel: true
+                            }, function(isConfirm){
+                                if (isConfirm) {
+                                    $.ajax({
+                                        url: "php/core.php?method=deleteFile",
+                                        type: "POST",
+                                        dataType:"json",
+                                        async: 0,
+                                        data: {"id": file_id}
+                                    }).success(function (data) {
+                                        if (data['type'] == "success"){
+                                            file_body.remove();
+                                            swal("Deleted!", "File has been deleted.", "success");
+                                        }else{
+                                            swal("Request Error!",data['error_msg'],"error");
+                                        }
+                                    });
+                                } else {
+                                    //swal("Cancelled", "Your imaginary file is safe :)", "error");
+                                }
+                            });
+                        });
                         console.log(divHTML);
                     });
                     //$('.step').validator();
