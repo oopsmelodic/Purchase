@@ -1,0 +1,31 @@
+<?php
+
+include_once 'PHPExcel/IOFactory.php';
+
+$report_data = $_POST['data'];
+
+$objPHPExcel = new PHPExcel();
+$objPHPExcel->setActiveSheetIndex(0);
+$rowCount = 1;
+foreach($report_data as $value){
+    $objPHPExcel->getActiveSheet()->SetCellValue('A'.$rowCount, $value['id']);
+    $objPHPExcel->getActiveSheet()->SetCellValue('B'.$rowCount, strval($value['department_name']));
+    $rowCount++;
+}
+
+//SAVE FILE XLSX
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+header("Pragma: public");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header('Content-type: application/vnd.ms-excel');
+header('Content-Disposition: attachment; filename="file.xls"');
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header("Content-Type: application/force-download");
+header("Content-Type: application/octet-stream");
+header("Content-Type: application/download");
+header("Content-Transfer-Encoding: binary ");
+$objWriter->save('php://output');
+exit;
+
+?>

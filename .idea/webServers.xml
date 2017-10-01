@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="a71d208b-cf90-497d-b96c-8f6f53fd8aff" name="Purchase Project" url="http://ftp.oopsmelodi.nichost.ru">
+        <fileTransfer host="ftp.oopsmelodi.nichost.ru" port="21" password="df98dfc5dfd0dffbdfd0dfe9df87dfda" username="oopsmelodi_ftp">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="d39fabe5-d15a-4585-94ad-97c07aaea57d" name="sk-decors" url="http://ftp.sk-decors.nichost.ru">
+        <fileTransfer host="ftp.sk-decors.nichost.ru" port="21" username="sk-decors_ftp">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

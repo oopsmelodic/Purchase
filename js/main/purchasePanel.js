@@ -1,160 +1,1014 @@
-var UsersJSON;
-var roles = ["General director", "Financial director", "Financial controller", "Financial", "Department leader", "Initiator"];
-$(document).ready(function () {
-    $('.selectpicker').selectpicker();
-    //getUsersJSON();
-    $('#summernote').summernote({height: 300});
-    $('.personOK').click(function (event) {
-        event.preventDefault();
-        if (event.target.nodeName == "BUTTON")
-            personOK(event.target);
-        else
-            personOK($(event.target).parent());
-    });
-    //ITEM BUTTON CONTROLL
-    $('.personADD').click(function (){
-        var parent = $(this).parents('li');
-        var all_count =$('#chain_list').size();
-        var text = $(this).parents('li').find('.list-group-item-heading').text();
-        var index = $(this).index();
+/**
+ * Created by melodic on 26.02.2016.
+ */
 
-        console.log(text);
-        $('<li class="list-group-item">' +
-                '<div class="col-lg-9"><select class="selectpicker" data-width="100%"><option>ITem1</option><option>Item2</option></select></div>' +
-                '<div class="col-lg-9"><select class="selectpicker" data-width="100%"><option>Item3</option><option>Item4</option></select></div>' +
-            '</li>').insertAfter(parent);
-            $('.selectpicker').selectpicker();
-            $('.selectpicker').on('change', function (e) {
-                console.log(this);
-            });
+function getFilters(name,table){
+    $.ajax({
+        url: '/php/core.php?method=getFilterData',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        method: 'POST',
+        async:false,
+        data: { "field_name" : name,"table_name": table}
+    }).success(function (data) {
+
+        window['filter'+name+table] = data;
+
+        console.log(window['filter'+name+table]);
     });
+
+    return 'var:filter'+name+table;
+}
+
+//
+//;(function($) {
+//    $.fn.fixMe = function() {
+//        return this.each(function() {
+//            var $this = $(this),
+//                $t_fixed;
+//            function init() {
+//                $this.wrap('<div class="container-fixed" />');
+//                $t_fixed = $this.clone();
+//                $t_fixed.find("tbody").remove().end().addClass("fixed").insertBefore($this);
+//                resizeFixed();
+//            }
+//            function resizeFixed() {
+//                $t_fixed.find("th").each(function(index) {
+//                    $(this).css("width",$this.find("th").eq(index).outerWidth()+"px");
+//                });
+//            }
+//            function scrollFixed() {
+//                var offset = $(this).scrollTop(),
+//                    tableOffsetTop = $this.offset().top,
+//                    tableOffsetBottom = tableOffsetTop + $this.height() - $this.find("thead").height();
+//                if(offset < tableOffsetTop || offset > tableOffsetBottom)
+//                    $t_fixed.hide();
+//                else if(offset >= tableOffsetTop && offset <= tableOffsetBottom && $t_fixed.is(":hidden"))
+//                    $t_fixed.show();
+//            }
+//            $(window).resize(resizeFixed);
+//            $(window).scroll(scrollFixed);
+//            init();
+//        });
+//    };
+//})(jQuery);
+
+function format_money(n) {
+    var fixed = parseInt(n);
+    return fixed.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,")+' ₽';
+}
+
+
+var filetypes = {"txt": "text-o", "docx": "word-o", "doc": "word-o", "ptt": "powerpoint-o", "pttx": "powerpoint-o", "zip": "archive-o", "rar": "archive-o", "pdf": "pdf-o", "jpg": "image-o", "png": "image-o", "ttif": "image-o", "xls": "excel-o", "xlsx": "excel-o"};
+
+window.operateEvents = {
+    'click .control': function (e, value, row, index) {
+        //alert(row['id']);
+        var button = $(this).html();
+
+        if (button!='Restart') {
+            swal({
+                title: "Are you sure?",
+                text: button + " application '" + row['name'] + "'?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    var comment = '';
+                    swal({
+                        title: "Comment Application?",
+                        text: "Write your comment here:",
+                        type: "input",
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        animation: "slide-from-top",
+                        inputPlaceholder: "Write something",
+                        showLoaderOnConfirm: true,
+                        showLoaderOnCancel: true
+                    }, function(inputValue){
+                        //if (inputValue === false) return false;
+                        comment = inputValue;
+                        $.ajax({
+                            url: '/php/core.php?method=signIom',
+                            type: 'POST',
+                            dataType: 'json',
+                            async: true,
+                            data: {id: row['id'], type: button , comment : comment}
+                        }).success(function (data) {
+                            if (data != null) {
+                                if (data['type'] == 'success') {
+                                    $('#testtable').bootstrapTable('refresh');
+                                    if (button == 'Cancel') {
+                                        swal("Canceled!", "Application '" + row['name'] + "' has been canceled.", "error");
+                                    } else {
+                                        swal("Confirmed!", "Application '" + row['name'] + "' has been confirmed.", "success");
+                                    }
+                                } else {
+                                    swal("You can't sign the application form", data['error_msg'], "error");
+                                }
+                            } else {
+                                swal("Request Error!", data['error_msg'], "error");
+                            }
+                        });
+                    });
+
+                } else {
+                    //swal("Cancelled", "Your imaginary file is safe :)", "error");
+                }
+            });
+        }else{
+            resetForm();
+            var iom_id = row['id'];
+            //$('.selectpicker').selectpicker('destroy');
+            tinymce.get('summernote').setContent('');
+            $('.selectpicker').selectpicker('deselectAll');
+            $('#purchase_budget_table').bootstrapTable('destroy');
+
+            $('#purchase_iomsource_table').bootstrapTable('destroy');
+
+            $('#purchase_budget_table').bootstrapTable({
+                url: '/php/core.php?method=getBudgets',
+                contentType: 'application/x-www-form-urlencoded',
+                method: 'POST',
+                clickToSelect:false,
+                filterControl:true,
+                uniqueId: 'id',
+                pagination: true,
+                toolbar:'#toolbar_purchase_budget_table',
+                queryParams: function (p){
+                    return {
+                        "iom_id":iom_id
+                    }
+                },
+                columns: [{checkbox:true},{
+                    field: 'brand_name',
+                    title: 'Brand:',
+                    filterControl:'select',
+                    filterData: getFilters('name','budget_brand')
+                    //sortable:true
+                    //filterControl:'select'
+                },{
+                    field: 'name',
+                    title: 'Name:',
+                    filterStrictSearch:true
+                },{
+                    field: 'mapping_name',
+                    title: 'Mapping:',
+                    filterControl:'select',
+                    filterData: getFilters('name','budget_mapping'),
+                    filterStrictSearch:true
+                },{
+                    field:'budget_date',
+                    title: 'Date:',
+                    width:'5%',
+                    sortable:true,
+                    formatter: function(id,data){
+
+                        var d = new Date.parse(data['budget_date'])
+
+                        return d.toString('MMMM');
+                    }
+                },{
+                    field: 'planed_cost',
+                    title: 'OB Value:',
+                    formatter: function(id,data){
+                        return format_money(parseInt(data['planed_cost']));
+                    }
+                    //sortable:true
+                    //filterControl:'select'
+                },{
+                    field: 'cur_sum',
+                    title: 'Current Sum:',
+                    formatter: function(id,data){
+                        var relocation_sum = 0;
+                        if (data['relocation_cost']!=null){
+                            relocation_sum = parseInt(data['relocation_cost']);
+                        }else{
+                            relocation_sum = parseInt(0);
+                        }
+                        if (data['cur_sum']!=null) {
+                            return format_money(parseInt(data['cur_sum'])+relocation_sum);
+                        }else{
+                            return format_money(parseInt(data['planed_cost'])+relocation_sum);
+                        }
+                    }
+                    //sortable:true
+                    //filterControl:'select'
+                },{
+                    title:'Select Sum:',
+                    align: 'center',
+                    events: operateEvents,
+                    formatter: function(id,data){
+                        var maxsum = 0;
+                        if (data['cur_sum']!=null) {
+                            maxsum = data['cur_sum'];
+                        }else{
+                            maxsum =data['planed_cost'];
+                        }
+                        var controls='<input budget_id="'+data['id']+'" budget_type="'+data['budget_type']+'" onchange="writeSum(this)" class="purchase_budget_inputs" disabled="disabled" name="budget_input_'+data['id']+'" id="budget_input_'+data['id']+'" value="'+data['select_sum']+'" type="number" min="0" max="'+maxsum+'">';
+                        return controls;
+                    }
+                }],
+            }).off('check.bs.table').on('check.bs.table', function (event,row,el){
+                //console.log(row);
+                $('#budget_input_'+row['id']).prop('disabled','');
+                $('#budget_input_'+row['id']).val(row['select_sum'])
+            }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,el){
+                //console.log(row);
+                //$('#purchase_budget_table').bootstrapTable('check',);
+                $('#purchase_budget_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
+                console.log(row);
+            }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
+                $('#budget_input_'+row['id']).prop('disabled','disabled');
+                $('#budget_input_'+row['id']).val(0);
+                row['select_sum'] = 0;
+                $('#purchase_budget_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
+            }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
+                var selections = $('#purchase_budget_table').bootstrapTable('getSelections');
+                console.log(selections);
+                selections.forEach(function (item,i,arr){
+                    console.log('Item:');
+                    console.log('budget_input_'+item['id']);
+                    $('#budget_input_'+item['id']).prop('disabled','').val(item['select_sum']);
+                });
+            }).off('load-success.bs.table').on('load-success.bs.table', function (event,row,el){
+
+                $.ajax({
+                    url: '/php/core.php?method=getIomBudgets',
+                    type: 'POST',
+                    dataType: 'json',
+                    async: true,
+                    data: {iom_id: iom_id}
+                }).success(function (data) {
+                    for (var i= 0,length= row.length;i<length;i++){
+                        for (var j= 0,length2=data.length;j<length2;j++) {
+                            if (row[i]['id']==data[j]['budget_id']) {
+                                $('#purchase_budget_table').bootstrapTable('check', i);
+                                $('#budget_input_'+data[j]['budget_id']).val(data[j]['cur_cost']);
+                                row[i]['select_sum']=data[j]['cur_cost'];
+                            }else{
+                            }
+                        }
+                    }
+                });
+            });
+
+            $('#purchase_iomsource_table').bootstrapTable({
+                url: '/php/core.php?method=getIomsSource',
+                contentType: 'application/x-www-form-urlencoded',
+                method: 'POST',
+                uniqueId: 'id',
+                clickToSelect:false,
+                toolbar:'#toolbar_purchase_budget_table',
+                filterControl:true,
+                pagination: true,
+                columns: [{checkbox:true},{
+                    field: 'id',
+                    title: 'ID:'
+                },{
+                    field: 'name',
+                    title: 'Name:'
+                },{
+                    field: 'invoice_cost',
+                    title: 'Invoice:',
+                    formatter: function(id,data){
+                        return format_money(parseInt(data['invoice_cost']));
+                    }
+                },{
+                    field:'budget_cost',
+                    title: 'Budget:',
+                    formatter: function(id,data){
+                        return format_money(parseInt(data['budget_cost']));
+                    }
+                },{
+                    title: 'Current Sum:',
+                    formatter: function(id,data){
+                        var budget_cost = 0;
+                        var invoice_cost = 0;
+                        if (data['budget_cost']!=null) {
+                            budget_cost = parseInt(data['budget_cost']);
+                        }else{
+                            return format_money(0);
+                        }
+                        if (data['invoice_cost']!=null) {
+                            invoice_cost = parseInt(data['invoice_cost']);
+                        }else{
+                            return format_money(0);
+                        }
+                        var sum = budget_cost-invoice_cost;
+                        if (data['source_cost']!=null){
+                            sum = sum - parseInt(data['source_cost']);
+                        }
+                        if (sum>0){
+                            return format_money(sum);
+                        }else{
+                            return format_money(0);
+                        }
+                    }
+                    //sortable:true
+                    //filterControl:'select'
+                },{
+                    title:'Select Sum:',
+                    align: 'center',
+                    events: operateEvents,
+                    formatter: function(id,data){
+                        var maxsum = 0;
+                        var budget_cost = 0;
+                        var invoice_cost = 0;
+                        if (data['budget_cost']!=null) {
+                            budget_cost = parseInt(data['budget_cost']);
+                        }else{
+                            maxsum = 0;
+                        }
+                        if (data['invoice_cost']!=null) {
+                            invoice_cost = parseInt(data['invoice_cost']);
+                        }else{
+                            maxsum = 0;
+                        }
+                        var sum = budget_cost-invoice_cost;
+                        if (data['source_cost']!=null){
+                            sum = sum - parseInt(data['source_cost']);
+                        }
+                        if (sum>0){
+                            maxsum = sum;
+                        }else{
+                            maxsum = 0;
+                        }
+                        var controls='<input iom_source="'+data['id']+'" onchange="writeSum(this)" class="purchase_iomcource_inputs" disabled="disabled" name="iomsource_input_'+data['id']+'" id="iomsource_input_'+data['id']+'" value="'+data['select_sum']+'" type="number" min="0" max="'+maxsum+'">';
+                        return controls;
+                    }
+                }],
+            }).off('check.bs.table').on('check.bs.table', function (event,row,el){
+                $('#iomsource_input_'+row['id']).prop('disabled','');
+                $('#iomsource_input_'+row['id']).val(row['select_sum']);
+            }).off('dbl-click-row.bs.table').on('dbl-click-row.bs.table', function (event,row,item,index){
+                $('#purchase_iomsource_table').bootstrapTable('checkBy',{field:'id',values: [row['id']]});
+            }).off('uncheck.bs.table').on('uncheck.bs.table', function (event,row,el){
+                $('#iomsource_input_'+row['id']).prop('disabled','disabled');
+                $('#iomsource_input_'+row['id']).val(0);
+                row['select_sum'] = 0;
+                $('#purchase_iomsource_table').bootstrapTable('updateByUniqueId', {id: row['id'],row: row});
+            }).off('page-change.bs.table').on('page-change.bs.table', function (event,row,el){
+                var selections = $('#purchase_iomsource_table').bootstrapTable('getSelections');
+                selections.forEach(function (item,i,arr){
+                    console.log('Item:');
+                    console.log('iomsource_input_'+item['id']);
+                    $('#iomsource_input_'+item['id']).prop('disabled','').val(item['select_sum']);
+                });
+            });
+
+            if ($('#myWizard').hasClass('left')){
+                $('#legend_iom').attr('iom_id',iom_id).text('Edit Application #'+iom_id);
+                $('#myWizard').removeClass('animated left').addClass('animated right');
+                $('#purchase_text').val(row['name']);
+                $('#user_id').text(row['fullname']+' from '+row['department_name']+' department.');
+                tinymce.get('summernote').setContent(row['substantation']);
+                //$("#summernote").summernote("editor.pasteHTML", row['substantation']);
+                $.ajax({
+                    url: '/php/core.php?method=getIomSigners',
+                    contentType: 'application/x-www-form-urlencoded',
+                    dataType: 'json',
+                    method: 'POST',
+                    data: { "iom_id" : row['id'] }
+                }).success(function (data){
+                    //console.log(data);
+                    var mass = Array();
+                    for (var i= 0,length=data.length;i<length;i++){
+                        mass.push(data[i]['employee_id']);
+                    }
+                    console.log(mass);
+                    $('#chain_list select').each(function (index, item) {
+                        $(item).val(mass[index]);
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                    $.ajax({
+                        url: '/php/core.php?method=getIomFiles',
+                        contentType: 'application/x-www-form-urlencoded',
+                        dataType: 'json',
+                        method: 'POST',
+                        data: { "iom_id" : row['id'] }
+                    }).success(function (data) {
+                        var divHTML='<legend>Old Iom Files: </legend>';
+                        for(var i=0;i<data.length;i++){
+                            var filepath = data[i]['filepath'].split('/').slice(-2).join('/');
+                            divHTML+='<div class="col-lg-1" style="padding=5px; margin-bottom:10px;" align="center"><div file_id="'+data[i]['id']+'" class="delete_file"><i class="fa fa-times"></i></div>'+
+                                    '<div><a class="btn btn-default" href="../' + filepath + '" download="' + data[i]['title'] +'.'+ data[i]['type']+'"><div><i class="fa fa-file-' + filetypes[data[i]['type']] + ' fa-2x"></i></div></a></div>'+
+                                    '<div style="font-size:12px; word-wrap:break-word;">'+data[i]['title']+'</div>'+
+                                '</div>';
+                        }
+                        $('#reset_files').html(divHTML);
+                        $('.delete_file').click(function (){
+                            var file_body = $(this);
+                            var file_id = file_body.attr('file_id');
+                            swal({
+                                title: "Are you sure?",
+                                text: "Abort event ?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Yes",
+                                cancelButtonText: "No",
+                                closeOnConfirm: true,
+                                showLoaderOnConfirm: true,
+                                closeOnCancel: true
+                            }, function(isConfirm){
+                                if (isConfirm) {
+                                    $.ajax({
+                                        url: "php/core.php?method=deleteFile",
+                                        type: "POST",
+                                        dataType:"json",
+                                        async: 0,
+                                        data: {"id": file_id}
+                                    }).success(function (data) {
+                                        if (data['type'] == "success"){
+                                            file_body.remove();
+                                            swal("Deleted!", "File has been deleted.", "success");
+                                        }else{
+                                            swal("Request Error!",data['error_msg'],"error");
+                                        }
+                                    });
+                                } else {
+                                    //swal("Cancelled", "Your imaginary file is safe :)", "error");
+                                }
+                            });
+                        });
+                        console.log(divHTML);
+                    });
+                    //$('.step').validator();
+                });
+            }else{
+                //$('#myWizard').removeClass('animated left').addClass('animated right');
+            }
+
+
+        }
+    }
+};
+
+function getFilters(name,table){
+    $.ajax({
+        url: '/php/core.php?method=getFilterData',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType: 'json',
+        method: 'POST',
+        async:false,
+        data: { "field_name" : name,"table_name": table}
+    }).success(function (data) {
+
+        window['filter'+name+table] = data;
+
+        console.log(window['filter'+name+table]);
+    });
+
+    return 'var:filter'+name+table;
+};
+
+
+$(document).ready(function () {
+
+    //$('#summernote').summernote();
+
+    $('.selectpicker').selectpicker({
+        noneSelectedText: '',
+        maxOptions:1
+    });
+    //getUsersJSON();
+    //$('#chain_list').validator();
+    //$('.personOK').click(function (event) {
+    //    event.preventDefault();
+    //    if (event.target.nodeName == "BUTTON")
+    //        personOK(event.target);
+    //    else
+    //        personOK($(event.target).parent());
+    //});
+
+
+    //test table
+
+    //var array_filter = JSON.stringify(['in progress','Canceled','Approved']);
+    //console.log(array_filter);
+
+    $('#testtable').bootstrapTable({
+        url: '/php/core.php?method=getAllIoms',
+        filterControl:true,
+        filterShowClear:true,
+        columns: [{
+            field: 'id',
+            title: 'IOM ID:',
+            sortable:true,
+            formatter: function(id,data,index){
+                var d1= Date.parse(data['time_stamp']);
+                return data['department_name']+d1.toString('yyyyMM')+data['id'];
+            }			
+        }, {
+            field: 'name',
+            title: 'Name:',
+            sortable:true
+        }, {
+            field: 'department_name',
+            title: 'Department:',
+            sortable:true,
+            filterControl:'select',
+            filterStrictSearch:false,
+            filterData:getFilters('name','departments'),
+        },{
+            field: 'time_stamp',
+            title: 'Created on:',
+            sortable:true
+        },{
+            field: 'status_filter',
+            title: 'IOM Status:',
+            sortable:true,
+            filterControl:'select',
+            searchFormatter:false,
+            filterStrictSearch:false,
+            filterData:getFilters('status','iom'),
+            formatter:function(id,data){
+                return data['status'];
+            }
+        },{
+            field: 'latest_action',
+            title: 'Last Event:',
+            sortable:true
+            //filterControl:'select'
+        },{
+            field:'user_last_status_filter',
+            title:'Actions:',
+            align: 'center',
+            events: operateEvents,
+            sortable:true,
+            searchFormatter:false,
+            filterStrictSearch:false,
+            filterControl:'select',
+            filterData:getFilters('status','sign_chain'),
+            formatter: function(id,data){
+                console.log(data.sign_status);
+                var controls='';
+                if (data.sign_status==1){
+                    controls = '<button class="btn btn-success control btn-sm">Confirm</button><button class="btn btn-danger btn-sm control">Cancel</button>'
+                }else{
+                    if (data.user_last_status != null) {
+                        controls += data.user_last_status + '<br><br>' || '';
+                    }else{
+                        controls +='';
+                    }
+                }
+                if($('.img-user').attr('user_id')==data.employee_id) {
+                    controls += '<button class="btn btn-warning control btn-sm">Restart</button>';
+                }
+                if($('.img-user').attr('user_id')==120 && data.sign_status==1) {
+                    controls += '<button class="btn btn-success control btn-sm">Send to C.H</button>';
+                }
+                controls += '<a href="/show/'+data.id+'" target="_blank" class="btn btn-primary btn-sm">View</a>';
+                return controls;
+            }
+        }],
+        search: true,
+        pagination: true,
+        strictSearch: false,
+        detailView : true,
+        pageList: [25,50,75,100,200],
+        showRefresh:true,
+        stickyHeader:false,
+        toolbar: '#toolbar',
+        customSort: function (sortName, sortOrder){
+            console.log(this.data);
+        },
+        //groupBy:true,
+        //groupByField:['status'],
+        detailFormatter: function (index, row){
+            var div = $('<div class="col-lg-12"></div>');
+            div.append('<div class="col-lg-6">' +
+                        '<legend>Budgets: </legend>' +
+                        '<table class="box-shadow table-bordered" id="budget_'+index+'"></table>' +
+                        '<legend>Iom: </legend>' +
+                        '<table class="box-shadow table-bordered" id="source_'+index+'"></table>' +
+                        '<br><legend>Description: </legend><br><div class="box-shadow" style="background: #F5F5F5; padding: 15px;" id="summer_'+index+'" readonly="readonly">'+row["substantation"]+'</div>' +
+                        '<br><legend>Comments: </legend>' +
+                        '<div class="box-shadow comments-table" id="comments_'+index+'"></div>' +
+                        '<br><legend>Attachments: </legend>' +
+                        '<div id="files_'+index+'"></div>' +
+                    '</div>');
+            div.append('<div class=col-lg-6>' +
+                        '<legend>Approved by: </legend>' +
+                        '<table class="table-bordered" id="signers_'+index+'"></table>' +
+                        '<br><legend>IOM Events: </legend>' +
+                        '<table class="table-bordered" id="events_'+index+'"></table>' +
+                    '</div>');
+
+            return div.html();
+        }
+    }).on('load-success.bs.table',function (data){
+        //console.log(data);
+    }).on('expand-row.bs.table',function (event,index,row){
+        //$('#summer_'+index).summernote({
+        //    shortcuts: false
+        //});
+        console.log(row);
+
+        var iom_id = row['id']
+        //$('#summer_'+index).code(row['substantation']);
+        $('#signers_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomSigners',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+			rowStyle: function (row,index){
+			  return {
+				classes: '',
+				css: {"font-size": "12px"}
+			  };				
+			},
+            columns: [{
+                field: 'id',
+                title: '#',
+                formatter: function(id,data,index){
+                    return index+1;
+                }
+            },{
+                field: 'fullname',
+                title: 'Name:',
+                //sortable:true
+            },{
+                field: 'dep_name',
+                title: 'Desig./Dep-t:',
+				formatter: function(id,data,index){
+                    return data['role_name']+'/ '+data['dep_name'];
+                }
+                //sortable:true
+            },{
+                field: 'status',
+                title: 'Status:'
+                //sortable:true
+                //filterControl:'select'
+            }]
+        });
+        $('#budget_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomBudgets',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+			showFooter:true,
+			rowStyle: function (row,index){
+			  return {
+				classes: '',
+				css: {"font-size": "12px"}
+			  };				
+			},
+			footerStyle: function (value,row,index){
+				return {
+					classes:'',
+					css: { "font-weight": "bold" }
+				};
+			},
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            columns: [{
+                field: 'name',
+                title: 'Name:'
+                //sortable:true
+            },{
+                field: 'brand_name',
+                title: 'Brand:',
+            },{
+                field: 'mapping_name',
+                title: 'Mapping:',
+            },{
+                field: 'budget_date',
+                title: 'Date:',
+						formatter: function(id,data){
+
+                            var d = new Date.parse(data['budget_date'])
+
+                            return d.toString('MMMM, yy');
+                        }						
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'current_balance',
+                title: 'Available:',
+                formatter: function(id,data){
+					var sum = data['planed_cost']-data['current_balance'];						
+                    return format_money(sum);
+                },
+				footerFormatter:function(data){
+					return 'Total:';
+				}
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'cur_cost',
+                title: 'IOM Cost:',
+                formatter: function(id,data){
+                            if (data['cur_cost']!=null) {
+                                return format_money(data['cur_cost']);
+                            }else{
+                                return format_money(data['planed_cost']);
+                            }
+                },
+				footerFormatter:function(data){
+					var sum = 0;
+					for (var i= 0,len = data.length;i<len;i++){
+						//sum += data[i]['planed_cost'];
+						var obj  = data[i];
+						if (obj['planed_cost']!=null) {
+							sum += parseInt(obj['cur_cost']);
+						}else{
+							sum +=0;
+						}
+					}
+					return format_money(sum);
+				}				
+                //sortable:true
+                //filterControl:'select'
+            },{
+                title: 'C/F Balance:',
+                formatter: function(id,data,index){
+                    var sum = data['planed_cost']-data['current_balance'];
+                    var relocation_sum = 0;
+                    if (data['relocation_cost']!=null){
+                        relocation_sum = parseInt(data['relocation_cost']);
+                    }else{
+                        relocation_sum = parseInt(0);
+                    }
+                    sum+=relocation_sum;
+                    sum = sum - data['cur_cost'];
+                    return format_money(sum);
+                }
+            }],
+        });
+
+        $('#source_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomSource',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            showFooter:true,
+            rowStyle: function (row,index){
+                return {
+                    classes: '',
+                    css: {"font-size": "12px"}
+                };
+            },
+            footerStyle: function (value,row,index){
+                return {
+                    classes:'',
+                    css: { "font-weight": "bold" }
+                };
+            },
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            columns: [{
+                field: 'id',
+                title: 'ID:'
+                //sortable:true
+            },{
+                field: 'name',
+                title: 'Name:',
+            },{
+                field: 'iom_cost',
+                title: 'IOM Cost:',
+                formatter: function(id,data){
+                    if (data['iom_cost']!=null) {
+                        return format_money(data['iom_cost']);
+                    }else{
+                        return format_money(0);
+                    }
+                },
+                footerFormatter:function(data){
+                    var sum = 0;
+                    for (var i= 0,len = data.length;i<len;i++){
+                        //sum += data[i]['planed_cost'];
+                        var obj  = data[i];
+                        if (obj['iom_cost']!=null) {
+                            sum += parseInt(obj['iom_cost']);
+                        }else{
+                            sum +=0;
+                        }
+                    }
+                    return format_money(sum);
+                }
+                //sortable:true
+                //filterControl:'select'
+            }],
+        });
+
+        $('#comments_'+index).bootstrapTable({
+            url: '/php/core.php?method=getComments',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            cardView:true,
+            pagination: true,
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            rowStyle: function(value,row,index){
+                return {
+                    classes: value['status'],
+                };
+            },
+            columns: [{
+                field: 'fullname',
+                title: '',
+                width:'100%',
+                align:'left',
+                formatter: function(id,data,index){
+                    return '<span style="text-decoration:underline;"><i class="fa fa-commenting-o"></i>&nbsp;'+data['fullname']+'</span>';
+                }
+                //sortable:true
+            },{
+                field: 'text',
+                title: '',
+                width:'100%',
+                align:'left'
+                //sortable:true
+                //filterControl:'select'
+            },{
+                field: 'time_stamp',
+                title: '',
+                width:'100%',
+                align:'left'
+                //sortable:true
+                //filterControl:'select'
+            }],
+        });
+
+        function operateFormatter(value, row, index) {
+            if (row['cancel']==0 && row['event_name']!='Created') {
+                return [
+                    '<a class="remove" href="javascript:void(0)" title="Remove">',
+                    '<i class="glyphicon glyphicon-remove"></i>',
+                    '</a>'
+                ].join('');
+            }else{
+                return '';
+            }
+        }
+        window.operateEvents = {
+            'click .remove': function (e, value, row) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Abort event ?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    closeOnConfirm: true,
+                    showLoaderOnConfirm: true,
+                    closeOnCancel: true
+                }, function(isConfirm){
+                    if (isConfirm) {
+                        $.ajax({
+                            url: "php/core.php?method=cancelEvent",
+                            type: "POST",
+                            dataType:"json",
+                            async: 0,
+                            data: {"id": row["id"],"iom_id": iom_id,"employee_id":row['employee_id']}
+                        }).success(function (data) {
+                            if (data['type'] == "success"){
+                                $('#events_'+index).bootstrapTable('refresh');
+                                $('#signers_'+index).bootstrapTable('refresh');
+                                swal("Canceled!", "Event has been Canceled.", "success");
+                            }else{
+                                swal("Request Error!",data['error_msg'],"error");
+                            }
+                        });
+                    } else {
+                        //swal("Cancelled", "Your imaginary file is safe :)", "error");
+                    }
+                });
+            }
+        };
+
+        $('#events_'+index).bootstrapTable({
+            url: '/php/core.php?method=getIomEvents',
+            contentType: 'application/x-www-form-urlencoded',
+            method: 'POST',
+            pagination: true,
+            queryParams: function (p){
+                return {
+                    "iom_id":row['id']
+                }
+            },
+            rowStyle: function(value,row,index){
+                var color = '';
+                switch (value['event_name']){
+                    case "Approved":
+                        color = "#5cb85c";
+                        break;
+                    case "Created":
+                        color = "#337ab7";
+                        break;
+                    case "Canceled":
+                        color = "#d9534f";
+                        break;
+                    case "Restarted":
+                        color = "#ed9c28";
+                        break;
+                }
+                return{
+                    css: {"color" : color,"font-size": "11px"}
+                }
+            },
+            columns: [{
+                field: 'event',
+                title: 'Event:'
+                //sortable:true
+            },{
+                field: 'date_time',
+                title: 'DateTime:'
+                //sortable:true
+                //filterControl:'select'
+            }],
+        });
+        $.ajax({
+            url: '/php/core.php?method=getIomFiles',
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
+            method: 'POST',
+            data: { "iom_id" : row['id'] }
+        }).success(function (data) {
+            var divHTML='';
+            for(var i=0;i<data.length;i++){
+                var filepath = data[i]['filepath'];
+                divHTML+='<div class="col-lg-3" style="padding=5px; margin-bottom:10px;" align="center">'+
+                    '<div><a class="btn btn-default" href="../' + filepath + '" download="' + data[i]['title'] +'.'+ data[i]['type']+'"><div><i class="fa fa-file-' + filetypes[data[i]['type']] + ' fa-2x"></i></div></a></div>'+
+                    '<div style="font-size:12px; word-wrap:break-word;">'+data[i]['title']+'</div>'+
+                    '</div>';
+            }
+            $('#files_'+index).html(divHTML);
+            console.log(divHTML);
+        });
+    });
+
+    //$(".table").fixMe();
+    //selects
+    $('#budget_select').selectpicker().on('changed.bs.select',function (item,val){
+        var selectedOptions= $(this).context.selectedOptions;
+        var cur_select = $(this).selectpicker('val');
+        if (cur_select!=null) {
+            $.each($('#budget_inputs div'), function () {
+                var this_id = $(this).attr('id').split("_")[1];
+                console.log(cur_select.indexOf(this_id));
+                if (cur_select.indexOf(this_id) == -1) {
+                    $(this).remove();
+                }
+            });
+
+            if (cur_select != null) {
+                cur_select.forEach(function (item, i, arr) {
+                    var data_content = $(selectedOptions[i]).attr('data-content');
+                    var input = $('#budget_inputs').find('#bi_' + item).get(0);
+                    if ($(input).size() == 0) {
+                        $('#budget_inputs').append('<div id="bi_' + item + '" class="form-group"><span class="col-lg-6">' + data_content + '</span>' +
+                            '<input budget_id="' + item + '" class="form-control" type="number" min="0" data-minlength="1" placeholder="Cost size..." required/>' +
+                            '<span class="glyphicon form-control-feedback" aria-hidden="true"></span><span class="help-block with-errors"></span></div>');
+                        //$('#budget_inputs').validator();
+                        $('#budget_inputs').validator("validate");
+                    } else {
+                        //$(input).remove();
+                    }
+                });
+            }
+        }else{
+            $('#budget_inputs').html('');
+        }
+    });
+
+
 });
 
-function getUsersJSON()
-{
-    $.ajax({
-        url: "php/getUsers.php",
-        dataType: "json",
-        success: usersTable
-    });
-}
+function resetForm(){
+    $('#myWizard a:first').tab('show');
+    $('#purchase_text').val('');
+    $('.selectpicker').selectpicker('deselectAll');
+    tinymce.get('summernote').setContent('');
+    //$('#summernote').summernote('code', '');
+    //$('.selectpicker').selectpicker('destroy');
+    $('#budget_inputs').html('');
+    $('#input-1').fileinput('clear');
+    $('.control-block').click();
+    $('#myWizard').removeClass('right').addClass('left');
+    //$('#testtable').bootstrapTable('refresh');
+    //$('#purchase_budget_table').bootstrapTable('destroy');
+    $('#legend_iom').attr('iom_id','');
+    $('#input-1').fileinput('unlock');
 
-function personOK(button)
-{
-
-    if ($(button).hasClass("btn-success"))
-    {
-        $(button).parents('.list-group-item').addClass('active');
-        $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', true).selectpicker('refresh');
-        $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-remove').removeClass('glyphicon-plus');
-        $(button).addClass('btn-warning').removeClass('btn-success');
-
-    }
-    else if ($(button).hasClass("btn-warning"))
-    {
-        $(button).parents('.list-group-item').removeClass('active');
-        $(button).parents('.list-group-item').find('.selectpicker').prop('disabled', false).selectpicker('refresh');
-        $(button).parents('.list-group-item').find('.personOK').find('.glyphicon').addClass('glyphicon-plus').removeClass('glyphicon-remove');
-        $(button).addClass('btn-success').removeClass('btn-warning');
-
-//        $('#createpurch').removeClass('disabled');
-    }
-}
-//function personOK(button)
-//{
-//    $(button).parent('.list-group-item').addClass('active');
-//    if ($(button).parent('.list-group-item').next().text() != "")
-//    {
-//        $('.personBack').remove();
-//        $(button).parent('.list-group-item').next().append("<select class='selectpicker inline' data-width='80%'>"
-//                + "<option>Initiator</option>"
-//                + "<option>General controller</option>"
-//                + "<option>Controller</option>"
-//                + "</select><button class='btn btn-success btn-sm inline personOK' style='right:60px; position:absolute;'>"
-//                + "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span></button>"
-//                + "<button class='btn btn-warning btn-sm inline personBack' style='right:20px; position:absolute;'>"
-//                + "<span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span></button>");
-//        $(button).parent('.list-group-item').children('.selectpicker').prop('disabled', true).selectpicker('refresh');
-//        $(button).remove();
-//
-//        $('.selectpicker').selectpicker();
-//        $('.personOK').click(function (event) {
-//            if (event.target.nodeName == "BUTTON")
-//                personOK(event.target);
-//            else
-//                personOK($(event.target).parent());
-//        });
-//        $('.personBack').click(function (event) {
-//        if (event.target.nodeName == "BUTTON")
-//            personBack(event.target);
-//        else
-//            personBack($(event.target).parent());
-//    });
-//    }
-//    else
-//    {
-//        $(button).parent('.list-group-item').children('.selectpicker').prop('disabled', true).selectpicker('refresh');
-//        $('#createpurch').removeClass('disabled');
-//        $(button).remove();
-//    }
-//}
-//function personBack(button)
-//{
-//    $('.personOK').remove();
-//    $(button).parent('.list-group-item').prev().append("<button class='btn btn-success btn-sm inline personOK' style='right:60px; position:absolute;'>"
-//            + "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span></button>"
-//            + "<button class='btn btn-warning btn-sm inline personBack' style='right:20px; position:absolute;'>"
-//            + "<span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span></button>");
-//    $(button).parent('.list-group-item').prev().children('.selectpicker').prop('disabled', false).selectpicker('refresh');
-//    $(button).parent('.list-group-item').prev().removeClass('active');
-//    $(button).parent('.list-group-item').children('.selectpicker').selectpicker('destroy');;
-//    $(button).remove();
-//
-//    $('.personOK').click(function (event) {
-//        if (event.target.nodeName == "BUTTON")
-//            personOK(event.target);
-//        else
-//            personOK($(event.target).parent());
-//    });
-//    $('.personBack').click(function (event) {
-//        if (event.target.nodeName == "BUTTON")
-//            personBack(event.target);
-//        else
-//            personBack($(event.target).parent());
-//    });
-//}
-function usersTable(json)
-{
-    UsersJSON = json;
-    var html = "<table id='tree' class='table table-bordered table-hover'  style='table-layout:fixed;'>";
-    var department = "";
-    var treegrid = 0;
-    var departmentID = 1;
-    for (var i = 0; i < UsersJSON.length; i++)
-    {
-        if (department != UsersJSON[i]["department"]) {
-            department = UsersJSON[i]["department"];
-            departmentID = treegrid + 1;
-            treegrid += 1;
-            html += "<tr class='treegrid-" + departmentID + " success'><td  class='col-md-5'>" + department + "</td><td class='col-md-3'></td><td class='col-md-3'></td><td class='col-md-1'></td></tr>";
-        }
-        treegrid += 1;
-        html += "<tr class='treegrid-" + treegrid + " treegrid-parent-" + departmentID + "'>"
-                + "<td><span class='glyphicon glyphicon-user' aria-hidden='true'></span> " + UsersJSON[i]["fullname"] + "</td><td>" + UsersJSON[i]["position"] + "</td><td>" + roles[UsersJSON[i]["role"] - 1] + "</td>"
-                + "<td style='text-align: center;'>"
-                + "<button type='button' class='btn btn-warning btn-xs' aria-label='Left Align'>"
-                + "<span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>"
-                + "</button> "
-                + "<button type='button' class='btn btn-danger btn-xs' aria-label='Left Align'>"
-                + "<span class='glyphicon glyphicon-remove' aria-hidden='true'></span>"
-                + "</button>"
-                + "</td></tr>";
-    }
-    html += "</table>";
-    $('#usersTable').html(html);
-
-    $('#tree').treegrid({
-        expanderExpandedClass: 'glyphicon glyphicon-minus',
-        expanderCollapsedClass: 'glyphicon glyphicon-plus'
-    });
 }
