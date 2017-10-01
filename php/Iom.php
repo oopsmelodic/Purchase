@@ -299,6 +299,7 @@ class Iom
             return Array('type'=>'error','error_msg'=>mysqli_error(GetMyConnection()));
         }
         else{
+            unlink($_SERVER['DOCUMENT_ROOT'].'/'.$params['file_path']);
             return Array('type'=>'success','file_id'=>$params['id']);
         }
     }

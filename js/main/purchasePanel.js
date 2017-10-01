@@ -397,7 +397,7 @@ window.operateEvents = {
                         var divHTML='<legend>Old Iom Files: </legend>';
                         for(var i=0;i<data.length;i++){
                             var filepath = data[i]['filepath'].split('/').slice(-2).join('/');
-                            divHTML+='<div class="col-lg-1" style="padding=5px; margin-bottom:10px;" align="center"><div file_id="'+data[i]['id']+'" class="delete_file"><i class="fa fa-times"></i></div>'+
+                            divHTML+='<div class="col-lg-1" style="padding=5px; margin-bottom:10px;" align="center"><div file_id="'+data[i]['id']+'" file_path="'+filepath+'" class="delete_file"><i class="fa fa-times"></i></div>'+
                                     '<div><a class="btn btn-default" href="../' + filepath + '" download="' + data[i]['title'] +'.'+ data[i]['type']+'"><div><i class="fa fa-file-' + filetypes[data[i]['type']] + ' fa-2x"></i></div></a></div>'+
                                     '<div style="font-size:12px; word-wrap:break-word;">'+data[i]['title']+'</div>'+
                                 '</div>';
@@ -406,6 +406,7 @@ window.operateEvents = {
                         $('.delete_file').click(function (){
                             var file_body = $(this);
                             var file_id = file_body.attr('file_id');
+                            var file_path_del = file_body.attr('file_path');
                             swal({
                                 title: "Are you sure?",
                                 text: "Abort event ?",
@@ -424,11 +425,11 @@ window.operateEvents = {
                                         type: "POST",
                                         dataType:"json",
                                         async: 0,
-                                        data: {"id": file_id}
+                                        data: {"id": file_id,"file_path": file_path_del}
                                     }).success(function (data) {
                                         if (data['type'] == "success"){
-                                            file_body.remove();
                                             swal("Deleted!", "File has been deleted.", "success");
+                                            file_body.parent().remove();
                                         }else{
                                             swal("Request Error!",data['error_msg'],"error");
                                         }
